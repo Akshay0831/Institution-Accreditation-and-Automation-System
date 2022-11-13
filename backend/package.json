@@ -1,19 +1,20 @@
 {
-  "name": "institution-accreditation-and-automation-system",
-  "version": "1.0.0",
-  "description": "Institution accreditation and automation system, built using MERN stack",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Akshay0831/Institution-Accreditation-and-Automation-System.git"
-  },
-  "author": "Akshay R, Prajwal Kulkarni, Shreesha S, Preethi KP",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Akshay0831/Institution-Accreditation-and-Automation-System/issues"
-  },
-  "homepage": "https://github.com/Akshay0831/Institution-Accreditation-and-Automation-System#readme"
+    "name": "institution-accreditation-and-automation-system",
+    "version": "1.0.0",
+    "description": "Institution accreditation and automation system, built using MERN stack",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Akshay0831/Institution-Accreditation-and-Automation-System.git"
+    },
+    "author": "Akshay R, Prajwal Kulkarni, Shreesha S, Preethi KP",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Akshay0831/Institution-Accreditation-and-Automation-System/issues"
+    },
+    "homepage": "https://github.com/Akshay0831/Institution-Accreditation-and-Automation-System#readme"
 }
