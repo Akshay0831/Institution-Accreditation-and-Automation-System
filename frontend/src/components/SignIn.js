@@ -3,14 +3,16 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase-config";
 import "bootstrap/dist/css/bootstrap.css";
 import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
     const refEmail = useRef(null);
     const refPassword = useRef(null);
+    const navigate = useNavigate();
 
-    const validateEmail = (email) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);
+    const validateEmail = (email) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
 
     const validatePassword = (password) =>
         /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/.test(password);
@@ -57,6 +59,9 @@ function SignIn() {
                                     .then((res) => res.json())
                                     .then((data) => console.log(data))
                                     .catch((err) => console.error(err));
+                                setTimeout(() => {
+                                    navigate("/home");
+                                }, 3000);
                             }
                         })
                         .catch((err) => console.error(err));
@@ -85,6 +90,17 @@ function SignIn() {
                 progress: undefined,
                 theme: "colored",
             });
+        } else if (!validateEmail(refEmail.current.value)) {
+            toast.error("Invalid Email-Id!", {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
     };
 
@@ -98,7 +114,7 @@ function SignIn() {
                 <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Email address</label>
                     <input
-                        type="email"
+                        type="text"
                         className="form-control"
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
