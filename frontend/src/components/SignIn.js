@@ -21,20 +21,23 @@ function SignIn() {
         if (validatePassword(refPassword.current.value) && validateEmail(refEmail.current.value)) {
             signInWithEmailAndPassword(auth, refEmail.current.value, refPassword.current.value)
                 .then((user) => {
-                    const docRef = doc(firestore, "users", user._tokenResponse.localId);
+                    const docRef = doc(firestore, "users", user.user.uid);
                     getDoc(docRef)
                         .then((docSnap) => {
                             if (docSnap.exists()) {
-                                toast.success("Logged in successfully!", {
-                                    position: "top-center",
-                                    autoClose: 3000,
-                                    hideProgressBar: false,
-                                    closeOnClick: true,
-                                    pauseOnHover: true,
-                                    draggable: true,
-                                    progress: undefined,
-                                    theme: "colored",
-                                });
+                                toast.success(
+                                    "Successfully! Logged in as " + refEmail.current.value,
+                                    {
+                                        position: "top-center",
+                                        autoClose: 2000,
+                                        hideProgressBar: false,
+                                        closeOnClick: true,
+                                        pauseOnHover: true,
+                                        draggable: true,
+                                        progress: undefined,
+                                        theme: "colored",
+                                    }
+                                );
                                 fetch("http://localhost:4000/login", {
                                     // Adding method type
                                     method: "POST",
@@ -62,7 +65,7 @@ function SignIn() {
                     console.error(err);
                     toast.error("Invalid User!", {
                         position: "top-right",
-                        autoClose: 3000,
+                        autoClose: 2000,
                         hideProgressBar: false,
                         closeOnClick: true,
                         pauseOnHover: true,
@@ -74,7 +77,7 @@ function SignIn() {
         } else if (!validatePassword(refPassword.current.value)) {
             toast.error("Invalid Password!", {
                 position: "top-right",
-                autoClose: 3000,
+                autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
@@ -92,8 +95,8 @@ function SignIn() {
                 className="border border-primary p-4 rounded"
                 style={{ maxWidth: "400px" }}
             >
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
+                <div className="form-group">
+                    <label htmlFor="exampleInputEmail1">Email address</label>
                     <input
                         type="email"
                         className="form-control"
@@ -106,8 +109,8 @@ function SignIn() {
                         We'll never share your email with anyone else.
                     </small>
                 </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
+                <div className="form-group">
+                    <label htmlFor="exampleInputPassword1">Password</label>
                     <input
                         type="password"
                         className="form-control"
@@ -118,7 +121,7 @@ function SignIn() {
                 </div>
                 <div className="form-group form-check">
                     <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                    <label className="form-check-label" for="exampleCheck1">
+                    <label className="form-check-label" htmlFor="exampleCheck1">
                         Check me out
                     </label>
                 </div>
