@@ -1,8 +1,10 @@
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase-config";
 import "bootstrap/dist/css/bootstrap.css";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
     const refEmail = useRef(null);
@@ -23,6 +25,16 @@ function SignIn() {
                     getDoc(docRef)
                         .then((docSnap) => {
                             if (docSnap.exists()) {
+                                toast.success("Logged in successfully!", {
+                                    position: "top-center",
+                                    autoClose: 3000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: true,
+                                    draggable: true,
+                                    progress: undefined,
+                                    theme: "colored",
+                                });
                                 fetch("http://localhost:4000/login", {
                                     // Adding method type
                                     method: "POST",
@@ -46,8 +58,30 @@ function SignIn() {
                         })
                         .catch((err) => console.error(err));
                 })
-                .catch((err) => console.error(err));
-        } else {
+                .catch((err) => {
+                    console.error(err);
+                    toast.error("Invalid User!", {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                    });
+                });
+        } else if (!validatePassword(refPassword.current.value)) {
+            toast.error("Invalid Password!", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
         }
     };
 
@@ -91,6 +125,7 @@ function SignIn() {
                 <button type="submit" className="btn btn-primary">
                     Submit
                 </button>
+                <ToastContainer />
             </form>
         </div>
     );

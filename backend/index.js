@@ -1,7 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const firebase_app = require("firebase/app");
-const firebase_auth = require("firebase/auth");
 require("dotenv").config();
 const port = 4000;
 
@@ -21,7 +19,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    console.log(`req.body = ${req.body.userType}`);
+    console.log(`req.body = ${req.body.email}, ${req.body.userId}, ${req.body.userType}`);
     return res.json({ message: "hello" });
 });
 
