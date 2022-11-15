@@ -12,6 +12,19 @@ function SignIn() {
     const refPassword = useRef(null);
     const navigate = useNavigate();
 
+    const toasts = (message, type) => {
+        type(message, {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    };
+
     const validateEmail = (email) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
 
     const validatePassword = (password) =>
@@ -27,18 +40,9 @@ function SignIn() {
                     getDoc(docRef)
                         .then((docSnap) => {
                             if (docSnap.exists()) {
-                                toast.success(
+                                toasts(
                                     "Successfully! Logged in as " + refEmail.current.value,
-                                    {
-                                        position: "top-center",
-                                        autoClose: 2000,
-                                        hideProgressBar: false,
-                                        closeOnClick: true,
-                                        pauseOnHover: true,
-                                        draggable: true,
-                                        progress: undefined,
-                                        theme: "colored",
-                                    }
+                                    toast.success
                                 );
                                 fetch("http://localhost:4000/login", {
                                     // Adding method type
@@ -66,42 +70,10 @@ function SignIn() {
                         })
                         .catch((err) => console.error(err));
                 })
-                .catch((err) => {
-                    console.error(err);
-                    toast.error("Invalid User!", {
-                        position: "top-right",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "colored",
-                    });
-                });
-        } else if (!validatePassword(refPassword.current.value)) {
-            toast.error("Invalid Password!", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-            });
-        } else if (!validateEmail(refEmail.current.value)) {
-            toast.error("Invalid Email-Id!", {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "colored",
-            });
-        }
+                .catch((err) => toasts("Invalid User!", toast.error));
+        } else if (!validatePassword(refPassword.current.value))
+            toasts("Invalid Password!", toast.error);
+        else if (!validateEmail(refEmail.current.value)) toasts("Invalid Email-Id!", toast.error);
     };
 
     return (
