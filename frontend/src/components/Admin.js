@@ -1,8 +1,8 @@
 import React from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import { useNavigate, Navigate, Link } from "react-router-dom";
 
-function Home() {
+const Admin = () => {
     let navigate = useNavigate();
     let handleClick = () => {
         let auth = getAuth();
@@ -17,19 +17,15 @@ function Home() {
                 console.error("Couldn't log out");
             });
     };
-
-    console.log(`uid: ${localStorage.getItem("uid")}`);
-    return localStorage.getItem("uid") ? (
-        <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
-            <p>Home</p>
+    return (
+        <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
+            <p>Admin</p>
             <button className="btn btn-danger" onClick={handleClick}>
                 Sign Out
             </button>
-            <Link to="/admin">go to admin</Link>
+            <Link to="/home">go to home</Link>
         </div>
-    ) : (
-        <Navigate to="/login" />
     );
-}
+};
 
-export default Home;
+export default Admin;

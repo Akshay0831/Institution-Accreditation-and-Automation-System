@@ -8,6 +8,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
+    console.log("uid: " + localStorage.getItem("uid"));
+
     const refEmail = useRef(null);
     const refPassword = useRef(null);
     const navigate = useNavigate();
@@ -33,47 +35,62 @@ function SignIn() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (validatePassword(refPassword.current.value) && validateEmail(refEmail.current.value)) {
-            signInWithEmailAndPassword(auth, refEmail.current.value, refPassword.current.value)
-                .then((user) => {
-                    const docRef = doc(firestore, "users", user.user.uid);
-                    getDoc(docRef)
-                        .then((docSnap) => {
-                            if (docSnap.exists()) {
-                                toasts(
-                                    "Successfully! Logged in as " + refEmail.current.value,
-                                    toast.success
-                                );
-                                fetch("http://localhost:4000/login", {
-                                    // Adding method type
-                                    method: "POST",
+        let loginCredentials = async () => {
+            if (
+                validatePassword(refPassword.current.value) &&
+                validateEmail(refEmail.current.value)
+            ) {
+                let user = await signInWithEmailAndPassword(
+                    auth,
+                    refEmail.current.value,
+                    refPassword.current.value
+                );
+                if (user) {
+                    let docRef = doc(firestore, "users", user.user.uid);
+                    let docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        toasts(
+                            "Successfully! Logged in as " + refEmail.current.value,
+                            toast.success
+                        );
+                        localStorage.setItem("uid", user.user.uid);
+                        localStorage.setItem("userType", docSnap.data().userType);
+                        let res = await fetch("http://localhost:4000/login", {
+                            // Adding method type
+                            method: "POST",
 
-                                    // Adding body or contents to send
-                                    body: JSON.stringify({
-                                        email: refEmail.current.value,
-                                        userId: user.user.uid,
-                                        userType: docSnap.data().userType,
-                                    }),
+                            // Adding body or contents to send
+                            body: JSON.stringify({
+                                email: refEmail.current.value,
+                                userId: user.user.uid,
+                                userType: docSnap.data().userType,
+                            }),
 
-                                    // Adding headers to the request
-                                    headers: {
-                                        "Content-type": "application/json; charset=UTF-8",
-                                    },
-                                })
-                                    .then((res) => res.json())
-                                    .then((data) => console.log(data))
-                                    .catch((err) => console.error(err));
-                                setTimeout(() => {
-                                    navigate("/home");
-                                }, 3000);
-                            }
-                        })
-                        .catch((err) => console.error(err));
-                })
-                .catch((err) => toasts("Invalid User!", toast.error));
-        } else if (!validatePassword(refPassword.current.value))
-            toasts("Invalid Password!", toast.error);
-        else if (!validateEmail(refEmail.current.value)) toasts("Invalid Email-Id!", toast.error);
+                            // Adding headers to the request
+                            headers: {
+                                "Content-type": "application/json; charset=UTF-8",
+                            },
+                        });
+                        let json = await res.json();
+                        console.log(json);
+                        console.log("localStorage: " + localStorage.getItem("uid"));
+                        setTimeout(
+                            () =>
+                                navigate(
+                                    localStorage.getItem("userType") === "Admin"
+                                        ? "/admin"
+                                        : "/home"
+                                ),
+                            4000
+                        );
+                    }
+                }
+            } else if (!validatePassword(refPassword.current.value))
+                toasts("Invalid Password!", toast.error);
+            else if (!validateEmail(refEmail.current.value))
+                toasts("Invalid Email-Id!", toast.error);
+        };
+        loginCredentials();
     };
 
     return (
