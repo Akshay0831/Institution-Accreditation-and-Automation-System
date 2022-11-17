@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
-    console.log("uid: " + localStorage.getItem("uid"));
+    console.log("uid: " + sessionStorage.getItem("uid"));
 
     const refEmail = useRef(null);
     const refPassword = useRef(null);
@@ -53,8 +53,8 @@ function SignIn() {
                             "Successfully! Logged in as " + refEmail.current.value,
                             toast.success
                         );
-                        localStorage.setItem("uid", user.user.uid);
-                        localStorage.setItem("userType", docSnap.data().userType);
+                        sessionStorage.setItem("uid", user.user.uid);
+                        sessionStorage.setItem("userType", docSnap.data().userType);
                         let res = await fetch("http://localhost:4000/login", {
                             // Adding method type
                             method: "POST",
@@ -73,15 +73,9 @@ function SignIn() {
                         });
                         let json = await res.json();
                         console.log(json);
-                        console.log("localStorage: " + localStorage.getItem("uid"));
-                        setTimeout(
-                            () =>
-                                navigate(
-                                    localStorage.getItem("userType") === "Admin"
-                                        ? "/admin"
-                                        : "/home"
-                                ),
-                            4000
+                        console.log("sessionStorage: " + sessionStorage.getItem("uid"));
+                        navigate(
+                            sessionStorage.getItem("userType") === "Admin" ? "/admin" : "/home"
                         );
                     }
                 }

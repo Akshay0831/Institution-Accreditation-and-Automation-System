@@ -9,8 +9,8 @@ function Home() {
         signOut(auth)
             .then(() => {
                 console.log("Logged out!");
-                localStorage.removeItem("uid");
-                localStorage.removeItem("userType");
+                sessionStorage.removeItem("uid");
+                sessionStorage.removeItem("userType");
                 navigate("/login");
             })
             .catch(() => {
@@ -18,8 +18,8 @@ function Home() {
             });
     };
 
-    console.log(`uid: ${localStorage.getItem("uid")}`);
-    return localStorage.getItem("uid") ? (
+    console.log(`uid: ${sessionStorage.getItem("uid")}`);
+    return sessionStorage.getItem("uid") ? (
         <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
             <p>Home</p>
             <button className="btn btn-danger" onClick={handleClick}>

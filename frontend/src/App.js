@@ -5,7 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 function App() {
-    console.log("App.js, uid: " + localStorage.getItem("uid"));
+    console.log("App.js, uid: " + sessionStorage.getItem("uid"));
 
     return (
         <Router>
