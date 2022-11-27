@@ -22,18 +22,23 @@ Clone the project
 
 Keep two terminals,
 
+To install dependencies,
+
 In one terminal,
 
 ```bash
   cd backend
   npm install
-  npm start
 ```
 In another terminal,
 
 ```bash
   cd frontend
   npm install
+```
+
+To run both client and backend server, in both terminals,
+```bash
   npm start
 ```
 
