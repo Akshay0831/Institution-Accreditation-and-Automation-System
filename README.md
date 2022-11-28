@@ -27,13 +27,13 @@ To install dependencies,
 In one terminal,
 
 ```bash
-  cd backend
+  cd Institution-Accreditation-and-Automation-System/backend
   npm install
 ```
 In another terminal,
 
 ```bash
-  cd frontend
+  cd Institution-Accreditation-and-Automation-System/frontend
   npm install
 ```
 
