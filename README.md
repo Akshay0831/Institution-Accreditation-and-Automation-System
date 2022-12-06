@@ -1,17 +1,3 @@
-
-# Institution-Accreditation-and-Automation-System
-
-
-
-## Tech Stack
-
-**Client:** React
-
-**Server:** Node, Express, Firebase Authentication
-
-**Database:** MongoDB, Firebase Firestore
-
-
 ## Run Locally
 
 Clone the project
@@ -27,19 +13,27 @@ To install dependencies,
 In one terminal,
 
 ```bash
-  cd Institution-Accreditation-and-Automation-System/backend
+  cd backend
   npm install
 ```
+
 In another terminal,
 
 ```bash
-  cd Institution-Accreditation-and-Automation-System/frontend
+  cd frontend
   npm install
 ```
 
-To run both client and backend server, in both terminals,
+Then, in both terminals,
+
 ```bash
   npm start
 ```
 
+To add the Database,
 
+From the root folder of the project
+
+```bash
+  mongorestore ./projectdb/dump/
+```
