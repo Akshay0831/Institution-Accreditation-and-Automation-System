@@ -1,3 +1,17 @@
+
+# Institution-Accreditation-and-Automation-System
+
+
+
+## Tech Stack
+
+**Client:** React
+
+**Server:** Node, Express, Firebase Authentication
+
+**Database:** MongoDB, Firebase Firestore
+
+
 ## Run Locally
 
 Clone the project
@@ -16,7 +30,6 @@ In one terminal,
   cd backend
   npm install
 ```
-
 In another terminal,
 
 ```bash
@@ -25,7 +38,6 @@ In another terminal,
 ```
 
 Then, in both terminals,
-
 ```bash
   npm start
 ```
@@ -33,7 +45,6 @@ Then, in both terminals,
 To add the Database,
 
 From the root folder of the project
-
 ```bash
   mongorestore ./projectdb/dump/
 ```
