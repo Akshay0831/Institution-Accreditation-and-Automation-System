@@ -169,3 +169,6 @@ packages/react-devtools-timeline/dist
 
 config.js
 .env
+
+/db/*
+!/db/collection*
