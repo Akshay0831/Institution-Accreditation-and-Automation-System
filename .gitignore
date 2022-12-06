@@ -169,7 +169,3 @@ packages/react-devtools-timeline/dist
 
 config.js
 .env
-
-WiredTiger*
-mongod*
-metrics*
