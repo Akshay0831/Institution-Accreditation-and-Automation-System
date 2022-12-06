@@ -173,4 +173,3 @@ config.js
 WiredTiger*
 mongod*
 metrics*
-sizeStorer.wt
