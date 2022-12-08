@@ -1,6 +1,6 @@
 import SignIn from "./components/SignIn";
-import Home from "./components/Home";
-import Admin from "./components/Admin";
+import Home from "./components/teacher/TeacherBase";
+import Admin from "./components/admin/AdminBase";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
