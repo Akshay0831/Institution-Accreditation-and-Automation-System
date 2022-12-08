@@ -10,8 +10,8 @@ const Teacher = () => {
         signOut(auth)
             .then(() => {
                 console.log("Logged out!");
-                localStorage.removeItem("uid");
-                localStorage.removeItem("userType");
+                sessionStorage.removeItem("uid");
+                sessionStorage.removeItem("userType");
                 navigate("/login");
             })
             .catch(() => {
@@ -20,7 +20,7 @@ const Teacher = () => {
     };
     return (
         <div className="container-fluid">
-            <Header/>
+            <Header />
             <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
                 <p>Admin</p>
                 <button className="btn btn-danger" onClick={handleClick}>
