@@ -88,42 +88,49 @@ function SignIn() {
     };
 
     return (
-        <div className="d-flex justify-content-center vh-100 align-items-center">
-            <form
-                onSubmit={handleSubmit}
-                className="border border-primary p-4 rounded"
-                style={{ maxWidth: "400px" }}
-            >
-                <div className="form-group">
-                    <label htmlFor="exampleInputEmail1">Email address</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                        ref={refEmail}
-                    />
-                    <small id="emailHelp" className="form-text text-muted">
-                        We'll never share your email with anyone else.
-                    </small>
+        <div className="container h-100">
+            <div className="row d-flex justify-content-center vh-100 align-items-center">
+              <div className="card bg-dark text-white col-12 col-md-8 col-lg-5 col-xl-4" styles="border-radius: 1rem;">
+                <div className="card-body py-5 px-3 text-center">
+
+                  <form onSubmit={handleSubmit}>
+
+                    <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
+                    <p className="text-white-50 mb-5">Please enter your login and password!</p>
+
+                    <div className="row form-group align-items-center m-4">
+                      <div className="col-auto mx-auto">
+                        <label className="col-form-label" htmlFor="typeEmailX">Email &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                      </div>
+                      <div className="col-auto mx-auto">
+                        <input type="email" id="typeEmailX" className="form-control" placeholder="Enter Email" ref={refEmail} />
+                      </div>
+                    </div>
+
+                    <div className="row form-group align-items-center m-4">
+                      <div className="col-auto mx-auto">
+                        <label className="col-form-label" htmlFor="typePasswordX">Password</label>
+                      </div>
+                      <div className="col-auto mx-auto">
+                        <input type="password" id="typePasswordX" className="form-control" placeholder="Password" ref={refPassword} />
+                      </div>
+                    </div>
+
+                    <p className="small mb-5 pb-lg-2"><a className="text-white-50" href="#!">Forgot password?</a></p>
+
+                    <button className="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+
+                    <div className="text-center mt-4 pt-1">
+                      <a href="#" className="text-white"><i className="fab fa-facebook-f fa-lg"></i></a>
+                      <a href="#" className="text-white"><i className="fab fa-twitter fa-lg mx-4 px-2"></i></a>
+                      <a href="#" className="text-white"><i className="fab fa-google fa-lg"></i></a>
+                    </div>
+
+                    <ToastContainer />
+                  </form>
                 </div>
-                <div className="form-group">
-                    <label htmlFor="exampleInputPassword1">Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        id="exampleInputPassword1"
-                        placeholder="Password"
-                        ref={refPassword}
-                    />
-                </div>
-                <br/>
-                <button type="submit" className="btn btn-primary">
-                    Submit
-                </button>
-                <ToastContainer />
-            </form>
+              </div>
+            </div>
         </div>
     );
 }
