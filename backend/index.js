@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const mongodb = require("./db/mongodb");
+const MongoDB = require("./db/mongodb");
 require("dotenv").config();
 const port = 4000;
 
+const mongodb = new MongoDB("projectdb");
 const app = express();
 
 app.use(express.static("public"));
@@ -24,8 +25,8 @@ app.post("/login", (req, res) => {
     return res.json({ message: "hello" });
 });
 
-app.get("/:collection", (req, res) => {
-    mongodb.getDocs(req.params["collection"]).then((docs) => res.json(docs));
+app.get("/:collection", async (req, res) => {
+    res.json(await mongodb.getDocs(req.params["collection"]));
 });
 
 app.listen(port, () => {
