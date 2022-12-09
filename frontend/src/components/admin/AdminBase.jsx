@@ -22,7 +22,7 @@ const Admin = () => {
     return (
         <div className="container-fluid">
             <Header/>
-            <CollectionList columnsList={['Slno','Free']}/>
+            <CollectionList collection="teacher" />
             <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
                 <p>Admin</p>
                 <button className="btn btn-danger" onClick={handleClick}>
