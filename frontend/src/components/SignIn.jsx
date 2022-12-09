@@ -6,17 +6,18 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
+import "../css/styles.css"
 
-import {
-    MDBBtn,
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBCard,
-    MDBCardBody,
-    MDBInput,
-    MDBIcon
-} from 'mdb-react-ui-kit';
+// import {
+//     MDBBtn,
+//     MDBContainer,
+//     MDBRow,
+//     MDBCol,
+//     MDBCard,
+//     MDBCardBody,
+//     MDBInput,
+//     MDBIcon
+// } from 'mdb-react-ui-kit';
 
 function SignIn() {
     console.log("uid: " + sessionStorage.getItem("uid"));
@@ -99,94 +100,95 @@ function SignIn() {
     };
 
     return (
-                // <div className="d-flex justify-content-center vh-100 align-items-center">
+                // <div classNameName="d-flex justify-content-center vh-100 align-items-center">
                 //     <form
                 //         onSubmit={handleSubmit}
-                //         className="border border-primary p-4 rounded"
+                //         classNameName="border border-primary p-4 rounded"
                 //         style={{ maxWidth: "400px" }}
                 //     >
-                //         <div className="form-group">
+                //         <div classNameName="form-group">
                 //             <label htmlFor="exampleInputEmail1">Email address</label>
                 //             <input
                 //                 type="text"
-                //                 className="form-control"
+                //                 classNameName="form-control"
                 //                 id="exampleInputEmail1"
                 //                 aria-describedby="emailHelp"
                 //                 placeholder="Enter email"
                 //                 ref={refEmail}
                 //             />
-                //             <small id="emailHelp" className="form-text text-muted">
+                //             <small id="emailHelp" classNameName="form-text text-muted">
                 //                 We'll never share your email with anyone else.
                 //             </small>
                 //         </div>
-                //         <div className="form-group">
+                //         <div classNameName="form-group">
                 //             <label htmlFor="exampleInputPassword1">Password</label>
                 //             <input
                 //                 type="password"
-                //                 className="form-control"
+                //                 classNameName="form-control"
                 //                 id="exampleInputPassword1"
                 //                 placeholder="Password"
                 //                 ref={refPassword}
                 //             />
                 //         </div>
-                //         <div className="form-group form-check">
-                //             <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                //             <label className="form-check-label" htmlFor="exampleCheck1">
+                //         <div classNameName="form-group form-check">
+                //             <input type="checkbox" classNameName="form-check-input" id="exampleCheck1" />
+                //             <label classNameName="form-check-label" htmlFor="exampleCheck1">
                 //                 Check me out
                 //             </label>
                 //         </div>
-                //         <button type="submit" className="btn btn-primary">
+                //         <button type="submit" classNameName="btn btn-primary">
                 //             Submit
                 //         </button>
                 //         <ToastContainer />
                 //     </form>
                 // </div>
-                 <MDBContainer fluid>
-                   
-                 <MDBRow className='d-flex justify-content-center align-items-center h-100'>
-                   <MDBCol col='12'>
-           
-                     <MDBCard className='bg-dark text-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '400px'}}>
-                       <MDBCardBody className='p-5 d-flex flex-column align-items-center mx-auto w-100'>
-           
-                         <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
-                         <p className="text-white-50 mb-5">Please enter your login and password!</p>
-           
-                         <MDBInput wrapperClass='mb-4 mx-5 w-100' labelClass='text-white' label='Email address'   id="exampleInputEmail1" type='email' size="lg"  placeholder="Enter email"
-                                ref={refEmail}/>
-                         <MDBInput wrapperClass='mb-4 mx-5 w-100' labelClass='text-white' label='Password' id='exampleInputPassword1' type='password' size="lg"  placeholder="Password"
-                               ref={refPassword}/>
-                         <MDBBtn outline className='mx-2 px-5' color='white' size='lg'>
-                           Login
-                         </MDBBtn>
-                         <p className="small mb-3 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
-                         
-           
-                         <div className='d-flex flex-row mt-3 mb-5'>
-                           <MDBBtn tag='a' color='none' className='m-3' style={{ color: 'white' }}>
-                             <MDBIcon fab icon='facebook-f' size="lg"/>
-                           </MDBBtn>
-           
-                           <MDBBtn tag='a' color='none' className='m-3' style={{ color: 'white' }}>
-                             <MDBIcon fab icon='twitter' size="lg"/>
-                           </MDBBtn>
-           
-                           <MDBBtn tag='a' color='none' className='m-3' style={{ color: 'white' }}>
-                             <MDBIcon fab icon='google' size="lg"/>
-                           </MDBBtn>
-                         </div>
-           
-                         <div>
-                           <p className="mb-0">Don't have an account? <a href="#!" class="text-white-50 fw-bold">Sign Up</a></p>
-           
-                         </div>
-                       </MDBCardBody>
-                     </MDBCard>
-           
-                   </MDBCol>
-                 </MDBRow>
-           
-               </MDBContainer>
+
+      <section className="vh-100 gradient-custom">
+        <div className="container py-5 h-100">
+          <div className="row d-flex justify-content-center align-items-center h-100">
+            <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+              <div className="card bg-dark text-white" styles="border-radius: 1rem;">
+                <div className="card-body p-5 text-center">
+
+                  <div className="mb-md-5 mt-md-4 pb-5">
+
+                    <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
+                    <p className="text-white-50 mb-5">Please enter your login and password!</p>
+
+                    <div className="form-outline form-white mb-4">
+                      <input type="email" id="typeEmailX" className="form-control form-control-lg" />
+                      <label className="form-label" htmlFor="typeEmailX">Email</label>
+                    </div>
+
+                    <div className="form-outline form-white mb-4">
+                      <input type="password" id="typePasswordX" className="form-control form-control-lg" />
+                      <label className="form-label" htmlFor="typePasswordX">Password</label>
+                    </div>
+
+                    <p className="small mb-5 pb-lg-2"><a className="text-white-50" href="#!">Forgot password?</a></p>
+
+                    <button className="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+
+                    <div className="d-flex justify-content-center text-center mt-4 pt-1">
+                      <a href="#!" className="text-white"><i className="fab fa-facebook-f fa-lg"></i></a>
+                      <a href="#!" className="text-white"><i className="fab fa-twitter fa-lg mx-4 px-2"></i></a>
+                      <a href="#!" className="text-white"><i className="fab fa-google fa-lg"></i></a>
+                    </div>
+
+                  </div>
+
+                  <div>
+                    <p className="mb-0">Don't have an account? <a href="#!" className="text-white-50 fw-bold">Sign Up</a>
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
                
     
 
