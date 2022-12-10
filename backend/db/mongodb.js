@@ -1,21 +1,22 @@
 const { MongoClient } = require("mongodb");
+class MongoDB {
+    constructor(database) {
+        this.uri = "mongodb://127.0.0.1:27017";
+        this.client = new MongoClient(this.uri, {
+            useUnifiedTopology: true,
+            useNewUrlParser: true,
+        });
+        this.database = database;
+        this.client.connect();
+        this.db = this.client.db(this.database);
+    }
 
-exports.getDocs = async (collectionName) => {
-    // Connecting to a local port
-    const uri = "mongodb://127.0.0.1:27017";
+    async getDocs(collectionName) {
+        const collection = this.db.collection(collectionName);
+        let cursorFind = collection.find();
+        let docs = await cursorFind.toArray();
+        return docs;
+    }
+}
 
-    const client = new MongoClient(uri, {
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
-    });
-    client.connect();
-    const db = client.db("projectdb");
-
-    const collection = db.collection(collectionName);
-    let cursorFind = collection.find();
-    let docs = await cursorFind.toArray();
-    setTimeout(() => {
-        client.close();
-    }, 2000);
-    return docs;
-};
+module.exports = MongoDB;

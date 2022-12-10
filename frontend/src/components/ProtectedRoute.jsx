@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { GlobalContext } from "../context/contextProvider";
 
 const ProtectedRoute = () => {
-    return sessionStorage.getItem("uid") ? <Outlet /> : <Navigate to="/login" />;
+    const { globalContext, setGlobalContext } = useContext(GlobalContext);
+
+    return globalContext?.uid ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
