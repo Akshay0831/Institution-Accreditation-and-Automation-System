@@ -7,15 +7,11 @@ class MongoDB {
             useNewUrlParser: true,
         });
         this.database = database;
-    }
-
-    openConnection() {
         this.client.connect();
         this.db = this.client.db(this.database);
     }
 
     async getDocs(collectionName) {
-        this.openConnection();
         const collection = this.db.collection(collectionName);
         let cursorFind = collection.find();
         let docs = await cursorFind.toArray();

@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
+import { GlobalContext } from "../../context/contextProvider";
 import Header from "../Header";
 
 const Teacher = () => {
+    const { globalContext, setGlobalContext } = useContext(GlobalContext);
+    console.log("TeacherBase: context: " + JSON.stringify(globalContext));
     let navigate = useNavigate();
     let handleClick = () => {
         let auth = getAuth();
         signOut(auth)
             .then(() => {
                 console.log("Logged out!");
-                sessionStorage.removeItem("uid");
-                sessionStorage.removeItem("userType");
+                // sessionStorage.removeItem("uid");
+                // sessionStorage.removeItem("userType");
+                setGlobalContext({});
                 navigate("/login");
             })
             .catch(() => {

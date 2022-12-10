@@ -22,10 +22,10 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     console.log(`req.body = ${req.body.email}, ${req.body.userId}, ${req.body.userType}`);
-    return res.json({ message: "hello" });
+    res.json({ message: "hello" });
 });
 
-app.get("/:collection", async (req, res) => {
+app.get("/documents/:collection", async (req, res) => {
     res.json(await mongodb.getDocs(req.params["collection"]));
 });
 
