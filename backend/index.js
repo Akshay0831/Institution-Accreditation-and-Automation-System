@@ -1,10 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const MongoDB = require("./db/mongodb");
+const mongodb = require("./db/mongodb");
 require("dotenv").config();
 const port = 4000;
 
-const mongodb = new MongoDB("projectdb");
 const app = express();
 
 app.use(express.static("public"));
@@ -27,6 +26,12 @@ app.post("/login", (req, res) => {
 
 app.get("/documents/:collection", async (req, res) => {
     res.json(await mongodb.getDocs(req.params["collection"]));
+});
+
+app.get("/documents/:collection/delete/:id", (req, res) => {
+    mongodb.deleteDoc(req.params["collection"], req.params["id"]).then(() => {
+        res.status(200).send("Deleted " + req.params["id"]);
+    });
 });
 
 app.listen(port, () => {
