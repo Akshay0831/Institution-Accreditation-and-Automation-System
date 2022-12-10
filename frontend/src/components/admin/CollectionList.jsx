@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import Table from 'react-bootstrap/Table';
 
 export default class CollectionList extends Component {
     constructor(props){
@@ -36,7 +37,7 @@ export default class CollectionList extends Component {
 
     tables() {
         if (this.state.documents)
-            return <table className="table">
+            return <Table striped bordered hover size="sm" id="dataTable">
               <thead className="thead-light">
                 <tr>
                     {this.state.columns.map(column=> <th key={column}>{column}</th>)}
@@ -45,16 +46,16 @@ export default class CollectionList extends Component {
               <tbody>
                 { this.documentList() }
               </tbody>
-            </table>
+            </Table>
         else
             return <p>No Values Found</p>
     }
 
     render() {
         return (
-          <div>
-            <h3>{this.props.collection}</h3>
-            {this.tables()}
+          <div className="card m-4">
+            <h3 className="card-header">{this.props.collection}</h3>
+            <div className="card-body">{this.tables()}</div>
           </div>
         )
       }
