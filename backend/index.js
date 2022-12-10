@@ -29,6 +29,10 @@ app.get("/documents/:collection", async (req, res) => {
     res.json(await mongodb.getDocs(req.params["collection"]));
 });
 
+app.get("/documents/:collection/delete/:id", (req, res) => {
+    mongodb.deleteDoc(req.params["collection"], req.params["id"]).then(() => {res.status(200).send("Deleted "+req.params["id"])});
+});
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });

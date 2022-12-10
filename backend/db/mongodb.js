@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 class MongoDB {
     constructor(database) {
         this.uri = "mongodb://127.0.0.1:27017";
@@ -16,6 +16,11 @@ class MongoDB {
         let cursorFind = collection.find();
         let docs = await cursorFind.toArray();
         return docs;
+    }
+
+    async deleteDoc(collectionName, documentId) {
+        let deletedResult = await this.db.collection(collectionName).deleteOne({_id:ObjectId(documentId)});
+        return deletedResult.acknowledged;
     }
 }
 
