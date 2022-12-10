@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import { GlobalContext } from "./context/contextProvider";
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.css";
+import "./App.css";
 
 function App() {
     const [globalContext, setGlobalContext] = useState({ uid: "", userType: "" });
