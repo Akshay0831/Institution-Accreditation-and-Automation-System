@@ -19,7 +19,9 @@ class MongoDB {
     }
 
     async deleteDoc(collectionName, documentId) {
-        let deletedResult = await this.db.collection(collectionName).deleteOne({_id:ObjectId(documentId)});
+        let deletedResult = await this.db
+            .collection(collectionName)
+            .deleteOne({ _id: ObjectId(documentId) });
         return deletedResult.acknowledged;
     }
 }

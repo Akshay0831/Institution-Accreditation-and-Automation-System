@@ -4,7 +4,7 @@ const MongoDB = require("./db/mongodb");
 require("dotenv").config();
 const port = 4000;
 
-const mongodb = new MongoDB("projectdb");
+mongodb = new MongoDB("projectdb");
 const app = express();
 
 app.use(express.static("public"));
@@ -30,7 +30,9 @@ app.get("/documents/:collection", async (req, res) => {
 });
 
 app.get("/documents/:collection/delete/:id", (req, res) => {
-    mongodb.deleteDoc(req.params["collection"], req.params["id"]).then(() => {res.status(200).send("Deleted "+req.params["id"])});
+    mongodb.deleteDoc(req.params["collection"], req.params["id"]).then(() => {
+        res.status(200).send("Deleted " + req.params["id"]);
+    });
 });
 
 app.listen(port, () => {

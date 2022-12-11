@@ -1,23 +1,8 @@
-import React, { useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
-import { GlobalContext } from "../context/contextProvider";
+import React from "react";
+import { Link } from "react-router-dom";
+import SignOut from "./SignOut";
 
 const Header = (props) => {
-    const { setGlobalContext } = useContext(GlobalContext);
-    let navigate = useNavigate();
-    let logOutHandler = () => {
-        let auth = getAuth();
-        signOut(auth)
-            .then(() => {
-                console.log("Logged out!");
-                setGlobalContext({});
-                navigate("/login");
-            })
-            .catch(() => {
-                console.error("Couldn't log out");
-            });
-    };
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark rounded-bottom">
             <div className="container-fluid">
@@ -58,9 +43,7 @@ const Header = (props) => {
                             </Link>
                         </li>
                     </ul>
-                    <button className="btn btn-danger" onClick={logOutHandler}>
-                        Sign Out
-                    </button>
+                    <SignOut />
                 </div>
             </div>
         </nav>
