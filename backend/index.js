@@ -1,9 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const mongodb = require("./db/mongodb");
+const MongoDB = require("./db/mongodb");
 require("dotenv").config();
 const port = 4000;
 
+mongodb = new MongoDB("projectdb");
 const app = express();
 
 app.use(express.static("public"));

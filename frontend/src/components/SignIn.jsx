@@ -1,18 +1,13 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase-config";
-import React, { useRef, useContext } from "react";
-import { GlobalContext } from "../context/contextProvider";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
     console.log("uid: " + sessionStorage.getItem("uid"));
-
-    const { globalContext, setGlobalContext } = useContext(GlobalContext);
 
     const refEmail = useRef(null);
     const refPassword = useRef(null);
@@ -57,8 +52,8 @@ function SignIn() {
                             "Successfully! Logged in as " + refEmail.current.value,
                             toast.success
                         );
-                        // sessionStorage.setItem("uid", user.user.uid);
-                        // sessionStorage.setItem("userType", docSnap.data().userType);
+                        sessionStorage.setItem("uid", user.user.uid);
+                        sessionStorage.setItem("userType", docSnap.data().userType);
                         let res = await fetch("http://localhost:4000/login", {
                             // Adding method type
                             method: "POST",
@@ -77,15 +72,10 @@ function SignIn() {
                         });
                         let json = await res.json();
                         console.log(json);
-                        setGlobalContext({
-                            uid: user.user.uid,
-                            userType: docSnap.data().userType,
-                        });
-                        // console.log("sessionStorage: " + sessionStorage.getItem("uid"));
+                        console.log("sessionStorage: " + sessionStorage.getItem("uid"));
                         navigate(docSnap.data().userType === "Admin" ? "/admin" : "/home");
                     }
                 }
-                console.log("SignIn.jsx, context: " + JSON.stringify(globalContext));
             } else if (!validatePassword(refPassword.current.value))
                 toasts("Invalid Password!", toast.error);
             else if (!validateEmail(refEmail.current.value))
