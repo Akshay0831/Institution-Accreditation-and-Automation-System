@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import SignOut from "./SignOut";
+import SignOutBtn from "./SignOutBtn";
 
 const Header = (props) => {
     return (
@@ -43,7 +43,7 @@ const Header = (props) => {
                             </Link>
                         </li>
                     </ul>
-                    <SignOut />
+                    <SignOutBtn />
                 </div>
             </div>
         </nav>
