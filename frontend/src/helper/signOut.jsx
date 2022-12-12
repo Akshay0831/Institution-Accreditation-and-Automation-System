@@ -1,6 +1,6 @@
 import { getAuth, signOut } from "firebase/auth";
 
-export default () => {
+export const SignOut = () => {
     let auth = getAuth();
     signOut(auth)
         .then(() => {
