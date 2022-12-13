@@ -26,9 +26,10 @@ class MongoDB {
     }
 
     async updateDoc(collectionName, documentId, body){
+        body=Object(body);
         let updatedResult = await this.db
             .collection(collectionName)
-            .updateOne({_id: ObjectId(documentId)}, {$set: Object(body)});
+            .updateOne({_id: documentId}, {$set: body});
         return updatedResult.acknowledged;
     }
 }
