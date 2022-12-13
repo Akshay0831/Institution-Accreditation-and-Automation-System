@@ -24,6 +24,13 @@ class MongoDB {
             .deleteOne({ _id: ObjectId(documentId) });
         return deletedResult.acknowledged;
     }
+
+    async updateDoc(collectionName, documentId, body){
+        let updatedResult = await this.db
+            .collection(collectionName)
+            .updateOne({_id: ObjectId(documentId)}, {$set: Object(body)});
+        return updatedResult.acknowledged;
+    }
 }
 
 module.exports = MongoDB;

@@ -35,6 +35,13 @@ app.get("/documents/:collection/delete/:id", (req, res) => {
     });
 });
 
+app.post("/documents/:collection/update/:id", (req, res) => {
+    mongodb.updateDoc(req.params["collection"], req.params["id"], req.body).then(() => {
+        res.status(200).send("Updated " + req.params["id"]);
+    });
+    // res.status(200).send("Update " + req.params['id']);
+});
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });

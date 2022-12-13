@@ -10,9 +10,8 @@ export default class CollectionList extends Component {
 
     async componentDidMount() {
         console.log("Called API: http://localhost:4000/documents/" + this.props.collection);
-        let response = await fetch("http://localhost:4000/documents/" + "Class Allocation");
+        let response = await fetch("http://localhost:4000/documents/" + this.props.collection);
         let json = await response.json();
-        console.log("json: " + json);
         this.setState({ columns: Object.keys(json[0]), documents: json });
     }
 
@@ -29,18 +28,44 @@ export default class CollectionList extends Component {
             .catch((err) => console.error(err));
     }
 
+    updateDocument(id, index) {
+      let message = this.state.documents[index];
+      fetch("http://localhost:4000/documents/" + this.props.collection + "/update/" + id, {
+        method: "POST",
+        body: JSON.stringify(message),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+        },
+      })
+        .then(res => {
+            if (res.status == 200)
+              console.table("Updated "+id+" Successfully!");
+        })
+        .catch(err => console.error(err));
+    }
+
+    handleItemChanged(col, index, event) {
+      let documents = this.state.documents;
+      documents[index][col] = event.target.value;
+      this.setState({
+        documents: documents
+      });
+    }
+
     documentList() {
         if (this.state.documents)
-            return this.state.documents.map((currentDocument) => {
+            return this.state.documents.map((currentDocument, i) => {
                 return (
                     <tr key={currentDocument._id}>
-                        {this.state.columns.map((col) => (
-                            <td key={col}>{currentDocument[col]}</td>
+                        {this.state.columns.map(col => (
+                            <td key={col}>
+                              <input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)} required/>
+                            </td>
                         ))}
                         <td>
                             <button
                                 className="btn btn-warning py-1"
-                                onClick={() => console.log("Update : " + currentDocument._id)}
+                                onClick={() => this.updateDocument(currentDocument._id, i)}
                             >
                                 <i className="fa fa-pencil" aria-hidden="true" />
                             </button>
@@ -57,7 +82,7 @@ export default class CollectionList extends Component {
         else
             return (
                 <tr>
-                    <td>No Values found</td>
+                    <td colSpan={this.state.columns.length}>No Values found</td>
                 </tr>
             );
     }
@@ -65,7 +90,7 @@ export default class CollectionList extends Component {
     tables() {
         if (this.state.documents)
             return (
-                <Table striped bordered hover size="sm" id="dataTable">
+                <Table striped bordered hover size="sm">
                     <thead className="thead-light">
                         <tr>
                             {this.state.columns.map((column) => (
