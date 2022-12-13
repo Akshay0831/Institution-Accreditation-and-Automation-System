@@ -10,7 +10,7 @@ export default class CollectionList extends Component {
 
     async componentDidMount() {
         console.log("Called API: http://localhost:4000/documents/" + this.props.collection);
-        let response = await fetch("http://localhost:4000/documents/" + "teacher");
+        let response = await fetch("http://localhost:4000/documents/" + "Class Allocation");
         let json = await response.json();
         console.log("json: " + json);
         this.setState({ columns: Object.keys(json[0]), documents: json });
