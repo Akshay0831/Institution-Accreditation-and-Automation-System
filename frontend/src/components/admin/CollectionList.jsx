@@ -88,27 +88,26 @@ export default class CollectionList extends Component {
     }
 
     tables() {
-        if (this.state.documents)
-            return (
-                <Table striped bordered hover size="sm">
-                    <thead className="thead-light">
-                        <tr>
-                            {this.state.columns.map((column) => (
-                                <th key={column}>{column}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>{this.documentList()}</tbody>
-                </Table>
-            );
-        else return <p>No Values Found</p>;
+        return (
+            <Table striped bordered hover size="sm">
+                <thead className="thead-light">
+                    <tr>
+                        {this.state.columns.map((column) => (
+                            <th key={column}>{column}</th>
+                        ))}
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>{this.documentList()}</tbody>
+            </Table>
+        );
     }
 
     render() {
         return (
             <div className="card m-4">
                 <h3 className="card-header">{this.props.collection}</h3>
-                <div className="card-body">{this.tables()}</div>
+                <div className="card-body overflow-scroll">{this.state.documents?this.tables():<p>No Values Found</p>}</div>
             </div>
         );
     }
