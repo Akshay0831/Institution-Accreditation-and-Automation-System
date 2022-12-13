@@ -59,7 +59,7 @@ export default class CollectionList extends Component {
                     <tr key={currentDocument._id}>
                         {this.state.columns.map(col => (
                             <td key={col}>
-                              <input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)} required/>
+                              {col.startsWith('_')? currentDocument[col] : <input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)} required/>}
                             </td>
                         ))}
                         <td>
