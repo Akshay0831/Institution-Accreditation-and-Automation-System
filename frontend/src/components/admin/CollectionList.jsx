@@ -1,18 +1,31 @@
 import React, { Component } from "react";
 import Table from "react-bootstrap/Table";
+import { MetaData } from "../../metaData";
 
 export default class CollectionList extends Component {
     constructor(props) {
         super(props);
-        // this.deleteDocument = this.deleteDocument.bind(this)
-        this.state = { columns: [], documents: [] };
+        let meta = MetaData[this.props.collection];
+        let lookedUpCollections={};
+        for (let col in meta){
+            if(meta[col].startsWith('fk_')){
+                let lookedUpCollectionName = meta[col].substring(3);
+                fetch("http://localhost:4000/documents/" + lookedUpCollectionName)
+                  .then(res=> 
+                    res.json()
+                      .then(val=> lookedUpCollections[col] = val)
+                  );
+            }
+        }
+        this.state = { columns: Object.keys(meta), documents: [] , lookedUpCollections: lookedUpCollections};
     }
+
 
     async componentDidMount() {
         console.log("Called API: http://localhost:4000/documents/" + this.props.collection);
         let response = await fetch("http://localhost:4000/documents/" + this.props.collection);
         let json = await response.json();
-        this.setState({ columns: Object.keys(json[0]), documents: json });
+        this.setState({ documents: json });
     }
 
     deleteDocument(id) {
@@ -59,7 +72,25 @@ export default class CollectionList extends Component {
                     <tr key={currentDocument._id}>
                         {this.state.columns.map(col => (
                             <td key={col}>
-                              {col.startsWith('_')? currentDocument[col] : <input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)} required/>}
+                              {
+                              col.startsWith('fk_')?
+                              (
+                                this.state.lookedUpCollections[col]?
+                                <select className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}>
+                                  {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
+                                    console.log(Object(entry));
+                                    return <option key={entry['_id']} value={entry['_id']}>{Object.values(entry).toString()}</option>
+                                  })}
+                                </select>
+                                :
+                                currentDocument[col]
+                              )
+                              :
+                              (col.startsWith('_')? 
+                              currentDocument[col] : 
+                              
+                              <input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}/>)
+                              }
                             </td>
                         ))}
                         <td>

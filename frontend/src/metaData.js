@@ -1,18 +1,18 @@
-module.exports.MetaData = {
-    class: {
+export const MetaData = {
+    Class: {
         _id: "pk",
-        "$Department ID": "fk_Department",
+        "fk_Department ID": "fk_Department",
         Section: "str",
         Semester: "int",
     },
     "Class Allocation": {
         _id: "pk",
-        "$Class ID": "fk_Class",
-        $USN: "fk_Student",
+        "fk_Class ID": "fk_Class",
+        fk_USN: "fk_Student",
     },
     "CO PO Map": {
-        "$Scheme Code": "fk",
-        "$Subject Code": "fk_Subject",
+        "fk_Scheme Code": "fk",
+        "fk_Subject Code": "fk_Subject",
         CO: "str",
         PO: "str",
         Values: "str",
@@ -20,18 +20,18 @@ module.exports.MetaData = {
     Department: {
         _id: "pk",
         "Department Name": "str",
-        "$Hod ID": "fk_Teacher",
+        "fk_Hod ID": "fk_Teacher",
     },
     Marks: {
         _id: "pk",
         "Marks Gained": "Array(Array(int))",
         "Max Marks": "Array_int",
-        "$Subject Code": "fk_Subject",
-        $USN: "fk_Student",
+        "fk_Subject Code": "fk_Subject",
+        fk_USN: "fk_Student",
     },
     Student: {
         _id: "pk",
-        "$Department ID": "fk_Department",
+        "fk_Department ID": "fk_Department",
         "Student Name": "str",
         USN: "pk",
     },
@@ -48,16 +48,16 @@ module.exports.MetaData = {
     },
     Teacher: {
         _id: "pk",
-        "$Department ID": "fk_Department",
+        "fk_Department Id": "fk_Department",
         Mail: "str_unique",
         Role: "str",
         "Teacher Name": "str",
     },
     "Teacher Allocation": {
         _id: "pk",
-        "$Class ID": "fk_Class",
-        "$Department ID": "fk_Department",
-        "$Subject Code": "fk_Subject",
-        "$Teacher ID": "fk_Teacher",
+        "fk_Class ID": "fk_Class",
+        "fk_Department ID": "fk_Department",
+        "fk_Subject Code": "fk_Subject",
+        "fk_Teacher ID": "fk_Teacher",
     },
 };

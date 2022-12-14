@@ -9,7 +9,7 @@ const Admin = () => {
         <Suspense>
             <div className="container-fluid">
                 <Header />
-                <CollectionList collection="teacher" />
+                <CollectionList collection="Teacher" />
                 <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
                     <p>Admin</p>
                     <SignOutBtn />
