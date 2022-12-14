@@ -78,8 +78,9 @@ export default class CollectionList extends Component {
                                 this.state.lookedUpCollections[col]?
                                 <select className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}>
                                   {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
-                                    console.log(Object(entry));
-                                    return <option key={entry['_id']} value={entry['_id']}>{Object.values(entry).toString()}</option>
+                                    console.log(Object(entry), col.substring(3));
+                                    let fkCol;
+                                    return <option key={entry['_id']} value={entry[col.substring(3)]}>{Object.values(entry).toString()}</option>
                                   })}
                                 </select>
                                 :
