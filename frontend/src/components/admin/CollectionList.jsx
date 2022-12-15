@@ -5,33 +5,28 @@ import { MetaData } from "../../metaData";
 export default class CollectionList extends Component {
     constructor(props) {
         super(props);
-        let meta = MetaData[this.props.collection];
-        let columns = Object.keys(meta), documentAdded={}, lookedUpCollections={};
+        this.serverURL = 'http://localhost:4000';
+        this.state = {collectionSelected: this.props.collection, columns: [], lookedUpCollections: {}, documents: [], documentAdded: {}};
+    }
+
+    async componentDidMount() {
+        console.log("Called API: "+this.serverURL+"/documents/" + this.state.collectionSelected);
+        let json = await (await fetch(this.serverURL+"/documents/" + this.state.collectionSelected)).json();
+        let meta = MetaData[this.state.collectionSelected];
+        let columns = Object.keys(meta), documentAdded={}; 
+        let lookedUpCollections={};
         for (let col in meta){
             if(meta[col].startsWith('fk_')){
-                let lookedUpCollectionName = meta[col].split("_")[1];
-                fetch("http://localhost:4000/documents/" + lookedUpCollectionName)
-                  .then(res=> 
-                    res.json()
-                      .then(val=> lookedUpCollections[col] = val)
-                  );
+                lookedUpCollections[col] =  await (await fetch(this.serverURL+"/documents/" + meta[col].split("_")[1])).json();
             }
         }
         for(let col in columns) if (columns[col]!="_id") documentAdded[columns[col]] = "";
-        console.log(documentAdded)
-        this.state = { columns: columns, documents: [], documentAdded: documentAdded, lookedUpCollections: lookedUpCollections};
-    }
-
-
-    async componentDidMount() {
-        console.log("Called API: http://localhost:4000/documents/" + this.props.collection);
-        let response = await fetch("http://localhost:4000/documents/" + this.props.collection);
-        let json = await response.json();
-        this.setState({ documents: json });
+        this.setState({ columns:columns, lookedUpCollections: lookedUpCollections, documents:json, documentAdded:documentAdded});
+        console.log(this.state);
     }
 
     deleteDocument(id) {
-        fetch("http://localhost:4000/documents/" + this.props.collection + "/delete/" + id)
+        fetch(this.serverURL+"/documents/" + this.state.collectionSelected + "/delete/" + id)
             .then((res) => {
                 console.log("Called API: Delete " + id);
                 if (res.status == 200)
@@ -44,7 +39,7 @@ export default class CollectionList extends Component {
 
     updateDocument(id, index) {
       let message = this.state.documents[index];
-      fetch("http://localhost:4000/documents/" + this.props.collection + "/update/" + id, {
+      fetch(this.serverURL+"/documents/" + this.state.collectionSelected + "/update/" + id, {
         method: "POST",
         body: JSON.stringify(message),
         headers: {
@@ -69,7 +64,7 @@ export default class CollectionList extends Component {
     addDocument(){
       let message = this.state.documentAdded;
       if (this.validateDocument(message))
-        fetch("http://localhost:4000/documents/"+this.props.collection+"/add", {
+        fetch(this.serverURL+"/documents/"+this.state.collectionSelected+"/add", {
           method: "POST",
           body: JSON.stringify(message),
           headers: {"Content-type": "application/json; charset=UTF-8",},
@@ -111,28 +106,21 @@ export default class CollectionList extends Component {
             return this.state.documents.map((currentDocument, i) => {
                 return (
                     <tr key={currentDocument._id}>
-                        {this.state.columns.map(col => (
-                            <td key={col}>
-                              {
-                              col.startsWith('fk_')
-                              ?(
-                                this.state.lookedUpCollections[col]?
-                                <select className="editable fullwidth" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}>
+                        {this.state.columns.map(col => {
+                          if (col.startsWith('_')) return <td key={col}>{currentDocument[col]}</td>;
+                          else if (col.startsWith('fk_'))
+                            return <td key={col}>
+                                {this.state.lookedUpCollections[col]
+                                ?<select className="editable fullwidth" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}>
                                   {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
                                     return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
                                   })}
                                 </select>
-                                :
-                                currentDocument[col]
-                              )
-                              :(
-                                col.startsWith('_')
-                                ?currentDocument[col] 
-                                :<input className="editable fullwidth" name={col} value={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}/>
-                              )
-                              }
-                            </td>
-                        ))}
+                                :currentDocument[col]}
+                              </td>
+                          else 
+                            return <td key={col}><input className="editable fullwidth" name={col} value={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}/></td>
+                        })}
                         <td>
                             <button className="btn btn-warning py-1" onClick={() => this.updateDocument(currentDocument._id, i)} >
                                 <i className="fa fa-pencil" aria-hidden="true" />
@@ -199,7 +187,7 @@ export default class CollectionList extends Component {
     render() {
         return (
             <div className="card m-4">
-                <h3 className="card-header">{this.props.collection}</h3>
+                <h3 className="card-header">{this.state.collectionSelected}</h3>
                 <div className="card-body overflow-scroll">{this.state.documents?this.tables():<p>No Values Found</p>}</div>
             </div>
         );
