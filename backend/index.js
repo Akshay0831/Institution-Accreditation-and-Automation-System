@@ -39,7 +39,16 @@ app.post("/documents/:collection/update/:id", (req, res) => {
     mongodb.updateDoc(req.params["collection"], req.params["id"], req.body).then(() => {
         res.status(200).send("Updated " + req.params["id"]);
     });
-    // res.status(200).send("Update " + req.params['id']);
+});
+
+app.post("/documents/:collection/add", (req, res) => {
+    mongodb.addDoc(req.params["collection"], req.body)
+    .then((result) => {
+        if (!result.acknowledged)
+            throw "Failed to add!"
+        res.status(200).send(result.insertedId);
+    })
+    .catch(err=>res.status(500).send(err));
 });
 
 app.listen(port, () => {
