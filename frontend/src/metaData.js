@@ -48,7 +48,7 @@ export const MetaData = {
     },
     Teacher: {
         _id: "pk",
-        "fk_Department Id": "fk_Department",
+        "fk_Department ID": "fk_Department",
         Mail: "str_unique",
         Role: "str",
         "Teacher Name": "str",

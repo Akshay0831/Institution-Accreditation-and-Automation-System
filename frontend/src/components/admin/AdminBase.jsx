@@ -8,13 +8,8 @@ const Admin = () => {
     return (
         <Suspense>
             <div className="container-fluid">
-                <Header />
-                <CollectionList collection="Teacher" />
-                <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
-                    <p>Admin</p>
-                    <SignOutBtn />
-                    <Link to="/home">go to home</Link>
-                </div>
+                <Header links={[['About Us','#'],['Contact Us','#'],['Teacher Dashboard','/home']]}/>
+                <CollectionList collection="Class Allocation" />
             </div>
         </Suspense>
     );

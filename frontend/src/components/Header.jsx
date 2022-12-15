@@ -28,21 +28,17 @@ const Header = (props) => {
                                     Home
                                 </a>
                             </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">
-                                    Contact Us
-                                </a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link" href="#">
-                                    About Us
-                                </a>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/home" className="nav-link">
-                                    Go To Home
-                                </Link>
-                            </li>
+                            {
+                                (props.links)
+                                ?props.links.map((entry)=>{
+                                    return <li key={entry[0]} className="nav-item">
+                                            <Link to={entry[1]} className="nav-link">
+                                                {entry[0]}
+                                            </Link>
+                                        </li>
+                                })
+                                :<></>
+                            }
                         </ul>
                         <SignOutBtn />
                     </div>

@@ -9,7 +9,7 @@ export default class CollectionList extends Component {
         let lookedUpCollections={};
         for (let col in meta){
             if(meta[col].startsWith('fk_')){
-                let lookedUpCollectionName = meta[col].substring(3);
+                let lookedUpCollectionName = meta[col].split("_")[1];
                 fetch("http://localhost:4000/documents/" + lookedUpCollectionName)
                   .then(res=> 
                     res.json()
@@ -58,6 +58,7 @@ export default class CollectionList extends Component {
     }
 
     handleItemChanged(col, index, event) {
+      console.log(event.target.value);
       let documents = this.state.documents;
       documents[index][col] = event.target.value;
       this.setState({
@@ -73,38 +74,30 @@ export default class CollectionList extends Component {
                         {this.state.columns.map(col => (
                             <td key={col}>
                               {
-                              col.startsWith('fk_')?
-                              (
+                              col.startsWith('fk_')
+                              ?(
                                 this.state.lookedUpCollections[col]?
-                                <select className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}>
+                                <select className="editable" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}>
                                   {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
-                                    console.log(Object(entry), col.substring(3));
-                                    let fkCol;
-                                    return <option key={entry['_id']} value={entry[col.substring(3)]}>{Object.values(entry).toString()}</option>
+                                    return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
                                   })}
                                 </select>
                                 :
                                 currentDocument[col]
                               )
-                              :
-                              (col.startsWith('_')? 
-                              currentDocument[col] : 
-                              
-                              <input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}/>)
+                              :(
+                                col.startsWith('_')
+                                ?currentDocument[col] 
+                                :<input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}/>
+                              )
                               }
                             </td>
                         ))}
                         <td>
-                            <button
-                                className="btn btn-warning py-1"
-                                onClick={() => this.updateDocument(currentDocument._id, i)}
-                            >
+                            <button className="btn btn-warning py-1" onClick={() => this.updateDocument(currentDocument._id, i)} >
                                 <i className="fa fa-pencil" aria-hidden="true" />
                             </button>
-                            <button
-                                className="btn btn-danger py-1"
-                                onClick={() => this.deleteDocument(currentDocument._id)}
-                            >
+                            <button className="btn btn-danger py-1" onClick={() => this.deleteDocument(currentDocument._id)} >
                                 <i className="fa fa-trash"></i>
                             </button>
                         </td>
@@ -130,7 +123,9 @@ export default class CollectionList extends Component {
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>{this.documentList()}</tbody>
+                <tbody>
+                    {this.documentList()}
+                </tbody>
             </Table>
         );
     }

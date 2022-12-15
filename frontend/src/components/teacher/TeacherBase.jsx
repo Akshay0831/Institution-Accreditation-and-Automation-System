@@ -7,12 +7,7 @@ const Teacher = () => {
     return (
         <Suspense>
             <div className="container-fluid">
-                <Header />
-                <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
-                    <p>Admin</p>
-                    <SignOutBtn />
-                    <Link to="/admin">go to admin</Link>
-                </div>
+                <Header links={[['About Us','#'],['Contact Us','#'],['Admin Dashboard','/admin']]}/>
             </div>
         </Suspense>
     );
