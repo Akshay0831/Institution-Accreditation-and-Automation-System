@@ -19,9 +19,7 @@ class MongoDB {
     }
 
     async deleteDoc(collectionName, documentId) {
-        let deletedResult = await this.db
-            .collection(collectionName)
-            .deleteOne({ _id: ObjectId(documentId) });
+        let deletedResult = await this.db.collection(collectionName).deleteOne({ _id: documentId });
         return deletedResult.acknowledged;
     }
 
@@ -143,6 +141,12 @@ class MongoDB {
         });
 
         return result;
+    }
+
+    async addDoc(collectionName, body) {
+        body["_id"] = new ObjectId().toString();
+        let insertedResult = await this.db.collection(collectionName).insertOne(body);
+        return insertedResult;
     }
 }
 

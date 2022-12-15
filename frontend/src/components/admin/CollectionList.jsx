@@ -6,7 +6,9 @@ export default class CollectionList extends Component {
     constructor(props) {
         super(props);
         let meta = MetaData[this.props.collection];
-        let lookedUpCollections = {};
+        let columns = Object.keys(meta),
+            documentAdded = {},
+            lookedUpCollections = {};
         for (let col in meta) {
             if (meta[col].startsWith("fk_")) {
                 let lookedUpCollectionName = meta[col].split("_")[1];
@@ -15,10 +17,12 @@ export default class CollectionList extends Component {
                 );
             }
         }
+        for (let col in columns) if (columns[col] != "_id") documentAdded[columns[col]] = "";
+        console.log(documentAdded);
         this.state = {
-            columns: Object.keys(meta),
+            columns: columns,
             documents: [],
-            documentAdded: {},
+            documentAdded: documentAdded,
             lookedUpCollections: lookedUpCollections,
         };
     }
@@ -38,7 +42,6 @@ export default class CollectionList extends Component {
                     this.setState({
                         documents: this.state.documents.filter((doc) => doc._id !== id),
                     });
-                console.table(this.state);
             })
             .catch((err) => console.error(err));
     }
@@ -61,7 +64,7 @@ export default class CollectionList extends Component {
     validateDocument(message) {
         let columns = this.state.columns;
         for (let col in columns) {
-            if (columns[col] != "_id" && message[columns[col]] === undefined) return false;
+            if (columns[col] != "_id" && !message[columns[col]]) return false;
         }
         return true;
     }
@@ -74,11 +77,14 @@ export default class CollectionList extends Component {
                 body: JSON.stringify(message),
                 headers: { "Content-type": "application/json; charset=UTF-8" },
             })
-                .then((res) => {
+                .then(async (res) => {
                     if (res.status == 200) {
+                        let documents = this.state.documents;
+                        message["_id"] = await res.text();
+                        documents.push(message);
                         console.log("Added ", message);
                         this.setState({
-                            documentAdded: {},
+                            documents: documents,
                         });
                     } else throw res;
                 })
