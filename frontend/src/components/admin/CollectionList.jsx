@@ -17,7 +17,7 @@ export default class CollectionList extends Component {
                   );
             }
         }
-        this.state = { columns: Object.keys(meta), documents: [] , lookedUpCollections: lookedUpCollections};
+        this.state = { columns: Object.keys(meta), documents: [], documentAdded: {}, lookedUpCollections: lookedUpCollections};
     }
 
 
@@ -52,17 +52,53 @@ export default class CollectionList extends Component {
       })
         .then(res => {
             if (res.status == 200)
-              console.table("Updated "+id+" Successfully!");
+              console.log("Updated "+id+" Successfully!");
         })
         .catch(err => console.error(err));
     }
 
-    handleItemChanged(col, index, event) {
-      console.log(event.target.value);
+    validateDocument(message){
+      let columns = this.state.columns;
+      for (let col in columns){
+        if (columns[col]!='_id' && message[columns[col]]===undefined)
+          return false;}
+      return true;
+    }
+
+    addDocument(){
+      let message = this.state.documentAdded;
+      if (this.validateDocument(message))
+        fetch("http://localhost:4000/documents/"+this.props.collection+"/add", {
+          method: "POST",
+          body: JSON.stringify(message),
+          headers: {"Content-type": "application/json; charset=UTF-8",},
+        })
+        .then(res => {
+          if (res.status == 200){
+            console.log("Added ", message);
+            this.setState({
+              documentAdded: {}
+            });
+          }
+          else throw res;
+        })
+        .catch(err => console.error(err.statusText));
+      else console.error("Invalid Document, Check all fields!");
+    }
+
+    handleItemUpdated(col, index, event) {
       let documents = this.state.documents;
       documents[index][col] = event.target.value;
       this.setState({
         documents: documents
+      });
+    }
+    
+    handleItemAdded(col, event) {
+      let document = this.state.documentAdded;
+      document[col] = event.target.value;
+      this.setState({
+        documentAdded: document
       });
     }
 
@@ -77,7 +113,7 @@ export default class CollectionList extends Component {
                               col.startsWith('fk_')
                               ?(
                                 this.state.lookedUpCollections[col]?
-                                <select className="editable" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}>
+                                <select className="editable fullwidth" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}>
                                   {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
                                     return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
                                   })}
@@ -88,7 +124,7 @@ export default class CollectionList extends Component {
                               :(
                                 col.startsWith('_')
                                 ?currentDocument[col] 
-                                :<input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}/>
+                                :<input className="editable fullwidth" name={col} value={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}/>
                               )
                               }
                             </td>
@@ -124,6 +160,32 @@ export default class CollectionList extends Component {
                     </tr>
                 </thead>
                 <tbody>
+                    <tr>
+                      {this.state.columns.map(col => {
+                          if (col.startsWith('_')) 
+                              return <td key={col}></td>
+                          else if (col.startsWith('fk_'))
+                              return <td key={col}>
+                                { this.state.lookedUpCollections[col]
+                                  ?<select className="fullwidth" defaultValue={this.state.documentAdded[col]} name={col} onChange={this.handleItemAdded.bind(this, col)}>
+                                    <option value="">Select {col}</option>
+                                    {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
+                                      return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
+                                    })}
+                                  </select>
+                                  :""}
+                                </td>
+                          else
+                              return <td key={col}>
+                                  <input className="fullwidth" value={this.state.documentAdded[col]} placeholder={col} onChange={this.handleItemAdded.bind(this, col)}/>
+                                </td>
+                      })}
+                      <td>
+                        <button className="btn btn-success py-1" onClick={() => {this.addDocument()}}>
+                          <i className="fa fa-plus" aria-hidden="true" />
+                        </button>
+                      </td>
+                    </tr>
                     {this.documentList()}
                 </tbody>
             </Table>
