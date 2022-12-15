@@ -12,6 +12,8 @@ body {
 .editable{
     border: 0;
     background: none;
-    width: 100%;
+}
+.fullwidth{
+    width:100%;
     box-sizing: border-box;
 }
