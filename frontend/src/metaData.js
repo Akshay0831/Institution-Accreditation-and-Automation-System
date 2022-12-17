@@ -24,8 +24,7 @@ export const MetaData = {
     },
     Marks: {
         _id: "pk",
-        "Marks Gained": "Array(Array(int))",
-        "Max Marks": "Array_int",
+        "Marks Gained": "IA(CO(int))",
         "fk_Subject Code": "fk_Subject",
         fk_USN: "fk_Student",
     },
@@ -38,7 +37,7 @@ export const MetaData = {
     Subject: {
         _id: "pk",
         "Test Assignment Ratio": "int",
-        MarksMeta: "Object(Object())",
+        "Max Marks": "IA(CO())",
         "Scheme Code": "str",
         "Subject Code": "pk",
         "Subject Name": "str",
