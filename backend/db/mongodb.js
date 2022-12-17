@@ -53,22 +53,23 @@ class MongoDB {
         };
 
         let resultClassAllocation = await this.db.collection("Class Allocation").find().toArray();
-        let resultClass = await this.db.collection("Class").find().toArray();
+        let resultClasses = await this.db.collection("Class").find().toArray();
         let resultMarks = await this.db.collection("Marks").find().toArray();
         let resultStudents = await this.db.collection("Student").find().toArray();
         let resultSubjects = await this.db.collection("Subject").find().toArray();
         let resultDepartments = await this.db.collection("Department").find().toArray();
-        let result = resultClass.map((c) => {
+
+        /*let result = resultClasses.map((classObj) => {
             //Adding students to class c
-            c.students = [];
-            resultDepartments.forEach((dep) => {
-                if (dep._id == c["fk_Department ID"]) {
-                    c.Department = { ...dep };
-                    delete c["fk_Department ID"];
+            classObj.students = [];
+            resultDepartments.forEach((dept) => {
+                if (dept._id == classObj["fk_Department ID"]) {
+                    classObj.Department = { ...dept };
+                    delete classObj["fk_Department ID"];
                 }
             });
             resultClassAllocation.forEach((ca) => {
-                if (c._id == ca["fk_Class ID"]) {
+                if (classObj._id == ca["fk_Class ID"]) {
                     let student;
                     resultStudents.forEach((s) => {
                         if (s.USN == ca["fk_USN"]) {
@@ -89,11 +90,58 @@ class MongoDB {
                             student["Marks"].push(m);
                         }
                     });
-                    c.students.push(student);
+                    classObj.students.push(student);
                 }
             });
-            return c;
+            return classObj;
+        });*/
+
+        let result = resultDepartments.map((department) => {
+            //Adding classes to department
+            department.Classes = [];
+            resultClasses.forEach((classObj) => {
+                if (department._id == classObj["fk_Department ID"]) {
+                    // console.log("class:", classObj);
+                    classObj.Subjects = [];
+                    resultSubjects.forEach((subject) => {
+                        if (
+                            subject["fk_Department ID"] == department._id &&
+                            subject.fk_Semester == classObj.Semester
+                        ) {
+                            // console.log("subject:", subject);
+                            subject.Students = [];
+                            resultStudents.forEach((student) => {
+                                resultClassAllocation.forEach((ca) => {
+                                    if (
+                                        ca.fk_USN == student.USN &&
+                                        student["fk_Department ID"] == department._id &&
+                                        ca["fk_Class ID"] == classObj._id
+                                    ) {
+                                        // console.log("Student:", student);
+                                        student["Marks Gained"] = {};
+                                        resultMarks.forEach((marks) => {
+                                            if (
+                                                marks["fk_Subject Code"] ==
+                                                    subject["Subject Code"] &&
+                                                marks.fk_USN == student.USN
+                                            ) {
+                                                // console.log(marks);
+                                                student["Marks Gained"] = { ...marks };
+                                            }
+                                        });
+                                        subject.Students.push({ ...student });
+                                    }
+                                });
+                            });
+                            classObj.Subjects.push({ ...subject });
+                        }
+                    });
+                    department.Classes.push({ ...classObj });
+                }
+            });
+            return department;
         });
+
         return result;
     }
 }

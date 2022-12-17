@@ -44,8 +44,7 @@ app.post("/documents/:collection/update/:id", (req, res) => {
 
 app.get("/update_marks", async (req, res) => {
     let data = await mongodb.getMarks();
-    console.log(data);
-    res.json(data);
+    res.json({ marks: data });
 });
 
 app.listen(port, () => {
