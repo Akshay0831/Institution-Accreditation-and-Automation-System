@@ -110,7 +110,7 @@ export default class CollectionList extends Component {
                           else if (col.startsWith('fk_'))
                             return <td key={col}>
                                 {this.state.lookedUpCollections[col]
-                                ?<select className="editable fullwidth" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}>
+                                ?<select className="bg-transparent border-0 w-100" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}>
                                   {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
                                     return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
                                   })}
@@ -118,7 +118,7 @@ export default class CollectionList extends Component {
                                 :currentDocument[col]}
                               </td>
                           else 
-                            return <td key={col}><input className="editable fullwidth" name={col} value={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}/></td>
+                            return <td key={col}><input className="bg-transparent border-0 w-100" name={col} value={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)}/></td>
                         })}
                         <td>
                             <button className="btn btn-warning py-1" onClick={() => this.updateDocument(currentDocument._id, i)} >
@@ -158,7 +158,7 @@ export default class CollectionList extends Component {
                           else if (col.startsWith('fk_'))
                               return <td key={col}>
                                 { this.state.lookedUpCollections[col]
-                                  ?<select className="fullwidth" defaultValue={this.state.documentAdded[col]} name={col} onChange={this.handleItemAdded.bind(this, col)}>
+                                  ?<select className="w-100" defaultValue={this.state.documentAdded[col]} name={col} onChange={this.handleItemAdded.bind(this, col)}>
                                     <option value="">Select {col}</option>
                                     {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
                                       return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
@@ -168,7 +168,7 @@ export default class CollectionList extends Component {
                                 </td>
                           else
                               return <td key={col}>
-                                  <input className="fullwidth" value={this.state.documentAdded[col]} placeholder={col} onChange={this.handleItemAdded.bind(this, col)}/>
+                                  <input className="w-100" value={this.state.documentAdded[col]} placeholder={col} onChange={this.handleItemAdded.bind(this, col)}/>
                                 </td>
                       })}
                       <td>
@@ -194,7 +194,7 @@ export default class CollectionList extends Component {
                     })}
                   </div>
                 </nav>
-                <div className="card-body overflow-scroll">{this.state.documents?this.tables():<p>No Values Found</p>}</div>
+                <div className="card-body overflow-auto">{this.state.documents?this.tables():<p>No Values Found</p>}</div>
             </div>
         );
     }
