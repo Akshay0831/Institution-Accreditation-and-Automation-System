@@ -10,7 +10,7 @@ export default ({ btnClass = "btn btn-danger", btnValue = "Sign Out" }) => {
     };
 
     return (
-        <button className={btnClass} onClick={handleClick}>
+        <button style={{ marginRight: "15px" }} className={btnClass} onClick={handleClick}>
             {btnValue}
         </button>
     );

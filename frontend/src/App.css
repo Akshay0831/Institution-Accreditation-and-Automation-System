@@ -9,11 +9,7 @@ body {
     background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
 }
 
-.editable{
-    border: 0;
-    background: none;
-}
-.fullwidth{
-    width:100%;
-    box-sizing: border-box;
+
+.container-fluid{
+    padding: 0px;
 }

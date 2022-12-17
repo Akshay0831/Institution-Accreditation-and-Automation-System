@@ -7,7 +7,7 @@ const Header = (props) => {
         <Suspense fallback={<h1>Loading...</h1>}>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark rounded-bottom">
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="#">
+                    <a style={{ marginLeft: "15px" }} className="navbar-brand" href="#">
                         {sessionStorage.getItem("userType")}
                     </a>
                     <button
