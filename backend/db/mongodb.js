@@ -32,67 +32,12 @@ class MongoDB {
     }
 
     async getMarks() {
-        let ClassLookUp = {
-            $lookup: {
-                from: "Class",
-                localField: "fk_Class ID",
-                foreignField: "_id",
-                as: "Classes",
-            },
-        };
-
-        let StudentLookUp = {
-            $lookup: {
-                from: "Student",
-                localField: "fk_USN",
-                foreignField: "USN",
-                as: "Students",
-            },
-        };
-
-        let resultClassAllocation = await this.db.collection("Class Allocation").find().toArray();
-        let resultClasses = await this.db.collection("Class").find().toArray();
-        let resultMarks = await this.db.collection("Marks").find().toArray();
-        let resultStudents = await this.db.collection("Student").find().toArray();
-        let resultSubjects = await this.db.collection("Subject").find().toArray();
-        let resultDepartments = await this.db.collection("Department").find().toArray();
-
-        /*let result = resultClasses.map((classObj) => {
-            //Adding students to class c
-            classObj.students = [];
-            resultDepartments.forEach((dept) => {
-                if (dept._id == classObj["fk_Department ID"]) {
-                    classObj.Department = { ...dept };
-                    delete classObj["fk_Department ID"];
-                }
-            });
-            resultClassAllocation.forEach((ca) => {
-                if (classObj._id == ca["fk_Class ID"]) {
-                    let student;
-                    resultStudents.forEach((s) => {
-                        if (s.USN == ca["fk_USN"]) {
-                            student = { ...s };
-                            student["Marks"] = [];
-                        }
-                    });
-                    resultMarks.map((marks) => {
-                        //Adding marks to student
-                        if (marks.fk_USN == student?.USN) {
-                            let m = { ...marks };
-                            resultSubjects.forEach((sub) => {
-                                if (sub["Subject Code"] == m["fk_Subject Code"]) {
-                                    m.Subject = { ...sub };
-                                    delete m["fk_Subject Code"];
-                                }
-                            });
-                            student["Marks"].push(m);
-                        }
-                    });
-                    classObj.students.push(student);
-                }
-            });
-            return classObj;
-        });*/
+        let resultClassAllocation = await this.getDocs("Class Allocation");
+        let resultClasses = await this.getDocs("Class");
+        let resultMarks = await this.getDocs("Marks");
+        let resultStudents = await this.getDocs("Student");
+        let resultSubjects = await this.getDocs("Subject");
+        let resultDepartments = await this.getDocs("Department");
 
         let result = resultDepartments.map((department) => {
             //Adding classes to department

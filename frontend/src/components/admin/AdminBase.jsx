@@ -8,7 +8,14 @@ const Admin = () => {
     return (
         <Suspense>
             <div className="container-fluid">
-                <Header links={[['About Us','#'],['Contact Us','#'],['Teacher Dashboard','/home']]}/>
+                <Header
+                    links={[
+                        ["About Us", "#"],
+                        ["Contact Us", "#"],
+                        ["Teacher Dashboard", "/home"],
+                        ["Update Marks", "/update_marks"],
+                    ]}
+                />
                 <CollectionList collection="Teacher" />
             </div>
         </Suspense>

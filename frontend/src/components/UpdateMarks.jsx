@@ -38,7 +38,14 @@ export default class UpdateMarks extends Component {
     render() {
         return (
             <Suspense>
-                <Header />
+                <Header
+                    links={[
+                        ["About Us", "#"],
+                        ["Contact Us", "#"],
+                        ["Teacher Dashboard", "/home"],
+                        ["Update Marks", "/update_marks"],
+                    ]}
+                />
                 <div className="container">
                     {this.state != null ? (
                         <div className="accordion" id="DepartmentsAccordion">
