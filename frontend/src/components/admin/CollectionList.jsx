@@ -6,20 +6,21 @@ export default class CollectionList extends Component {
     constructor(props) {
         super(props);
         let meta = MetaData[this.props.collection];
-        let lookedUpCollections={};
-        for (let col in meta){
-            if(meta[col].startsWith('fk_')){
+        let lookedUpCollections = {};
+        for (let col in meta) {
+            if (meta[col].startsWith("fk_")) {
                 let lookedUpCollectionName = meta[col].split("_")[1];
-                fetch("http://localhost:4000/documents/" + lookedUpCollectionName)
-                  .then(res=> 
-                    res.json()
-                      .then(val=> lookedUpCollections[col] = val)
-                  );
+                fetch("http://localhost:4000/documents/" + lookedUpCollectionName).then((res) =>
+                    res.json().then((val) => (lookedUpCollections[col] = val))
+                );
             }
         }
-        this.state = { columns: Object.keys(meta), documents: [] , lookedUpCollections: lookedUpCollections};
+        this.state = {
+            columns: Object.keys(meta),
+            documents: [],
+            lookedUpCollections: lookedUpCollections,
+        };
     }
-
 
     async componentDidMount() {
         console.log("Called API: http://localhost:4000/documents/" + this.props.collection);
@@ -42,28 +43,27 @@ export default class CollectionList extends Component {
     }
 
     updateDocument(id, index) {
-      let message = this.state.documents[index];
-      fetch("http://localhost:4000/documents/" + this.props.collection + "/update/" + id, {
-        method: "POST",
-        body: JSON.stringify(message),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-        },
-      })
-        .then(res => {
-            if (res.status == 200)
-              console.table("Updated "+id+" Successfully!");
+        let message = this.state.documents[index];
+        fetch("http://localhost:4000/documents/" + this.props.collection + "/update/" + id, {
+            method: "POST",
+            body: JSON.stringify(message),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+            },
         })
-        .catch(err => console.error(err));
+            .then((res) => {
+                if (res.status == 200) console.table("Updated " + id + " Successfully!");
+            })
+            .catch((err) => console.error(err));
     }
 
     handleItemChanged(col, index, event) {
-      console.log(event.target.value);
-      let documents = this.state.documents;
-      documents[index][col] = event.target.value;
-      this.setState({
-        documents: documents
-      });
+        console.log(event.target.value);
+        let documents = this.state.documents;
+        documents[index][col] = event.target.value;
+        this.setState({
+            documents: documents,
+        });
     }
 
     documentList() {
@@ -71,33 +71,62 @@ export default class CollectionList extends Component {
             return this.state.documents.map((currentDocument, i) => {
                 return (
                     <tr key={currentDocument._id}>
-                        {this.state.columns.map(col => (
+                        {this.state.columns.map((col) => (
                             <td key={col}>
-                              {
-                              col.startsWith('fk_')
-                              ?(
-                                this.state.lookedUpCollections[col]?
-                                <select className="editable" name={col} defaultValue={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}>
-                                  {Object.values(this.state.lookedUpCollections[col]).map(entry=>{
-                                    return <option key={entry['_id']} value={entry[col.split("_")[1]]?entry[col.split("_")[1]]:entry['_id']}>{Object.entries(entry).filter((x)=>x[0]!="_id").map((x)=>x[1]).toString()}</option>
-                                  })}
-                                </select>
-                                :
-                                currentDocument[col]
-                              )
-                              :(
-                                col.startsWith('_')
-                                ?currentDocument[col] 
-                                :<input className="editable" name={col} value={currentDocument[col]} onChange={this.handleItemChanged.bind(this, col, i)}/>
-                              )
-                              }
+                                {col.startsWith("fk_") ? (
+                                    this.state.lookedUpCollections[col] ? (
+                                        <select
+                                            className="editable"
+                                            name={col}
+                                            defaultValue={currentDocument[col]}
+                                            onChange={this.handleItemChanged.bind(this, col, i)}
+                                        >
+                                            {Object.values(this.state.lookedUpCollections[col]).map(
+                                                (entry) => {
+                                                    return (
+                                                        <option
+                                                            key={entry["_id"]}
+                                                            value={
+                                                                entry[col.split("_")[1]]
+                                                                    ? entry[col.split("_")[1]]
+                                                                    : entry["_id"]
+                                                            }
+                                                        >
+                                                            {Object.entries(entry)
+                                                                .filter((x) => x[0] != "_id")
+                                                                .map((x) => x[1])
+                                                                .toString()}
+                                                        </option>
+                                                    );
+                                                }
+                                            )}
+                                        </select>
+                                    ) : (
+                                        currentDocument[col]
+                                    )
+                                ) : col.startsWith("_") ? (
+                                    currentDocument[col]
+                                ) : (
+                                    <input
+                                        className="editable"
+                                        name={col}
+                                        value={currentDocument[col]}
+                                        onChange={this.handleItemChanged.bind(this, col, i)}
+                                    />
+                                )}
                             </td>
                         ))}
                         <td>
-                            <button className="btn btn-warning py-1" onClick={() => this.updateDocument(currentDocument._id, i)} >
+                            <button
+                                className="btn btn-warning py-1"
+                                onClick={() => this.updateDocument(currentDocument._id, i)}
+                            >
                                 <i className="fa fa-pencil" aria-hidden="true" />
                             </button>
-                            <button className="btn btn-danger py-1" onClick={() => this.deleteDocument(currentDocument._id)} >
+                            <button
+                                className="btn btn-danger py-1"
+                                onClick={() => this.deleteDocument(currentDocument._id)}
+                            >
                                 <i className="fa fa-trash"></i>
                             </button>
                         </td>
@@ -123,9 +152,7 @@ export default class CollectionList extends Component {
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {this.documentList()}
-                </tbody>
+                <tbody>{this.documentList()}</tbody>
             </Table>
         );
     }
@@ -134,7 +161,9 @@ export default class CollectionList extends Component {
         return (
             <div className="card m-4">
                 <h3 className="card-header">{this.props.collection}</h3>
-                <div className="card-body overflow-scroll">{this.state.documents?this.tables():<p>No Values Found</p>}</div>
+                <div className="card-body overflow-scroll">
+                    {this.state.documents ? this.tables() : <p>No Values Found</p>}
+                </div>
             </div>
         );
     }
