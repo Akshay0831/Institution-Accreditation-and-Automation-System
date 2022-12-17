@@ -40,7 +40,6 @@ export default class CollectionList extends Component {
             documents: json,
             documentAdded: documentAdded,
         });
-        console.log(this.state);
     }
 
     deleteDocument(id) {
@@ -280,7 +279,29 @@ export default class CollectionList extends Component {
     render() {
         return (
             <div className="card m-4">
-                <h3 className="card-header">{this.state.collectionSelected}</h3>
+                <h3 className="card-header">Collections CRUD</h3>
+                <nav>
+                    <div className="nav nav-tabs" id="nav-tab" role="tablist">
+                        {Object.keys(MetaData).map((collection) => {
+                            return (
+                                <button
+                                    key={collection}
+                                    className="nav-link"
+                                    data-bs-toggle="tab"
+                                    type="button"
+                                    role="tab"
+                                    aria-selected="true"
+                                    onClick={() => {
+                                        this.setState({ collectionSelected: collection });
+                                        this.forceUpdate(this.componentDidMount);
+                                    }}
+                                >
+                                    {collection}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </nav>
                 <div className="card-body overflow-scroll">
                     {this.state.documents ? this.tables() : <p>No Values Found</p>}
                 </div>

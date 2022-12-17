@@ -9,7 +9,7 @@ const Admin = () => {
         <Suspense>
             <div className="container-fluid">
                 <Header links={[['About Us','#'],['Contact Us','#'],['Teacher Dashboard','/home']]}/>
-                <CollectionList collection="Class Allocation" />
+                <CollectionList collection="Teacher" />
             </div>
         </Suspense>
     );
