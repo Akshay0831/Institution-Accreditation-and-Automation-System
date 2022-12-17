@@ -37,10 +37,7 @@ export const MetaData = {
     },
     Subject: {
         _id: "pk",
-        "Test Assignment Ratio": {
-            Assignment: "int",
-            Test: "int",
-        },
+        "Test Assignment Ratio": "int",
         MarksMeta: "Object(Object())",
         "Scheme Code": "str",
         "Subject Code": "pk",
