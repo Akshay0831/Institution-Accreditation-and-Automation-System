@@ -5,7 +5,7 @@ const SignOutBtn = lazy(() => import("./SignOutBtn"));
 const Header = (props) => {
     return (
         <Suspense fallback={<h1>Loading...</h1>}>
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark rounded-bottom">
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
                 <div className="container-fluid">
                     <a style={{ marginLeft: "15px" }} className="navbar-brand" href="#">
                         {sessionStorage.getItem("userType")}

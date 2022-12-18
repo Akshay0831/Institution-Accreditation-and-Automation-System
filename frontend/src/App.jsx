@@ -11,7 +11,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import "./App.css";
 import Dashboard from "./components/Dashboard";
-import MappingCOPO from "./components/MappingCOPO";
+import COPOMapper from "./components/teacher/COPOMapper";
 import CollectionList from "./components/admin/CollectionList";
 
 function App() {
@@ -27,14 +27,14 @@ function App() {
                             <Route exact path="updatemarks" element={<><Home/><UpdateMarks/></>}/>
                             <Route exact path="documents" element={<><Home/><DocumentsAccess/></>}/>
                             <Route exact path="analytics" element={<><Home/><Analytics/></>}/>
-                            <Route exact path="mapping" element={<><Home/><MappingCOPO/></>}/>
+                            <Route exact path="mapping" element={<><Home/><COPOMapper/></>}/>
                         </Route>
                         <Route exact path="admin" >
                             <Route index element={<><Admin/><Dashboard type="admin"/></>}/>
                             <Route exact path="updatemarks" element={<><Admin/><UpdateMarks/></>}/>
                             <Route exact path="documents" element={<><Admin/><DocumentsAccess/></>}/>
                             <Route exact path="analytics" element={<><Admin/><Analytics/></>}/>
-                            <Route exact path="mapping" element={<><Admin/><MappingCOPO/></>}/>
+                            <Route exact path="mapping" element={<><Admin/><COPOMapper/></>}/>
                             <Route exact path="collectionlist" element={<><Admin/><CollectionList collection="Teacher"/></>}/>
                         </Route>
                     </Route>

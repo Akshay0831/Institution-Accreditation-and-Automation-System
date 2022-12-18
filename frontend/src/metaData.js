@@ -15,7 +15,7 @@ export const MetaData = {
         "fk_Subject Code": "fk_Subject",
         CO: "str",
         PO: "str",
-        Values: "str",
+        Value: "str",
     },
     Department: {
         _id: "pk",
