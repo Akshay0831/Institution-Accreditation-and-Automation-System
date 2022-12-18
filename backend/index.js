@@ -51,6 +51,21 @@ app.post("/documents/:collection/add", (req, res) => {
     .catch(err=>res.status(500).send(err));
 });
 
+app.get("/update_marks", async (req, res) => {
+    let data = await mongodb.getMarks();
+    res.json({ marks: data });
+});
+
+app.post("/documents/:collection/add", (req, res) => {
+    mongodb.addDoc(req.params["collection"], req.body)
+    .then((result) => {
+        if (!result.acknowledged)
+            throw "Failed to add!"
+        res.status(200).send(result.insertedId);
+    })
+    .catch(err=>res.status(500).send(err));
+});
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });

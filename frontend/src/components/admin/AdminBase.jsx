@@ -9,9 +9,9 @@ const Admin = () => {
     return (
         <Suspense>
             <div className="container-fluid">
-                <Header links={[['About Us','#'],['Contact Us','#'],['Teacher Dashboard','/home']]}/>
+                <Header links={[['About Us', '#'], ['Contact Us', '#'], ['Teacher Dashboard', '/home']]} />
                 {/* <CollectionList collection="Teacher" /> */}
-                <Sidebar type="admin"/>
+                <Sidebar type="admin" />
             </div>
         </Suspense>
     );

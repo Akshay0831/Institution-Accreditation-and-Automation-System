@@ -23,19 +23,19 @@ function App() {
                     <Route exact path="/login" element={<SignIn />} />
                     <Route exact path="/" element={<ProtectedRoute />}>
                         <Route exact path="home">
-                            <Route index element={<><Home/><Dashboard type="home"/></>}/>
-                            <Route exact path="updatemarks" element={<><Home/><UpdateMarks/></>}/>
-                            <Route exact path="documents" element={<><Home/><DocumentsAccess/></>}/>
-                            <Route exact path="analytics" element={<><Home/><Analytics/></>}/>
-                            <Route exact path="mapping" element={<><Home/><COPOMapper/></>}/>
+                            <Route index element={<><Home /><Dashboard type="home" /></>} />
+                            <Route exact path="updatemarks" element={<><Home /><UpdateMarks /></>} />
+                            <Route exact path="documents" element={<><Home /><DocumentsAccess /></>} />
+                            <Route exact path="analytics" element={<><Home /><Analytics /></>} />
+                            <Route exact path="mapping" element={<><Home /><COPOMapper /></>} />
                         </Route>
                         <Route exact path="admin" >
-                            <Route index element={<><Admin/><Dashboard type="admin"/></>}/>
-                            <Route exact path="updatemarks" element={<><Admin/><UpdateMarks/></>}/>
-                            <Route exact path="documents" element={<><Admin/><DocumentsAccess/></>}/>
-                            <Route exact path="analytics" element={<><Admin/><Analytics/></>}/>
-                            <Route exact path="mapping" element={<><Admin/><COPOMapper/></>}/>
-                            <Route exact path="collectionlist" element={<><Admin/><CollectionList collection="Teacher"/></>}/>
+                            <Route index element={<><Admin /><Dashboard type="admin" /></>} />
+                            <Route exact path="updatemarks" element={<><Admin /><UpdateMarks /></>} />
+                            <Route exact path="documents" element={<><Admin /><DocumentsAccess /></>} />
+                            <Route exact path="analytics" element={<><Admin /><Analytics /></>} />
+                            <Route exact path="mapping" element={<><Admin /><COPOMapper /></>} />
+                            <Route exact path="collectionlist" element={<><Admin /><CollectionList collection="Teacher" /></>} />
                         </Route>
                     </Route>
                 </Routes>
