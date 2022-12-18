@@ -185,6 +185,8 @@ export default class CollectionList extends Component {
 
     render() {
         return (
+          <main style={{color: "margin-top: 58px"}}>
+          <div className="container pt-4">
             <div className="card m-4">
                 <h3 className="card-header">Collections CRUD</h3>
                 <nav>
@@ -196,6 +198,8 @@ export default class CollectionList extends Component {
                 </nav>
                 <div className="card-body overflow-auto">{this.state.documents?this.tables():<p>No Values Found</p>}</div>
             </div>
+          </div>
+          </main>
         );
     }
 }

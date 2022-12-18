@@ -11,6 +11,8 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.js";
 import "./App.css";
 import Dashboard from "./components/Dashboard";
+import MappingCOPO from "./components/MappingCOPO";
+import CollectionList from "./components/admin/CollectionList";
 
 function App() {
     return (
@@ -20,13 +22,21 @@ function App() {
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route exact path="/login" element={<SignIn />} />
                     <Route exact path="/" element={<ProtectedRoute />}>
-                    <Route exact path="home">
-                        <Route index element={<><Home/><Dashboard/></>}/>
-                        <Route exact path="updatemarks" element={<><Home/><UpdateMarks/></>}/>
-                        <Route exact path="documents" element={<><Home/><DocumentsAccess/></>}/>
-                        <Route exact path="analytics" element={<><Home/><Analytics/></>}/>
-                    </Route>
-                        <Route exact path="admin" element={<Admin />} />
+                        <Route exact path="home">
+                            <Route index element={<><Home/><Dashboard type="home"/></>}/>
+                            <Route exact path="updatemarks" element={<><Home/><UpdateMarks/></>}/>
+                            <Route exact path="documents" element={<><Home/><DocumentsAccess/></>}/>
+                            <Route exact path="analytics" element={<><Home/><Analytics/></>}/>
+                            <Route exact path="mapping" element={<><Home/><MappingCOPO/></>}/>
+                        </Route>
+                        <Route exact path="admin" >
+                            <Route index element={<><Admin/><Dashboard type="admin"/></>}/>
+                            <Route exact path="updatemarks" element={<><Admin/><UpdateMarks/></>}/>
+                            <Route exact path="documents" element={<><Admin/><DocumentsAccess/></>}/>
+                            <Route exact path="analytics" element={<><Admin/><Analytics/></>}/>
+                            <Route exact path="mapping" element={<><Admin/><MappingCOPO/></>}/>
+                            <Route exact path="collectionlist" element={<><Admin/><CollectionList collection="Teacher"/></>}/>
+                        </Route>
                     </Route>
                 </Routes>
             </Router>
