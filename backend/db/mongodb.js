@@ -33,8 +33,8 @@ class MongoDB {
         return updatedResult.acknowledged;
     }
 
-    async addDoc(collectionName, body){
-        body['_id']=(new ObjectId).toString();
+    async addDoc(collectionName, body) {
+        body['_id'] = (new ObjectId).toString();
         let insertedResult = await this.db
             .collection(collectionName)
             .insertOne(body);
@@ -54,31 +54,22 @@ class MongoDB {
             department.Classes = [];
             resultClasses.forEach((classObj) => {
                 if (department._id == classObj["fk_Department ID"]) {
-                    // console.log("class:", classObj);
+
+                    //Adding Subjects to classes
                     classObj.Subjects = [];
                     resultSubjects.forEach((subject) => {
-                        if (
-                            subject["fk_Department ID"] == department._id &&
-                            subject.fk_Semester == classObj.Semester
-                        ) {
-                            // console.log("subject:", subject);
+                        if (subject["fk_Department ID"] == department._id && subject.fk_Semester == classObj.Semester) {
+
+                            // Adding Students to classes
                             subject.Students = [];
                             resultStudents.forEach((student) => {
                                 resultClassAllocation.forEach((ca) => {
-                                    if (
-                                        ca.fk_USN == student.USN &&
-                                        student["fk_Department ID"] == department._id &&
-                                        ca["fk_Class ID"] == classObj._id
-                                    ) {
-                                        // console.log("Student:", student);
+                                    if (ca.fk_USN == student.USN && student["fk_Department ID"] == department._id && ca["fk_Class ID"] == classObj._id) {
+
+                                        // Adding marks to each student in each subject
                                         student["Marks Gained"] = {};
                                         resultMarks.forEach((marks) => {
-                                            if (
-                                                marks["fk_Subject Code"] ==
-                                                    subject["Subject Code"] &&
-                                                marks.fk_USN == student.USN
-                                            ) {
-                                                // console.log(marks);
+                                            if (marks["fk_Subject Code"] == subject["Subject Code"] && marks.fk_USN == student.USN) {
                                                 student["Marks Gained"] = { ...marks };
                                             }
                                         });
@@ -102,6 +93,12 @@ class MongoDB {
         body["_id"] = new ObjectId().toString();
         let insertedResult = await this.db.collection(collectionName).insertOne(body);
         return insertedResult;
+    }
+
+    async deleteThenInsert(collectionName, queryToDelete, insertsArray) {
+        for (let i in insertsArray) insertsArray[i]['_id'] = (new ObjectId).toString();
+        let collection = this.db.collection(collectionName)
+        return ((await collection.deleteMany(queryToDelete)).acknowledged && (await collection.insertMany(insertsArray)).acknowledged);
     }
 }
 
