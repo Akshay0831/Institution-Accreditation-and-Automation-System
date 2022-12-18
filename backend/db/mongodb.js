@@ -40,6 +40,12 @@ class MongoDB {
             .insertOne(body);
         return insertedResult
     }
+
+    async deleteThenInsert(collectionName, queryToDelete, insertsArray){
+        for (let i in insertsArray) insertsArray[i]['_id']=(new ObjectId).toString();
+        let collection = this.db.collection(collectionName)
+        return ((await collection.deleteMany(queryToDelete)).acknowledged && (await collection.insertMany(insertsArray)).acknowledged);
+    }
 }
 
 module.exports = MongoDB;

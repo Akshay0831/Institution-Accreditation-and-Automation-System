@@ -32,12 +32,12 @@ const Sidebar = props => {
                 </Link>
                 <Link to= {"/" + props.type + "/mapping"} style={{ textDecoration: 'none' }}>
                 <span
-                    className="list-group-item list-group-item-action ripple"><i class="fa-sharp fa-solid fa-chart-tree-map fa-fw me-3"></i><span>CO PO Mapping</span></span>
+                    className="list-group-item list-group-item-action ripple"><i className="fa-sharp fa-solid fa-chart-tree-map fa-fw me-3"></i><span>CO PO Mapping</span></span>
                 </Link>
                 { props.type == "admin" && 
                     <Link to= "/admin/collectionlist" style={{ textDecoration: 'none' }}>
                     <span
-                        className="list-group-item list-group-item-action ripple"><i class="fa-solid fa-screwdriver-wrench fa-fw me-3"></i><span>Collection CRUD</span></span>
+                        className="list-group-item list-group-item-action ripple"><i className="fa-solid fa-screwdriver-wrench fa-fw me-3"></i><span>Collection CRUD</span></span>
                     </Link>
                 }  
             </div>

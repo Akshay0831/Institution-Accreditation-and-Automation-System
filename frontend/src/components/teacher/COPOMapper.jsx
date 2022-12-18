@@ -24,10 +24,10 @@ export default class COPOMapper extends Component {
         }
         for (let i in COPOCollection){
             let doc = COPOCollection[i];
-            COPOMaps[doc['CO']][doc['PO']]=doc['Value'];
+            if (doc['fk_Subject Code']==this.state.subjectSelected)
+                COPOMaps[doc['CO']][doc['PO']]=doc['Value'];
         }
         this.setState({COs:COs, POs:POs, subjects:subjects, subjectSelected:(this.state.subjectSelected?this.state.subjectSelected:subjects[0]['_id']), COPOMaps:COPOMaps});
-        // console.log(this.state);
     }
 
     updateCOPOMapping() {
@@ -60,6 +60,7 @@ export default class COPOMapper extends Component {
         this.setState({
             subjectSelected: event.target.value
         });
+        this.forceUpdate(this.componentDidMount);
       }
 
     tables() {
@@ -73,11 +74,12 @@ export default class COPOMapper extends Component {
                 </thead>
                 <tbody>
                     {this.state.POs.map(POn => {
+                        let COPOMaps=this.state.COPOMaps;
                         return <tr key={POn}>
                             <th>{POn}</th>
                             {this.state.COs.map(COn=>{
                                 return <td key={COn}>
-                                        <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn+"/"+POn} onChange={this.handleItemUpdated.bind(this, COn, POn)}/>
+                                        <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn+"/"+POn} defaultValue={COPOMaps[COn][POn]} onChange={this.handleItemUpdated.bind(this, COn, POn)}/>
                                     </td>
                             })}
                         </tr>
