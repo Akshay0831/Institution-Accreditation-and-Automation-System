@@ -29,7 +29,7 @@ export default class UpdateMarks extends Component {
         if (inputMarks <= maxMarksObj[ia][co]) {
             if (inputMarks >= 0) {
                 this.validated = true;
-                return inputMarks;
+                return Number(inputMarks);
             }
             this.validated = false;
             this.toasts("Marks value must be greater than or equal to 0", toast.error)
@@ -37,15 +37,13 @@ export default class UpdateMarks extends Component {
         }
         this.validated = false;
         this.toasts("Marks value must be less than or equal to " + maxMarksObj[ia][co], toast.error)
-        return maxMarksObj[ia][co];
+        return Number(maxMarksObj[ia][co]);
     }
 
     handleItemChanged(deptIndex, classIndex, subjectIndex, studentIndex, ia, co, event) {
-        console.log(deptIndex, classIndex, subjectIndex, studentIndex, ia, co, event.target.value);
         let marks = { ...this.state.marks };
         marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
         this.setState(marks);
-        this.forceUpdate();
     }
 
     updateDocument(marksObj) {
@@ -60,16 +58,16 @@ export default class UpdateMarks extends Component {
             }).then((res) => {
                 if (res.status == 200) {
                     console.log(res);
-                    this.toasts("Updated Successfully!", toast.success);
+                    this.toasts("Updated Succcessfully!", toast.success);
                 }
             });
         else this.toasts("Cannot Update!", toast.error);
         console.log(marksObj);
     }
 
-    totalIA(ia) {
+    totalIA(IAObj) {
         let sum = 0;
-        Object.keys(ia).forEach(co => { sum += ia[co] });
+        Object.keys(IAObj).forEach(co => { sum += Number(IAObj[co]) });
         return sum;
     }
 
@@ -120,7 +118,7 @@ export default class UpdateMarks extends Component {
                                                                                             <th scope="col" className="text-center" rowSpan="2">Name</th>
                                                                                             {Object.keys(subject["Max Marks"]).map(i => (
                                                                                                 <th
-                                                                                                    colSpan={Object.keys(subject["Max Marks"][i]).length}
+                                                                                                    colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
                                                                                                     scope="col"
                                                                                                     className="text-center"
                                                                                                     key={i}>
@@ -130,11 +128,11 @@ export default class UpdateMarks extends Component {
                                                                                         </tr>
                                                                                         <tr>
                                                                                             {Object.keys(subject["Max Marks"]).map((ia, i) => {
-                                                                                                return (Object.keys(subject["Max Marks"][ia]).map((co, c) => {
+                                                                                                return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
                                                                                                     return (
-                                                                                                        <th scope="col" className="text-center" key={i}>{co}</th>
+                                                                                                        <th scope="col" className="text-center" key={ia + co}>{co}</th>
                                                                                                     );
-                                                                                                }))
+                                                                                                }), <th scope="col" className="text-center" key={i}>Total</th>])
                                                                                             })}
                                                                                         </tr>
                                                                                     </thead>
@@ -146,7 +144,7 @@ export default class UpdateMarks extends Component {
                                                                                                     <td>{student.USN}</td>
                                                                                                     <td>{student["Student Name"]}</td>
                                                                                                     {Object.keys(student["Marks Gained"]["Marks Gained"]).map((ia, i) => {
-                                                                                                        return (Object.keys(student["Marks Gained"]["Marks Gained"][ia]).map((co, c) => {
+                                                                                                        return [(Object.keys(student["Marks Gained"]["Marks Gained"][ia]).map((co, c) => {
                                                                                                             return (
                                                                                                                 <td key={ia + co} style={{ minWidth: "100px" }}>
                                                                                                                     <input type="number"
@@ -158,13 +156,12 @@ export default class UpdateMarks extends Component {
                                                                                                                 </td>
                                                                                                             )
                                                                                                         })
-                                                                                                        )
+                                                                                                        ), <td key={"total_" + ia}>{this.totalIA(student["Marks Gained"]["Marks Gained"][ia]) + "/" + this.totalIA(subject["Max Marks"][ia])}</td>]
                                                                                                     })}
                                                                                                     <td>
                                                                                                         <button
                                                                                                             className="btn btn-warning py-1"
-                                                                                                            onClick={() => this.updateDocument(student["Marks Gained"])}
-                                                                                                        >
+                                                                                                            onClick={() => this.updateDocument(student["Marks Gained"])}>
                                                                                                             <i className="fa fa-pencil" aria-hidden="true" />
                                                                                                         </button>
                                                                                                     </td>

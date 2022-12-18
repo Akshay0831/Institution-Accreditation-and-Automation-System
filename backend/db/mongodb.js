@@ -64,7 +64,9 @@ class MongoDB {
                             subject.Students = [];
                             resultStudents.forEach((student) => {
                                 resultClassAllocation.forEach((ca) => {
-                                    if (ca.fk_USN == student.USN && student["fk_Department ID"] == department._id && ca["fk_Class ID"] == classObj._id) {
+                                    if (ca.fk_USN == student.USN &&
+                                        student["fk_Department ID"] == department._id &&
+                                        ca["fk_Class ID"] == classObj._id) {
 
                                         // Adding marks to each student in each subject
                                         student["Marks Gained"] = {};
