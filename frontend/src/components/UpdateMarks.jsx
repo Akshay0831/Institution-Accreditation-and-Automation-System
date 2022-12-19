@@ -25,7 +25,6 @@ export default class UpdateMarks extends Component {
     }
 
     inputValidation(inputMarks, maxMarksObj, ia, co) {
-        console.log(inputMarks)
         if (inputMarks <= maxMarksObj[ia][co]) {
             if (inputMarks >= 0) {
                 this.validated = true;
@@ -58,7 +57,7 @@ export default class UpdateMarks extends Component {
             }).then((res) => {
                 if (res.status == 200) {
                     console.log(res);
-                    this.toasts("Updated Succcessfully!", toast.success);
+                    this.toasts("Updated Successfully!", toast.success);
                 }
             });
         else this.toasts("Cannot Update!", toast.error);
@@ -73,14 +72,13 @@ export default class UpdateMarks extends Component {
 
     render() {
         return (
-            <main className="pt-5">
+            <main className="pt-5" >
                 <Suspense>
                     <ToastContainer />
                     <Header links={[["About Us", "#"], ["Contact Us", "#"], ["Teacher Dashboard", "/home"], ["Update Marks", "/update_marks"]]} />
                     <div className="container">
                         {this.state != null ? (
                             <div className="accordion" id="DepartmentsAccordion">
-                                <h4>Departments</h4>
                                 {this.state.marks.map((dept, deptIndex) => {
                                     return (
                                         <AccordionItem
@@ -110,7 +108,7 @@ export default class UpdateMarks extends Component {
                                                                             headContent={`${subject["Subject Name"]} (${subject["Subject Code"]})`}>
                                                                             <div className="accordion overflow-auto" id="StudentsAccordion">
                                                                                 <h4>Students</h4>
-                                                                                <table className="table table-striped table-hover table-bordered">
+                                                                                <table className="table table-striped table-hover table-bordered" style={{ fontSize: "10px" }}>
                                                                                     <thead>
                                                                                         <tr>
                                                                                             <th scope="col" className="text-center" rowSpan="2">Sl. No</th>
@@ -146,9 +144,10 @@ export default class UpdateMarks extends Component {
                                                                                                     {Object.keys(student["Marks Gained"]["Marks Gained"]).map((ia, i) => {
                                                                                                         return [(Object.keys(student["Marks Gained"]["Marks Gained"][ia]).map((co, c) => {
                                                                                                             return (
-                                                                                                                <td key={ia + co} style={{ minWidth: "100px" }}>
+                                                                                                                <td key={ia + co} style={{ minWidth: "85px" }}>
                                                                                                                     <input type="number"
                                                                                                                         className="form-control"
+                                                                                                                        style={{ fontSize: "10px" }}
                                                                                                                         min="0"
                                                                                                                         max={subject["Max Marks"][ia][co]}
                                                                                                                         placeholder={student["Marks Gained"]["Marks Gained"][ia][co] + "/" + subject["Max Marks"][ia][co]}
