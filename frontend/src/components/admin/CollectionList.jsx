@@ -20,7 +20,10 @@ export default class CollectionList extends Component {
                 lookedUpCollections[col] = await (await fetch(this.serverURL + "/documents/" + meta[col].split("_")[1])).json();
             }
         }
-        for (let col in columns) if (columns[col] != "_id") documentAdded[columns[col]] = "";
+        for (let col in columns) {
+            if (columns[col].startsWith("obj_")) documentAdded[columns[col].split("_")[1]] = {};
+            else if (columns[col] != "_id") documentAdded[columns[col]] = "";
+        }
         this.setState({ columns: columns, lookedUpCollections: lookedUpCollections, documents: json, documentAdded: documentAdded });
     }
 
@@ -55,7 +58,9 @@ export default class CollectionList extends Component {
     validateDocument(message) {
         let columns = this.state.columns;
         for (let col in columns) {
-            if (columns[col] != '_id' && !message[columns[col]])
+            let colName = columns[col];
+            if (colName.startsWith("obj_")) colName = colName.split("_")[1];
+            if (colName != '_id' && !message[colName])
                 return false;
         }
         return true;
@@ -63,6 +68,7 @@ export default class CollectionList extends Component {
 
     addDocument() {
         let message = this.state.documentAdded;
+        console.log(message);
         if (this.validateDocument(message))
             fetch(this.serverURL + "/documents/" + this.state.collectionSelected + "/add", {
                 method: "POST",
@@ -100,6 +106,14 @@ export default class CollectionList extends Component {
             documentAdded: document
         });
     }
+    
+    handleJSONItemAdded(col, event) {
+        let document = this.state.documentAdded;
+        document[col.split("_")[1]] = JSON.parse(event.target.value);
+        this.setState({
+            documentAdded: document
+        });
+    }
 
     documentList() {
         if (this.state.documents)
@@ -108,6 +122,7 @@ export default class CollectionList extends Component {
                     <tr key={currentDocument._id}>
                         {this.state.columns.map(col => {
                             if (col.startsWith('_')) return <td key={col}>{currentDocument[col]}</td>;
+                            else if (col.startsWith('obj_')) return <td key={col}>{JSON.stringify(currentDocument[col.split("_")[1]])}</td>;
                             else if (col.startsWith('fk_'))
                                 return <td key={col}>
                                     {this.state.lookedUpCollections[col]
@@ -160,8 +175,11 @@ export default class CollectionList extends Component {
                 <tbody>
                     <tr>
                         {this.state.columns.map(col => {
-                            if (col.startsWith('_'))
-                                return <td key={col}></td>
+                            if (col.startsWith('_')) return <td key={col}></td>
+                            else if (col.startsWith('obj_'))    
+                                return <td key={col}>
+                                    <input className="w-100" value={JSON.stringify(this.state.documentAdded[col.split("_")[1]])} placeholder={col} onChange={this.handleJSONItemAdded.bind(this, col)} />
+                                </td>
                             else if (col.startsWith('fk_'))
                                 return <td key={col}>
                                     {this.state.lookedUpCollections[col]
