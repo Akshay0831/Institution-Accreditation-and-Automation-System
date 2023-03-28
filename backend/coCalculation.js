@@ -360,3 +360,132 @@ for (const key in directAttainmentTargetLevels) {
 }
 
 console.log(finalAttainment)
+
+let copoMappingTable = [
+    {
+        "_id": "63a0050c1181da46a46864d0",
+        "fk_Subject Code": "63790c36a2552fdc443b9334",
+        "PO1": {
+            "CO1": 3,
+            "CO2": 3,
+            "CO3": 3,
+            "CO4": 3,
+            "CO5": 3
+        },
+        "PO2": {
+            "CO1": 1,
+            "CO2": 2,
+            "CO3": 2,
+            "CO4": 2,
+            "CO5": 1
+        },
+        "PO3": {
+            "CO1": 1,
+            "CO2": 2,
+            "CO3": 2,
+            "CO4": 2,
+            "CO5": 1
+        },
+        "PO4": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO5": {
+            "CO1": 2,
+            "CO2": 2,
+            "CO3": 2,
+            "CO4": 2,
+            "CO5": null
+        },
+        "PO6": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO7": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO8": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO9": {
+            "CO1": 2.00,
+            "CO2": 2.00,
+            "CO3": 2.00,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO10": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO11": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PO12": {
+            "CO1": null,
+            "CO2": null,
+            "CO3": null,
+            "CO4": null,
+            "CO5": null
+        },
+        "PSO1": {
+            "CO1": 2,
+            "CO2": 2,
+            "CO3": 2,
+            "CO4": 2,
+            "CO5": 2
+        },
+        "PSO2": {
+            "CO1": null,
+            "CO2": 2,
+            "CO3": 2,
+            "CO4": 2,
+            "CO5": 2
+        }
+    }
+]
+
+const poAverages = {}
+
+for (const obj of copoMappingTable) {
+    for (const key in obj) {
+        if (key.startsWith("P")) {
+            let sum = 0;
+            let weight = 0;
+            let hasNonNullValue = false;
+            for (const subkey in obj[key]) {
+                const value = obj[key][subkey];
+                if (value !== null) {
+                    hasNonNullValue = true;
+                    sum += value;
+                    weight += 1;
+                }
+            }
+            const weightedAvg = hasNonNullValue ? sum / weight : null;
+            poAverages[key] = weightedAvg;
+        }
+    }
+}
+
+console.log(poAverages)
