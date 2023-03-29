@@ -13,7 +13,7 @@ export default class COPOMapper extends Component {
         let COPOCollection = await (await fetch(this.serverURL+'/documents/CO PO Map')).json();
         let subjects = await (await fetch(this.serverURL+'/documents/Subject')).json();
         let COs = ['CO1','CO2','CO3','CO4','CO5'];
-        let POs = ['PO1','PO2','PO3','PO4','PO5','PO6','PO7','PO8','PO9','PO10','PO11','PO12'];
+        let POs = ['PO1','PO2','PO3','PO4','PO5','PO6','PO7','PO8','PO9','PO10','PO11','PO12','PSO1','PSO2'];
         let COPOMaps= {}
         for(let x in COs){
             let POObjs = {};
