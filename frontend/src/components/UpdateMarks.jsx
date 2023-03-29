@@ -2,6 +2,7 @@ import React, { Component, lazy, Suspense } from "react";
 import { ToastContainer, toast } from "react-toastify";
 const Header = lazy(() => import("./Header"));
 const AccordionItem = lazy(() => import("./AccordionItem"));
+const BatchInput = lazy(() => import("./teacher/BatchInput"));
 export default class UpdateMarks extends Component {
 
     toasts(message, type) {
@@ -170,6 +171,7 @@ export default class UpdateMarks extends Component {
                                                                                     </tbody>
                                                                                 </table>
                                                                             </div>
+                                                                            <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/>
                                                                         </AccordionItem>
                                                                     );
                                                                 })}
