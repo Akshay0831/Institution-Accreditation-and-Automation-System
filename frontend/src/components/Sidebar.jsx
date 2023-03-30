@@ -1,7 +1,7 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "../../public/css/styles.css"
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Sidebar = props => {
 
@@ -20,6 +20,12 @@ const Sidebar = props => {
                             <span
                                 className="list-group-item list-group-item-action ripple">
                                 <i className="fas fa-chart-area fa-fw me-3"></i><span>Update Marks</span>
+                            </span>
+                        </Link>
+                        <Link to={"/" + props.type + "/studentlist"} style={{ textDecoration: 'none' }}>
+                            <span
+                                className="list-group-item list-group-item-action ripple">
+                                <i className="fas fa-solid fa-graduation-cap fa-fw me-3"></i><span>Student List</span>
                             </span>
                         </Link>
                         <Link to={"/" + props.type + "/documents"} style={{ textDecoration: 'none' }}>

@@ -41,6 +41,8 @@ export const MetaData = {
         "Scheme Code": "str",
         "Subject Code": "pk",
         "Subject Name": "str",
+        "Semester": "int",
+        "fk_Department ID": "fk_Department",
     },
     Teacher: {
         _id: "pk",

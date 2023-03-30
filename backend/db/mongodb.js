@@ -1,7 +1,7 @@
 const { MongoClient, ObjectId } = require("mongodb");
 class MongoDB {
     constructor(database) {
-        this.uri = "mongodb://127.0.0.1:27017";
+        this.uri = "mongodb+srv://prajwalkulkarni01:zHLNFYN-KvmJ75W@prodject.lgxin4n.mongodb.net/?retryWrites=true&w=majority";
         this.client = new MongoClient(this.uri, {
             useUnifiedTopology: true,
             useNewUrlParser: true,
@@ -18,6 +18,12 @@ class MongoDB {
         return docs;
     }
 
+    async getDoc(collectionName, id) {
+        const collection = this.db.collection(collectionName);
+        let cursorFind = await collection.findOne({ _id: id });
+        return cursorFind;
+    }
+
     async deleteDoc(collectionName, documentId) {
         let deletedResult = await this.db
             .collection(collectionName)
@@ -25,11 +31,11 @@ class MongoDB {
         return deletedResult.acknowledged;
     }
 
-    async updateDoc(collectionName, documentId, body) {
+    async updateDoc(collectionName, searchObj, body) {
         body = Object(body);
         let updatedResult = await this.db
             .collection(collectionName)
-            .updateOne({ _id: documentId }, { $set: body });
+            .updateOne(searchObj, { $set: body });
         return updatedResult.acknowledged;
     }
 
@@ -91,16 +97,38 @@ class MongoDB {
         return result;
     }
 
-    async addDoc(collectionName, body) {
-        body["_id"] = new ObjectId().toString();
-        let insertedResult = await this.db.collection(collectionName).insertOne(body);
-        return insertedResult;
-    }
-
     async deleteThenInsert(collectionName, queryToDelete, insertsArray) {
         for (let i in insertsArray) insertsArray[i]['_id'] = (new ObjectId).toString();
         let collection = this.db.collection(collectionName)
         return ((await collection.deleteMany(queryToDelete)).acknowledged && (await collection.insertMany(insertsArray)).acknowledged);
+    }
+
+    async getStudents() {
+        let resultStudents = await this.getDocs("Student");
+        let resultClasses = await this.getDocs("Class");
+        let resultClassAllocations = await this.getDocs("Class Allocation");
+        let resultDepartments = await this.getDocs("Department");
+
+        let result = resultDepartments.map(department => {
+            department.Classes = [];
+            resultClasses.forEach(classObj => {
+                if (department._id == classObj["fk_Department ID"]) {
+                    classObj.Students = [];
+                    resultStudents.forEach(student => {
+                        resultClassAllocations.forEach(ca => {
+                            if (ca.fk_USN == student.USN &&
+                                student["fk_Department ID"] == department._id &&
+                                ca["fk_Class ID"] == classObj._id) {
+                                classObj.Students.push({ ...student });
+                            }
+                        })
+                    });
+                    department.Classes.push({ ...classObj });
+                }
+            });
+            return department;
+        });
+        return result;
     }
 }
 

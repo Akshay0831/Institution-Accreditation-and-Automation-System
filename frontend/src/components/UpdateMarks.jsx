@@ -1,8 +1,7 @@
 import React, { Component, lazy, Suspense } from "react";
 import { ToastContainer, toast } from "react-toastify";
 const Header = lazy(() => import("./Header"));
-const AccordionItem = lazy(() => import("./AccordionItem"));
-const BatchInput = lazy(() => import("./teacher/BatchInput"));
+const AccordionItem = lazy(() => import("./AccordionItem"));// const BatchInput = lazy(() => import("./teacher/BatchInput"));
 export default class UpdateMarks extends Component {
 
     toasts(message, type) {
@@ -23,6 +22,7 @@ export default class UpdateMarks extends Component {
         let data = await res.json();
         this.setState(data);
         this.validated = true;
+        document.title = "Update Marks";
     }
 
     inputValidation(inputMarks, maxMarksObj, ia, co) {
@@ -42,7 +42,11 @@ export default class UpdateMarks extends Component {
 
     handleItemChanged(deptIndex, classIndex, subjectIndex, studentIndex, ia, co, event) {
         let marks = { ...this.state.marks };
-        marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
+        if (ia !== "SEE") {
+            marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
+        } else {
+            marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia] = Number(event.target.value);
+        }
         this.setState(marks);
     }
 
@@ -109,7 +113,7 @@ export default class UpdateMarks extends Component {
                                                                             headContent={`${subject["Subject Name"]} (${subject["Subject Code"]})`}>
                                                                             <div className="accordion overflow-auto" id="StudentsAccordion">
                                                                                 <h4>Students</h4>
-                                                                                <table className="table table-striped table-hover table-bordered" style={{ fontSize: "10px" }}>
+                                                                                <table className="table table-striped table-hover table-bordered" style={{ fontSize: "15px" }}>
                                                                                     <thead>
                                                                                         <tr>
                                                                                             <th scope="col" className="text-center" rowSpan="2">Sl. No</th>
@@ -126,7 +130,7 @@ export default class UpdateMarks extends Component {
                                                                                             ))}
                                                                                         </tr>
                                                                                         <tr>
-                                                                                            {Object.keys(subject["Max Marks"]).map((ia, i) => {
+                                                                                            {Object.keys(subject["Max Marks"]).filter(obj => obj !== "SEE").map((ia, i) => {
                                                                                                 return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
                                                                                                     return (
                                                                                                         <th scope="col" className="text-center" key={ia + co}>{co}</th>
@@ -144,19 +148,31 @@ export default class UpdateMarks extends Component {
                                                                                                     <td>{student["Student Name"]}</td>
                                                                                                     {Object.keys(student["Marks Gained"]["Marks Gained"]).map((ia, i) => {
                                                                                                         return [(Object.keys(student["Marks Gained"]["Marks Gained"][ia]).map((co, c) => {
-                                                                                                            return (
-                                                                                                                <td key={ia + co} style={{ minWidth: "85px" }}>
-                                                                                                                    <input type="number"
-                                                                                                                        className="form-control"
-                                                                                                                        style={{ fontSize: "10px" }}
-                                                                                                                        min="0"
-                                                                                                                        max={subject["Max Marks"][ia][co]}
-                                                                                                                        placeholder={student["Marks Gained"]["Marks Gained"][ia][co] + "/" + subject["Max Marks"][ia][co]}
-                                                                                                                        onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, co)} />
-                                                                                                                </td>
-                                                                                                            )
+                                                                                                            if (ia !== "SEE") {
+                                                                                                                return (
+                                                                                                                    <td key={ia + co} style={{ minWidth: "100px" }}>
+                                                                                                                        <input type="number"
+                                                                                                                            className="form-control"
+                                                                                                                            style={{ fontSize: "15px" }}
+                                                                                                                            min="0"
+                                                                                                                            max={subject["Max Marks"][ia][co]}
+                                                                                                                            placeholder={student["Marks Gained"]["Marks Gained"][ia][co] + "/" + subject["Max Marks"][ia][co]}
+                                                                                                                            onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, co)} />
+                                                                                                                    </td>
+                                                                                                                )
+                                                                                                            }
                                                                                                         })
-                                                                                                        ), <td key={"total_" + ia}>{this.totalIA(student["Marks Gained"]["Marks Gained"][ia]) + "/" + this.totalIA(subject["Max Marks"][ia])}</td>]
+                                                                                                        ), ia !== "SEE" ? <td key={"total_" + ia}>{this.totalIA(student["Marks Gained"]["Marks Gained"][ia]) + "/" + this.totalIA(subject["Max Marks"][ia])}</td> : (
+                                                                                                            <td key={"SEE"} style={{ minWidth: "100px" }}>
+                                                                                                                <input type="number"
+                                                                                                                    className="form-control"
+                                                                                                                    style={{ fontSize: "15px" }}
+                                                                                                                    min="0"
+                                                                                                                    max={subject["Max Marks"][ia]}
+                                                                                                                    placeholder={student["Marks Gained"]["Marks Gained"][ia] + "/" + subject["Max Marks"][ia]}
+                                                                                                                    onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, "SEE", null)} />
+                                                                                                            </td>
+                                                                                                        )]
                                                                                                     })}
                                                                                                     <td>
                                                                                                         <button
@@ -170,8 +186,7 @@ export default class UpdateMarks extends Component {
                                                                                         })}
                                                                                     </tbody>
                                                                                 </table>
-                                                                            </div>
-                                                                            <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/>
+                                                                            </div>{/* <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/> */}
                                                                         </AccordionItem>
                                                                     );
                                                                 })}

@@ -106,7 +106,7 @@ export default class CollectionList extends Component {
             documentAdded: document
         });
     }
-    
+
     handleJSONItemAdded(col, event) {
         let document = this.state.documentAdded;
         document[col.split("_")[1]] = JSON.parse(event.target.value);
@@ -176,7 +176,7 @@ export default class CollectionList extends Component {
                     <tr>
                         {this.state.columns.map(col => {
                             if (col.startsWith('_')) return <td key={col}></td>
-                            else if (col.startsWith('obj_'))    
+                            else if (col.startsWith('obj_'))
                                 return <td key={col}>
                                     <input className="w-100" value={JSON.stringify(this.state.documentAdded[col.split("_")[1]])} placeholder={col} onChange={this.handleJSONItemAdded.bind(this, col)} />
                                 </td>
