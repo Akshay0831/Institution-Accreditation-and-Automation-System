@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Table from "react-bootstrap/Table";
+import { Table, Card, Tab, Tabs } from 'react-bootstrap';
 import { MetaData } from "../../metaData";
 
 export default class CollectionList extends Component {
@@ -210,19 +210,17 @@ export default class CollectionList extends Component {
 
     render() {
         return (
-            <main style={{ color: "margin-top: 58px" }}>
-                <div className="container pt-4">
-                    <div className="card m-4">
-                        <h3 className="card-header">Collections CRUD</h3>
-                        <nav>
-                            <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                                {Object.keys(MetaData).map(collection => {
-                                    return <button key={collection} className="nav-link" data-bs-toggle="tab" type="button" role="tab" aria-selected="true" onClick={() => { this.setState({ collectionSelected: collection }); this.forceUpdate(this.componentDidMount) }}>{collection}</button>
-                                })}
-                            </div>
-                        </nav>
-                        <div className="card-body overflow-auto">{this.state.documents ? this.tables() : <p>No Values Found</p>}</div>
-                    </div>
+            <main className="pt-5">
+                <div className="container">
+                    <Card className="card">
+                        <Card.Header className="card-header">Collections CRUD</Card.Header>
+                        <Tabs id="documentsSelector" activeKey={this.state.collectionSelected} onSelect={(collectionKey) => { this.setState({ collectionSelected: collectionKey }); this.forceUpdate(this.componentDidMount) }}>
+                            {Object.keys(MetaData).map(collection => {
+                                return <Tab eventKey={collection} key={collection} title={collection} />
+                            })}
+                        </Tabs>
+                        <Card.Body className="card-body overflow-auto">{this.state.documents ? this.tables() : <p>No Values Found</p>}</Card.Body>
+                    </Card>
                 </div>
             </main>
         );
