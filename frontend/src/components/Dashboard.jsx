@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 const Dashboard = props => {
     document.title = "Dashboard"
     return (
-        <main style={{ color: "margin-top: 58px" }}>
-            <div className="container">
+        <main className="mt-5">
+            <div className="container p-2">
                 <div className="row">
                     <div className="col col-sm-6">
                         <div className="card" style={{ color: "width: 18rem" }}>
