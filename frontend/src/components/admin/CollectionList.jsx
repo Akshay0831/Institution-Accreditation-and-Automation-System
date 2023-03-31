@@ -136,19 +136,21 @@ export default class CollectionList extends Component {
                             else
                                 return <td key={col}><input className="bg-transparent border-0 w-100" name={col} value={currentDocument[col]} onChange={this.handleItemUpdated.bind(this, col, i)} /></td>
                         })}
-                        <td>
-                            <button
-                                className="btn btn-warning py-1"
-                                onClick={() => this.updateDocument(currentDocument._id, i)}
-                            >
-                                <i className="fa fa-pencil" aria-hidden="true" />
-                            </button>
-                            <button
-                                className="btn btn-danger py-1"
-                                onClick={() => this.deleteDocument(currentDocument._id)}
-                            >
-                                <i className="fa fa-trash"></i>
-                            </button>
+                        <td style={{'min-width':90}}>
+                            <div className="btn-group m-auto">
+                                <button
+                                    className="btn btn-warning py-1"
+                                    onClick={() => this.updateDocument(currentDocument._id, i)}
+                                >
+                                    <i className="fa fa-pencil" aria-hidden="true" />
+                                </button>
+                                <button
+                                    className="btn btn-danger py-1"
+                                    onClick={() => this.deleteDocument(currentDocument._id)}
+                                >
+                                    <i className="fa fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 );
@@ -167,7 +169,7 @@ export default class CollectionList extends Component {
                 <thead className="thead-light">
                     <tr>
                         {this.state.columns.map((column) => (
-                            <th key={column}>{column}</th>
+                            <th key={column}>{column.includes('_')?column.split('_').at(-1):column}</th>
                         ))}
                         <th>Actions</th>
                     </tr>
@@ -197,7 +199,7 @@ export default class CollectionList extends Component {
                                 </td>
                         })}
                         <td>
-                            <button className="btn btn-success py-1" onClick={() => { this.addDocument() }}>
+                            <button style={{'min-width':80}} className="btn btn-success py-1" onClick={() => { this.addDocument() }}>
                                 <i className="fa fa-plus" aria-hidden="true" />
                             </button>
                         </td>
@@ -219,7 +221,7 @@ export default class CollectionList extends Component {
                                 return <Tab eventKey={collection} key={collection} title={collection} />
                             })}
                         </Tabs>
-                        <Card.Body className="card-body overflow-auto">{this.state.documents ? this.tables() : <p>No Values Found</p>}</Card.Body>
+                        <Card.Body className="card-body overflow-auto table-responsive">{this.state.documents ? this.tables() : <p>No Values Found</p>}</Card.Body>
                     </Card>
                 </div>
             </main>
