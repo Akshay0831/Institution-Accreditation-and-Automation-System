@@ -8,12 +8,18 @@ export default class StudentList extends Component {
         let res = await fetch("http://localhost:4000/students");
         let data = await res.json();
         this.setState(data);
-        console.log(data);
         document.title = "Update Marks";
     }
 
     async deleteClicked(USN) {
-        alert(USN);
+        let res = await fetch("http://localhost:4000/students", {
+            // Adding method type
+            method: "DELETE",
+            // Adding body or contents to send
+            body: JSON.stringify({ USN: USN }),
+            // Adding headers to the request
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
     }
 
     render() {

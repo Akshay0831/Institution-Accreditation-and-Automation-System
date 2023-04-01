@@ -24,10 +24,10 @@ class MongoDB {
         return cursorFind;
     }
 
-    async deleteDoc(collectionName, documentId) {
+    async deleteDoc(collectionName, searchObj) {
         let deletedResult = await this.db
             .collection(collectionName)
-            .deleteOne({ _id: documentId });
+            .deleteOne(searchObj);
         return deletedResult.acknowledged;
     }
 

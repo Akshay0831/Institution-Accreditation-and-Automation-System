@@ -47,7 +47,7 @@ app.get("/copomaps/:subjectId", async (req, res) => {
 });
 
 app.get("/documents/:collection/delete/:id", (req, res) => {
-    mongo.deleteDoc(req.params["collection"], req.params["id"]).then(() => {
+    mongo.deleteDoc(req.params["collection"], { _id: req.params["id"] }).then(() => {
         res.status(200).send("Deleted " + req.params["id"]);
     });
 });
@@ -98,6 +98,8 @@ app.post("/teacher/COPOMapper/update/:subjectSelected", (req, res) => {
         .then(() => res.status(200).send("Updated Mapping!"))
         .catch(err => res.status(500).send(err));
 })
+
+//---------Student CRUD Operations--------------
 
 app.get("/students", async (req, res) => {
     let data = await mongo.getStudents();
@@ -152,4 +154,14 @@ app.put("/students", async (req, res) => {
     const isSuccess = studentUpdated && classAllocationUpdated;
 
     res.status(isSuccess ? 200 : 400).json({ message: isSuccess ? "Updated Successfully" : "Update Unsuccessful" });
+});
+
+app.delete("/students", async (req, res) => {
+    const isStudentDeleted = await mongo.deleteDoc("Student", { USN: req.body["USN"] });
+    const isMarksDeleted = await mongo.deleteDoc("Marks", { fk_USN: req.body["USN"] });
+    const isAllocationDeleted = await mongo.deleteDoc("Class Allocation", { fk_USN: req.body["USN"] });
+
+    const isDeleteSuccess = isStudentDeleted && isAllocationDeleted && isMarksDeleted;
+
+    res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
 });
