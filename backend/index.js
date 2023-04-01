@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { ObjectId } = require("mongodb");
 const MongoDB = require("./db/mongodb");
+const models = require("./models");
 require("dotenv").config();
 const port = 4000;
 
@@ -12,6 +13,10 @@ app.use(express.static("public"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.listen(port, () => {
+    console.log(`app listening on port ${port}`);
+});
 
 app.get("/", (req, res) => {
     res.redirect("/login");
@@ -100,70 +105,39 @@ app.get("/students", async (req, res) => {
 });
 
 app.post("/students", async (req, res) => {
-    const ID = new ObjectId().toString();
-    const studentObj = {
-        _id: ID,
-        "fk_Department ID": req.body["fk_Department ID"],
-        "Student ID": ID,
-        "Student Name": req.body["Student Name"],
-        USN: req.body["USN"]
-    };
-    const classAllocationObj = {
-        _id: (new ObjectId()).toString(),
-        "fk_Class ID": req.body["Class ID"],
-        "fk_USN": req.body["USN"]
-    };
+
+    //Creating a Student document
+    const studentObj = { ...models.Student }
+    studentObj["Student Name"] = req.body["Student Name"];
+    studentObj.USN = req.body.USN;
+    studentObj["fk_Department"] = req.body["fk_Department"];
+    await mongo.addDoc("Student", studentObj);
+
+    //Creating a Class Allocation document
+    const classAllocationObj = { ...models["Class Allocation"] };
+    classAllocationObj["fk_Class ID"] = req.body["Class ID"];
+    classAllocationObj.fk_USN = req.body.USN;
+    await mongo.addDoc("Class Allocation", classAllocationObj);
 
     let subjects = await mongo.getDocs("Subject");
-    subjects = subjects.filter(subject => subject["fk_Department ID"] === studentObj["fk_Department ID"]);
+    subjects = subjects.filter(subject => subject["fk_Department"] === studentObj["fk_Department"]);
 
     subjects.forEach(async subject => {
-        const marksObj = {
-            "Marks Gained": {
-                "IA1": {
-                    "CO1": 0,
-                    "CO2": 0
-                },
-                "A1": {
-                    "CO1": 0,
-                    "CO2": 0
-                },
-                "IA2": {
-                    "CO2": 0,
-                    "CO3": 0,
-                    "CO4": 0
-                },
-                "A2": {
-                    "CO2": 0,
-                    "CO3": 0,
-                    "CO4": 0
-                },
-                "IA3": {
-                    "CO4": 0,
-                    "CO5": 0
-                },
-                "A3": {
-                    "CO4": 0,
-                    "CO5": 0
-                },
-                "SEE": 0
-            },
-            "fk_Subject Code": subject["Subject Code"],
-            "fk_USN": studentObj.USN
-        };
+        //Creating a Subject document for all subjects
+        const marksObj = { ...models.Marks };
+        marksObj["fk_Subject Code"] = subject["Subject Code"];
+        marksObj.fk_USN = studentObj.USN;
+
         await mongo.addDoc("Marks", { ...marksObj });
     });
-
-    await mongo.addDoc("Student", studentObj);
-    await mongo.addDoc("Class Allocation", classAllocationObj);
 
     res.status(200).json("Created new Student");
 });
 
-app.put("/students/:USN", async (req, res) => {
+app.put("/students", async (req, res) => {
 
     const studentObj = {
-        "fk_Department ID": req.body["fk_Department ID"],
+        "fk_Department": req.body["fk_Department"],
         "Student Name": req.body["Student Name"],
         USN: req.body["USN"]
     };
@@ -172,17 +146,10 @@ app.put("/students/:USN", async (req, res) => {
         "fk_USN": req.body["USN"]
     };
 
-    console.log(studentObj, classAllocationObj);
-
-    //Need student _id and class allocation _id to update
     const studentUpdated = await mongo.updateDoc("Student", { USN: req.body["USN"] }, studentObj);
     const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { fk_USN: req.body["USN"] }, classAllocationObj);
 
     const isSuccess = studentUpdated && classAllocationUpdated;
 
     res.status(isSuccess ? 200 : 400).json({ message: isSuccess ? "Updated Successfully" : "Update Unsuccessful" });
-});
-
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
 });

@@ -8,8 +8,8 @@ export default class StudentList extends Component {
         let res = await fetch("http://localhost:4000/students");
         let data = await res.json();
         this.setState(data);
-        document.title = "Update Marks";
         console.log(data);
+        document.title = "Update Marks";
     }
 
     async deleteClicked(USN) {

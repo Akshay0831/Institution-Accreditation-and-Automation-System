@@ -1,4 +1,5 @@
 import React, { Component, lazy, Suspense } from "react";
+import Table from "react-bootstrap/Table";
 import { ToastContainer, toast } from "react-toastify";
 const Header = lazy(() => import("./Header"));
 const AccordionItem = lazy(() => import("./AccordionItem"));// const BatchInput = lazy(() => import("./teacher/BatchInput"));
@@ -20,6 +21,7 @@ export default class UpdateMarks extends Component {
     async componentDidMount() {
         let res = await fetch("http://localhost:4000/update_marks");
         let data = await res.json();
+        console.log(data);
         this.setState(data);
         this.validated = true;
         document.title = "Update Marks";
@@ -41,7 +43,7 @@ export default class UpdateMarks extends Component {
     }
 
     handleItemChanged(deptIndex, classIndex, subjectIndex, studentIndex, ia, co, event) {
-        let marks = { ...this.state.marks };
+        let marks = { ...this.state?.marks };
         if (ia !== "SEE") {
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
         } else {
@@ -61,12 +63,10 @@ export default class UpdateMarks extends Component {
                 headers: { "Content-type": "application/json; charset=UTF-8" },
             }).then((res) => {
                 if (res.status == 200) {
-                    console.log(res);
                     this.toasts("Updated Successfully!", toast.success);
                 }
             });
         else this.toasts("Cannot Update!", toast.error);
-        console.log(marksObj);
     }
 
     totalIA(IAObj) {
@@ -94,7 +94,7 @@ export default class UpdateMarks extends Component {
                                             headContent={dept["Department Name"]}>
                                             <div className="accordion" id="ClassesAccordion">
                                                 <h4>Classes</h4>
-                                                {dept.Classes.map((classObj, classIndex) => {
+                                                {dept.Classes?.map((classObj, classIndex) => {
                                                     return (
                                                         <AccordionItem key={classObj._id}
                                                             accHeadingId={dept["Department Name"] + classObj.Semester + classObj.Section}
@@ -103,7 +103,7 @@ export default class UpdateMarks extends Component {
                                                             headContent={classObj.Semester + classObj.Section}>
                                                             <div className="accordion" id="SubjectsAccordion" >
                                                                 <h4>Subjects</h4>
-                                                                {classObj.Subjects.map((subject, subjectIndex) => {
+                                                                {classObj.Subjects?.map((subject, subjectIndex) => {
                                                                     return (
                                                                         <AccordionItem
                                                                             key={subject._id}
@@ -119,15 +119,18 @@ export default class UpdateMarks extends Component {
                                                                                             <th scope="col" className="text-center" rowSpan="2">Sl. No</th>
                                                                                             <th scope="col" className="text-center" rowSpan="2">USN</th>
                                                                                             <th scope="col" className="text-center" rowSpan="2">Name</th>
-                                                                                            {Object.keys(subject["Max Marks"]).map(i => (
-                                                                                                <th
-                                                                                                    colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
-                                                                                                    scope="col"
-                                                                                                    className="text-center"
-                                                                                                    key={i}>
-                                                                                                    {i}
-                                                                                                </th>
-                                                                                            ))}
+                                                                                            {Object.keys(subject["Max Marks"]).map(i => {
+                                                                                                return (
+                                                                                                    <th
+                                                                                                        colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
+                                                                                                        rowSpan={i === "SEE" ? 2 : 1}
+                                                                                                        scope="col"
+                                                                                                        className="text-center"
+                                                                                                        key={i}>
+                                                                                                        {i}
+                                                                                                    </th>
+                                                                                                )
+                                                                                            })}
                                                                                         </tr>
                                                                                         <tr>
                                                                                             {Object.keys(subject["Max Marks"]).filter(obj => obj !== "SEE").map((ia, i) => {
@@ -202,6 +205,34 @@ export default class UpdateMarks extends Component {
                         ) : (
                             <p>empty</p>
                         )}
+                    </div>
+                    <div className="table-responsive card p-3">
+                        <Table bordered className="p-0">
+                            <thead>
+                                <tr>
+                                    <th>Abbreviation</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>IA</td>
+                                    <td>Internal Assessment</td>
+                                </tr>
+                                <tr>
+                                    <td>A</td>
+                                    <td>Assignment</td>
+                                </tr>
+                                <tr>
+                                    <td>CO</td>
+                                    <td>Course Outcome</td>
+                                </tr>
+                                <tr>
+                                    <td>SEE</td>
+                                    <td>Semester End Examination</td>
+                                </tr>
+                            </tbody>
+                        </Table>
                     </div>
                 </Suspense>
             </main>

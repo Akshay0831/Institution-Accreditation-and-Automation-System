@@ -1,31 +1,3 @@
-// import React from "react";
-// import { Line } from 'react-chartjs-2';
-// import { Chart as ChartJS, LineElement, PointElement, LinearScale, Title } from 'chart.js';
-// import "bootstrap/dist/css/bootstrap.css";
-// import "../../public/css/styles.css"
-
-// function Analytics() {
-//     ChartJS.register(LineElement, PointElement, LinearScale, Title);
-//     const chartData = {
-//         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-//         datasets: [{
-//             label: '# of Votes',
-//             data: [12, 19, 3, 5, 2, 3],
-//             borderWidth: 1
-//         }]
-//     }
-
-//     return (
-//         <main style={{ color: "margin-top: 58px" }}>
-//             <div className="container pt-4">
-//                 <Line data={chartData} />
-//             </div>
-//         </main>
-//     )
-// }
-
-// export default Analytics;
-
 import React from 'react';
 import {
     Chart as ChartJS,
@@ -38,7 +10,6 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-// import faker from 'faker';
 
 ChartJS.register(
     CategoryScale,

@@ -59,25 +59,25 @@ class MongoDB {
             //Adding classes to department
             department.Classes = [];
             resultClasses.forEach((classObj) => {
-                if (department._id == classObj["fk_Department ID"]) {
+                if (department["Department Name"] == classObj["fk_Department"]) {
 
                     //Adding Subjects to classes
                     classObj.Subjects = [];
                     resultSubjects.forEach((subject) => {
-                        if (subject["fk_Department ID"] == department._id && subject.fk_Semester == classObj.Semester) {
-
+                        if (subject["fk_Department"] == department["Department Name"] && subject.Semester == classObj.Semester) {
                             // Adding Students to classes
                             subject.Students = [];
                             resultStudents.forEach((student) => {
                                 resultClassAllocation.forEach((ca) => {
                                     if (ca.fk_USN == student.USN &&
-                                        student["fk_Department ID"] == department._id &&
+                                        student["fk_Department"] == department["Department Name"] &&
                                         ca["fk_Class ID"] == classObj._id) {
 
                                         // Adding marks to each student in each subject
                                         student["Marks Gained"] = {};
                                         resultMarks.forEach((marks) => {
                                             if (marks["fk_Subject Code"] == subject["Subject Code"] && marks.fk_USN == student.USN) {
+                                                console.log(marks);
                                                 student["Marks Gained"] = { ...marks };
                                             }
                                         });
@@ -112,12 +112,12 @@ class MongoDB {
         let result = resultDepartments.map(department => {
             department.Classes = [];
             resultClasses.forEach(classObj => {
-                if (department._id == classObj["fk_Department ID"]) {
+                if (department["Department Name"] == classObj["fk_Department"]) {
                     classObj.Students = [];
                     resultStudents.forEach(student => {
                         resultClassAllocations.forEach(ca => {
                             if (ca.fk_USN == student.USN &&
-                                student["fk_Department ID"] == department._id &&
+                                student["fk_Department"] == department["Department Name"] &&
                                 ca["fk_Class ID"] == classObj._id) {
                                 classObj.Students.push({ ...student });
                             }

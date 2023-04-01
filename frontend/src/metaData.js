@@ -8,7 +8,7 @@ export const MetaData = {
     },
     Class: {
         // _id: "pk",
-        "fk_Department ID": "fk_Department",
+        "fk_Department": "fk_Department",
         Semester: "int",
         Section: "str",
     },
@@ -32,7 +32,7 @@ export const MetaData = {
         // _id: "pk",
         USN: "pk",
         "Student Name": "str",
-        "fk_Department ID": "fk_Department",
+        "fk_Department": "fk_Department",
     },
     Subject: {
         // _id: "pk",
@@ -42,20 +42,20 @@ export const MetaData = {
         "Semester": "int",
         "Test Assignment Ratio": "int",
         "obj_Max Marks": "IA(CO())",
-        "fk_Department ID": "fk_Department",
+        "fk_Department": "fk_Department",
     },
     Teacher: {
         // _id: "pk",
         "Teacher Name": "str",
         Mail: "str_unique",
         Role: "str",
-        "fk_Department ID": "fk_Department",
+        "fk_Department": "fk_Department",
     },
     "Teacher Allocation": {
         // _id: "pk",
         "fk_Teacher ID": "fk_Teacher",
         "fk_Subject Code": "fk_Subject",
         "fk_Class ID": "fk_Class",
-        "fk_Department ID": "fk_Department",
+        "fk_Department": "fk_Department",
     },
 };

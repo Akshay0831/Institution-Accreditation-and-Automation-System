@@ -11,7 +11,7 @@ export default ({ btnClass = "btn btn-danger", btnValue = "Sign Out" }) => {
 
     return (
         <button style={{ marginRight: "15px" }} className={btnClass} onClick={handleClick}>
-            <i class="fa-solid fa-power-off me-2"></i>
+            <i className="fa-solid fa-power-off me-2"></i>
             {btnValue}
         </button>
     );

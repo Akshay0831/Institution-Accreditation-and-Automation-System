@@ -7,7 +7,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
-    console.log("uid: " + sessionStorage.getItem("uid"));
 
     const refEmail = useRef(null);
     const refPassword = useRef(null);
@@ -71,8 +70,6 @@ function SignIn() {
                             },
                         });
                         let json = await res.json();
-                        console.log(json);
-                        console.log("sessionStorage: " + sessionStorage.getItem("uid"));
                         navigate(docSnap.data().userType === "Admin" ? "/admin" : "/home");
                     }
                 }

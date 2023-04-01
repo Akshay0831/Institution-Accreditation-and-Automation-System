@@ -41,10 +41,10 @@ export default function AddStudent() {
         const student = {
             "Student Name": name,
             USN: usn,
-            "fk_Department ID": departmentID,
+            "fk_Department": departmentID,
             "Class ID": classID
         }
-        fetch(`http://localhost:4000/students${isUpdate ? ("/" + usn) : ""}`, {
+        fetch(`http://localhost:4000/students`, {
             // Adding method type
             method: isUpdate ? "PUT" : "POST",
             // Adding body or contents to send
@@ -57,7 +57,13 @@ export default function AddStudent() {
     const handleDepartmentChange = (event) => {
         setDisabled(false);
         setDepartmentID(event.target.value);
-        setClasses(originalClasses.filter(obj => obj["fk_Department ID"] === event.target.value));
+        setClasses(originalClasses.filter(obj => obj["fk_Department"] === event.target.value));
+    }
+
+    const handleClassChange = (event) => {
+        console.log(event.target.value);
+        const value = event.target.value;
+        setClassID(value !== "null" ? value : "")
     }
 
     return (
@@ -78,7 +84,7 @@ export default function AddStudent() {
                             <select name="department" className="form-select" required onChange={handleDepartmentChange}>
                                 {disabled ? <option>Open this select menu</option> : null}
                                 {departments.map((department) => {
-                                    return <option key={department["Department ID"]} value={department["Department ID"]}>{department["Department Name"]}</option>
+                                    return <option key={department["Department Name"]} value={department["Department Name"]}>{department["Department Name"]}</option>
                                 })}
                             </select>
                             <p>{departmentID}</p>
@@ -89,15 +95,13 @@ export default function AddStudent() {
                                 name="class"
                                 className="form-select"
                                 required
-                                defaultValue={isUpdate ? classId : null}
                                 // disabled={disabled || isUpdate}
-                                onChange={(event) => { setClassID(event.target.value) }}>
-                                {disabled ? <option>Open this select menu</option> : null}
+                                onChange={handleClassChange}>
+                                <option value={"null"}>Open this select menu</option>
                                 {classes.map((classObj) => {
-                                    return <option key={classObj["Class ID"]} value={classObj["Class ID"]}>{classObj["Semester"] + classObj["Section"]}</option>
+                                    return <option key={classObj["_id"]} value={classObj["_id"]}>{classObj["Semester"] + classObj["Section"]}</option>
                                 })}
                             </select>
-                            <p>{classID}</p>
                             {disabled ? <p style={{ color: 'red' }}>Select department first</p> : null}
                         </div>
                         <button type="submit" className="btn btn-success">Submit</button>
