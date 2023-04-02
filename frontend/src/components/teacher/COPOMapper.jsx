@@ -1,17 +1,25 @@
 import React, { Component } from "react";
+import { Card } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 
 export default class COPOMapper extends Component {
     constructor(props) {
         super(props);
         this.serverURL = 'http://localhost:4000';
+        this.userType = sessionStorage.getItem("userType");
         this.state = { COs: [], POs: [], subjects: [], subjectSelected: "", COPOMaps: [[], []] };
     }
 
     async componentDidMount() {
         console.log("Called APIs: " + this.serverURL + '/documents/CO PO Map' + ", " + this.serverURL + '/documents/Subjects');
         let COPOCollection = await (await fetch(this.serverURL + '/documents/CO PO Map')).json();
-        let subjects = await (await fetch(this.serverURL + '/documents/Subject')).json();
+
+        let subjects;
+        if (this.userType == "Teacher")
+            subjects = await (await fetch(this.serverURL + '/subjectsTaught/' + sessionStorage.getItem("userMail"))).json();
+        else if (this.userType == "Admin")
+            subjects = await (await fetch(this.serverURL + '/documents/Subject')).json();
+        console.log(subjects);
         let COs = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
         let POs = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2'];
         let COPOMaps = {}
@@ -27,7 +35,7 @@ export default class COPOMapper extends Component {
             if (doc['fk_Subject Code'] == this.state.subjectSelected)
                 COPOMaps[doc['CO']][doc['PO']] = doc['Value'];
         }
-        this.setState({ COs: COs, POs: POs, subjects: subjects, subjectSelected: (this.state.subjectSelected ? this.state.subjectSelected : subjects[0]['_id']), COPOMaps: COPOMaps });
+        this.setState({ COs: COs, POs: POs, subjects: subjects, subjectSelected: (this.state.subjectSelected ? this.state.subjectSelected : (subjects.length?subjects[0]['_id']:"")), COPOMaps: COPOMaps });
     }
 
     updateCOPOMapping() {
@@ -92,9 +100,11 @@ export default class COPOMapper extends Component {
     render() {
         return (
             <main className="pt-5">
-                <div className="card m-4">
-                    <h3 className="card-header">CO PO Mapper</h3>
-                    <div className="card-body overflow-auto">
+                <Card className="m-3">
+                    <Card.Header className="fs-3">CO PO Mapper</Card.Header>
+                    {
+                    this.state.subjects.length
+                    ?<Card.Body className="overflow-auto">
                         <select className="form-select mb-3" value={this.state.subjectSelected} aria-label="Select subject" onChange={this.handleSubjectUpdated.bind(this)}>
                             <option value="">Select Subject</option>
                             {this.state.subjects
@@ -107,10 +117,13 @@ export default class COPOMapper extends Component {
                         </select>
                         {this.state.COPOMaps ? this.tables() : <p>No Values Found</p>}
                         <button className="btn btn-success" onClick={() => this.updateCOPOMapping()}>Save&nbsp; Changes</button>
-                    </div>
-                </div>
+                    </Card.Body>
+                    :
+                    <Card.Body>No Subjects Allocated to you. Please Contact Admininistrator</Card.Body>
+                    }
+                </Card>
 
-                <div className="table-responsive card p-3">
+                <Card className="table-responsive p-3">
                     <Table bordered className="p-0">
                         <thead>
                             <tr>
@@ -137,7 +150,7 @@ export default class COPOMapper extends Component {
                             </tr>
                         </tbody>
                     </Table>
-                </div>
+                </Card>
             </main>
         );
     }
