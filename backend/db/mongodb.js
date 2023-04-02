@@ -77,7 +77,6 @@ class MongoDB {
                                         student["Marks Gained"] = {};
                                         resultMarks.forEach((marks) => {
                                             if (marks["fk_Subject Code"] == subject["Subject Code"] && marks.fk_USN == student.USN) {
-                                                console.log(marks);
                                                 student["Marks Gained"] = { ...marks };
                                             }
                                         });

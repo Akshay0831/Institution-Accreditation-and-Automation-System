@@ -37,21 +37,25 @@ export default function AddStudent() {
     }, []);
 
     const onSubmitClicked = (event) => {
-        event.preventDefault();
-        const student = {
-            "Student Name": name,
-            USN: usn,
-            "fk_Department": departmentID,
-            "Class ID": classID
+        if (!disabled && classID.length != 0 && departmentID.length != 0) {
+            event.preventDefault();
+            const student = {
+                "Student Name": name,
+                USN: usn,
+                "fk_Department": departmentID,
+                "Class ID": classID
+            }
+            fetch(`http://localhost:4000/students`, {
+                // Adding method type
+                method: isUpdate ? "PUT" : "POST",
+                // Adding body or contents to send
+                body: JSON.stringify(student),
+                // Adding headers to the request
+                headers: { "Content-type": "application/json; charset=UTF-8" },
+            });
+        } else {
+            alert("Please fill all fields");
         }
-        fetch(`http://localhost:4000/students`, {
-            // Adding method type
-            method: isUpdate ? "PUT" : "POST",
-            // Adding body or contents to send
-            body: JSON.stringify(student),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        })
     }
 
     const handleDepartmentChange = (event) => {
@@ -61,7 +65,6 @@ export default function AddStudent() {
     }
 
     const handleClassChange = (event) => {
-        console.log(event.target.value);
         const value = event.target.value;
         setClassID(value !== "null" ? value : "")
     }
@@ -95,7 +98,7 @@ export default function AddStudent() {
                                 name="class"
                                 className="form-select"
                                 required
-                                // disabled={disabled || isUpdate}
+                                disabled={disabled}
                                 onChange={handleClassChange}>
                                 <option value={"null"}>Open this select menu</option>
                                 {classes.map((classObj) => {
