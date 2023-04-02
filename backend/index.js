@@ -3,17 +3,18 @@ const cors = require("cors");
 const { ObjectId } = require("mongodb");
 const MongoDB = require("./db/mongodb");
 const models = require("./models");
+const fs = require('fs');
 require("dotenv").config();
 const port = 4000;
 
 const mongo = new MongoDB("projectdb");
 const app = express();
 
+app.use((req, res, next) => { res.header({ "Access-Control-Allow-Origin": "*" }); next(); })
 app.use(express.static("public"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.listen(port, () => {
     console.log(`app listening on port ${port}`);
 });
@@ -164,4 +165,11 @@ app.delete("/students", async (req, res) => {
     const isDeleteSuccess = isStudentDeleted && isAllocationDeleted && isMarksDeleted;
 
     res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
+});
+
+app.get("/listOfDocuments", async (req, res) => {
+    fs.readdir("public/documents", (err, files) => {
+        if (err) console.log(err);
+        else res.json(files);
+    });
 });
