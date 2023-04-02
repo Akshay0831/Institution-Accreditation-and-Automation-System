@@ -173,3 +173,17 @@ app.get("/listOfDocuments", async (req, res) => {
         else res.json(files);
     });
 });
+
+app.get("/subjectsTaught/:teacherEmail", async (req, res) => { 
+    let teacherDoc = (await mongo.getDoc("Teacher", {Mail : req.params["teacherEmail"]}));
+    if (teacherDoc){
+        let teacherId = teacherDoc._id;
+        let teacherAllocation = await mongo.getDocs("Teacher Allocation", {"fk_Teacher ID" : teacherId});
+        let subjects = []
+        teacherAllocation.forEach(doc => {if (!subjects.includes(doc["fk_Subject Code"])) subjects.push(doc['fk_Subject Code'])});
+        subjects = await mongo.getDocs("Subject", {"Subject Code" : {$in : subjects}});
+        res.json(subjects);
+    }
+    else
+        res.json({});
+});

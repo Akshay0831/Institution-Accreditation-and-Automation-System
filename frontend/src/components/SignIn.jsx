@@ -53,6 +53,7 @@ function SignIn() {
                         );
                         sessionStorage.setItem("uid", user.user.uid);
                         sessionStorage.setItem("userType", docSnap.data().userType);
+                        sessionStorage.setItem("userMail", refEmail.current.value);
                         let res = await fetch("http://localhost:4000/login", {
                             // Adding method type
                             method: "POST",
