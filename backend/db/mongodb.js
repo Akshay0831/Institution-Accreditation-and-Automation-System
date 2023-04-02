@@ -131,4 +131,5 @@ class MongoDB {
     }
 }
 
-module.exports = MongoDB;
+const mongo = new MongoDB("projectdb");
+module.exports = mongo;

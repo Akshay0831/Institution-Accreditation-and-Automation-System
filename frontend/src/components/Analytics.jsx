@@ -112,7 +112,7 @@ export default function Analytics() {
     let handleClassChange = (event) => {
         setSubjectEnabled(true);
         setSubjectCode("");
-        setSubjects(originalSubjects.filter(subject => subject["Subject Code"] === eve))
+        // setSubjects(originalSubjects.filter(subject => subject["Subject Code"] === eve))
         setClassID(event.target.value);
     }
 

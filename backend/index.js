@@ -1,13 +1,17 @@
 const express = require("express");
 const cors = require("cors");
 const { ObjectId } = require("mongodb");
-const MongoDB = require("./db/mongodb");
+const mongo = require("./db/mongodb");
 const models = require("./models");
+
+//.............routes...........
+const studentRoutes = require("./routes/studentRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
+
 const fs = require('fs');
 require("dotenv").config();
 const port = 4000;
 
-const mongo = new MongoDB("projectdb");
 const app = express();
 
 app.use((req, res, next) => { res.header({ "Access-Control-Allow-Origin": "*" }); next(); })
@@ -100,73 +104,6 @@ app.post("/teacher/COPOMapper/update/:subjectSelected", (req, res) => {
         .catch(err => res.status(500).send(err));
 })
 
-//---------Student CRUD Operations--------------
-
-app.get("/students", async (req, res) => {
-    let data = await mongo.getStudents();
-    res.json({ students: data });
-});
-
-app.post("/students", async (req, res) => {
-
-    //Creating a Student document
-    const studentObj = { ...models.Student }
-    studentObj["Student Name"] = req.body["Student Name"];
-    studentObj.USN = req.body.USN;
-    studentObj["fk_Department"] = req.body["fk_Department"];
-    await mongo.addDoc("Student", studentObj);
-
-    //Creating a Class Allocation document
-    const classAllocationObj = { ...models["Class Allocation"] };
-    classAllocationObj["fk_Class ID"] = req.body["Class ID"];
-    classAllocationObj.fk_USN = req.body.USN;
-    await mongo.addDoc("Class Allocation", classAllocationObj);
-
-    let subjects = await mongo.getDocs("Subject");
-    subjects = subjects.filter(subject => subject["fk_Department"] === studentObj["fk_Department"]);
-
-    subjects.forEach(async subject => {
-        //Creating a Subject document for all subjects
-        const marksObj = { ...models.Marks };
-        marksObj["fk_Subject Code"] = subject["Subject Code"];
-        marksObj.fk_USN = studentObj.USN;
-
-        await mongo.addDoc("Marks", { ...marksObj });
-    });
-
-    res.status(200).json("Created new Student");
-});
-
-app.put("/students", async (req, res) => {
-
-    const studentObj = {
-        "fk_Department": req.body["fk_Department"],
-        "Student Name": req.body["Student Name"],
-        USN: req.body["USN"]
-    };
-    const classAllocationObj = {
-        "fk_Class ID": req.body["Class ID"],
-        "fk_USN": req.body["USN"]
-    };
-
-    const studentUpdated = await mongo.updateDoc("Student", { USN: req.body["USN"] }, studentObj);
-    const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { fk_USN: req.body["USN"] }, classAllocationObj);
-
-    const isSuccess = studentUpdated && classAllocationUpdated;
-
-    res.status(isSuccess ? 200 : 400).json({ message: isSuccess ? "Updated Successfully" : "Update Unsuccessful" });
-});
-
-app.delete("/students", async (req, res) => {
-    const isStudentDeleted = await mongo.deleteDoc("Student", { USN: req.body["USN"] });
-    const isMarksDeleted = await mongo.deleteDoc("Marks", { fk_USN: req.body["USN"] });
-    const isAllocationDeleted = await mongo.deleteDoc("Class Allocation", { fk_USN: req.body["USN"] });
-
-    const isDeleteSuccess = isStudentDeleted && isAllocationDeleted && isMarksDeleted;
-
-    res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
-});
-
 app.get("/listOfDocuments", async (req, res) => {
     fs.readdir("public/documents", (err, files) => {
         if (err) console.log(err);
@@ -174,26 +111,14 @@ app.get("/listOfDocuments", async (req, res) => {
     });
 });
 
-//...............Analytics.................
+//---------students routes--------------
 
-app.get("/analytics", async (req, res) => {
-    const departments = await mongo.getDocs("Department");
-    const classes = await mongo.getDocs("Class");
-    const subjects = await mongo.getDocs("Subject");
+app.use("/students", studentRoutes);
 
-    res.status(200).json({ departments, classes, subjects });
-});
+//.........Analytics routes.............
 
-app.get("/analytics/:department/:classid", async (req, res) => {
-    console.log(req.params.department, req.params.classid);
+app.use("/analytics", analyticsRoutes);
 
-    let marksData = await mongo.getMarks();
-
-    let department = marksData.filter(department => department["Department Name"] === req.params.department)[0];
-    let classObj = department.Classes.filter(c => c._id === req.params.classid)[0];
-
-
-});
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));
