@@ -92,7 +92,7 @@ export default function Analytics() {
 
     useEffect(() => {
         let fetchData = async () => {
-            let data = await fetch("http://localhost:4000/analytics");
+            let data = await fetch("http://localhost:4000/Analytics");
             data = await data.json();
 
             setDepartments(data.departments);
@@ -119,7 +119,7 @@ export default function Analytics() {
     let handleSubmit = async (event) => {
         event.preventDefault();
         if (department && classID) {
-            let data = await fetch("http://localhost:4000/analytics/" + department + "/" + classID);
+            let data = await fetch("http://localhost:4000/Analytics/" + department + "/" + classID);
             data = await data.json();
         } else {
             toasts("Please fill all fields", toast.error);

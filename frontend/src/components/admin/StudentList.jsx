@@ -5,14 +5,14 @@ import { Link } from "react-router-dom";
 export default class StudentList extends Component {
 
     async componentDidMount() {
-        let res = await fetch("http://localhost:4000/students");
+        let res = await fetch("http://localhost:4000/Student");
         let data = await res.json();
         this.setState(data);
         document.title = "Update Marks";
     }
 
     async deleteClicked(USN) {
-        let res = await fetch("http://localhost:4000/students", {
+        let res = await fetch("http://localhost:4000/Student", {
             // Adding method type
             method: "DELETE",
             // Adding body or contents to send
@@ -27,7 +27,7 @@ export default class StudentList extends Component {
             <main className="pt-5" >
                 <div className="container">
                     <button className="btn btn-success">
-                        <Link to={"/home/addstudent"} style={{ textDecoration: 'none', color: 'white' }}> <i className="fas fa-solid fa-user-plus"></i> Add Student </Link>
+                        <Link to={"/" + sessionStorage.getItem("userType") + "/addstudent"} style={{ textDecoration: 'none', color: 'white' }}> <i className="fas fa-solid fa-user-plus"></i> Add Student </Link>
                     </button>
                     <hr />
                     {this.state != null ? (
@@ -76,7 +76,7 @@ export default class StudentList extends Component {
                                                                                     <tr className="text-center">
                                                                                         <td colSpan={2}>
                                                                                             <button className="btn btn-warning py-1">
-                                                                                                <Link to={`/home/updatestudent/${classObj._id}/${dept._id}/${student.USN}/${student["Student Name"]}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
+                                                                                                <Link to={`/${sessionStorage.getItem("userType")}/updatestudent/${classObj._id}/${dept._id}/${student.USN}/${student["Student Name"]}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
                                                                                             </button>
                                                                                             <button className="btn btn-danger" onClick={() => { this.deleteClicked(student.USN) }}>
                                                                                                 <i className="fa fa-solid fa-user-minus" aria-hidden="true"></i>

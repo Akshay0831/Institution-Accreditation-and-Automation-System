@@ -45,7 +45,7 @@ export default function AddStudent() {
                 "fk_Department": departmentID,
                 "Class ID": classID
             }
-            fetch(`http://localhost:4000/students`, {
+            fetch(`http://localhost:4000/Student`, {
                 // Adding method type
                 method: isUpdate ? "PUT" : "POST",
                 // Adding body or contents to send

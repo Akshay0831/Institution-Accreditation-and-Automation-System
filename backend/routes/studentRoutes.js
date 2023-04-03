@@ -6,7 +6,6 @@ const router = express.Router();
 router.route("/")
     .get(async (req, res) => {
         let data = await mongo.getStudents();
-        res.status()
         res.status(200).json({ students: data });
     })
 
@@ -17,26 +16,29 @@ router.route("/")
         studentObj["Student Name"] = req.body["Student Name"];
         studentObj.USN = req.body.USN;
         studentObj["fk_Department"] = req.body["fk_Department"];
-        await mongo.addDoc("Student", studentObj);
+        const studentAdded = await mongo.addDoc("Student", studentObj);
 
         //Creating a Class Allocation document
         const classAllocationObj = { ...models["Class Allocation"] };
         classAllocationObj["fk_Class ID"] = req.body["Class ID"];
         classAllocationObj.fk_USN = req.body.USN;
-        await mongo.addDoc("Class Allocation", classAllocationObj);
+        const classAllocationAdded = await mongo.addDoc("Class Allocation", classAllocationObj);
 
         let subjects = await mongo.getDocs("Subject");
         subjects = subjects.filter(subject => subject["fk_Department"] === studentObj["fk_Department"]);
+        let marksAdded;
 
         subjects.forEach(async (subject) => {
             //Creating a Subject document for all subjects
             const marksObj = { ...models.Marks };
             marksObj["fk_Subject Code"] = subject["Subject Code"];
             marksObj.fk_USN = studentObj.USN;
-            await mongo.addDoc("Marks", { ...marksObj });
+            marksAdded = await mongo.addDoc("Marks", { ...marksObj });
         });
 
-        res.status(201).json("Created new Student");
+        const isCreated = studentAdded && classAllocationAdded && marksAdded;
+
+        res.status(isCreated ? 201 : 400).json(isCreated ? "Created new Student" : "Couldn't create new student");
     })
 
 

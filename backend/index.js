@@ -113,11 +113,11 @@ app.get("/listOfDocuments", async (req, res) => {
 
 //---------students routes--------------
 
-app.use("/students", studentRoutes);
+app.use("/Student", studentRoutes);
 
 //.........Analytics routes.............
 
-app.use("/analytics", analyticsRoutes);
+app.use("/Analytics", analyticsRoutes);
 
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
