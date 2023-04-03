@@ -1,61 +1,101 @@
 export const MetaData = {
     "CO PO Map": {
-        // _id: "pk",
-        "fk_Subject Code": "fk_Subject",
-        CO: "str",
-        PO: "str",
-        Value: "str",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Subject Code', title: 'Subject Code' },
+            { isFilterable: true, isSortable: true, prop: 'CO', title: 'CO' },
+            { isFilterable: true, isSortable: true, prop: 'PO', title: 'PO' },
+            { isFilterable: true, isSortable: true, prop: 'Value', title: 'Value' },
+        ]
     },
     Class: {
-        // _id: "pk",
-        "fk_Department": "fk_Department",
-        Semester: "int",
-        Section: "str",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: true, isSortable: true, prop: 'Semester', title: 'Semester' },
+            { isFilterable: true, isSortable: true, prop: 'Section', title: 'Section' },
+        ]
     },
     "Class Allocation": {
-        // _id: "pk",
-        "fk_Class ID": "fk_Class",
-        fk_USN: "fk_Student",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Class ID', title: 'Class' },
+            { isFilterable: true, isSortable: true, prop: 'fk_USN', title: 'USN' },
+        ]
     },
     Department: {
-        // _id: "pk",
-        "Department Name": "str",
-        "fk_Hod ID": "fk_Teacher",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'Department Name', title: 'Name' },
+            { isFilterable: true, isSortable: false, prop: 'fk_HoD ID', title: 'Head of Department' },
+        ]
     },
     Marks: {
-        // _id: "pk",
-        fk_USN: "fk_Student",
-        "fk_Subject Code": "fk_Subject",
-        "obj_Marks Gained": "IA(CO(int))",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'fk_USN', title: 'USN' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Subject Code', title: 'Subject Code' },
+            // { isFilterable: true, isSortable: false, prop: 'Marks Gained', title: 'Marks Gained' },
+        ]
     },
     Student: {
-        // _id: "pk",
-        USN: "pk",
-        "Student Name": "str",
-        "fk_Department": "fk_Department",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'USN', title: 'USN' },
+            { isFilterable: true, isSortable: true, prop: 'Student Name', title: 'Name' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+        ]
     },
     Subject: {
-        // _id: "pk",
-        "Scheme Code": "str",
-        "Subject Code": "pk",
-        "Subject Name": "str",
-        "Semester": "int",
-        "Test Assignment Ratio": "int",
-        "obj_Max Marks": "IA(CO())",
-        "fk_Department": "fk_Department",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'Scheme Code', title: 'Scheme Code' },
+            { isFilterable: true, isSortable: true, prop: 'Subject Code', title: 'Subject Code' },
+            { isFilterable: true, isSortable: true, prop: 'Subject Name', title: 'Name' },
+            { isFilterable: true, isSortable: true, prop: 'Semester', title: 'Semester' },
+            // { isFilterable: false, isSortable: false, prop: 'Max Marks', title: 'Max Marks' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+        ]
     },
     Teacher: {
-        // _id: "pk",
-        "Teacher Name": "str",
-        Mail: "str_unique",
-        Role: "str",
-        "fk_Department": "fk_Department",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'Teacher Name', title: 'Name' },
+            { isFilterable: true, isSortable: true, prop: 'Mail', title: 'Mail Id' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: true, isSortable: false, prop: 'Role', title: 'Role' },
+        ]
     },
     "Teacher Allocation": {
-        // _id: "pk",
-        "fk_Teacher ID": "fk_Teacher",
-        "fk_Subject Code": "fk_Subject",
-        "fk_Class ID": "fk_Class",
-        "fk_Department": "fk_Department",
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Teacher ID', title: 'Teacher' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Subject Code', title: 'Subject Code' },
+            { isFilterable: true, isSortable: false, prop: 'fk_Class ID', title: 'Class' },
+            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            {
+              prop: "button",
+              cell: (row) => (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => {
+                    alert(`${row.username}'s score is ${row.score}`);
+                  }}
+                >
+                  Click me
+                </Button>
+              )
+            }
+        ]
     },
 };
