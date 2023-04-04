@@ -27,7 +27,7 @@ export default class StudentList extends Component {
             <main className="pt-5" >
                 <div className="container">
                     <button className="btn btn-success">
-                        <Link to={"/" + sessionStorage.getItem("userType") + "/addstudent"} style={{ textDecoration: 'none', color: 'white' }}> <i className="fas fa-solid fa-user-plus"></i> Add Student </Link>
+                        <Link to={"/" + sessionStorage.getItem("userType").toLowerCase() + "/Student/add"} style={{ textDecoration: 'none', color: 'white' }}> <i className="fas fa-solid fa-user-plus"></i> Add Student </Link>
                     </button>
                     <hr />
                     {this.state != null ? (

@@ -22,12 +22,14 @@ const Sidebar = props => {
                                 <i className="fa-solid fa-square-pen fa-fw me-3"></i><span>Update Marks</span>
                             </span>
                         </Link>
-                        <Link to={"/" + props.type + "/studentlist"} style={{ textDecoration: 'none' }}>
-                            <span
-                                className="list-group-item list-group-item-action ripple">
-                                <i className="fas fa-solid fa-graduation-cap fa-fw me-3"></i><span>Student List</span>
-                            </span>
-                        </Link>
+                        {props.type == "admin" &&
+                            <Link to={"/" + props.type + "/studentlist"} style={{ textDecoration: 'none' }}>
+                                <span
+                                    className="list-group-item list-group-item-action ripple">
+                                    <i className="fas fa-solid fa-graduation-cap fa-fw me-3"></i><span>Student List</span>
+                                </span>
+                            </Link>
+                        }
                         <Link to={"/" + props.type + "/documents"} style={{ textDecoration: 'none' }}>
                             <span
                                 className="list-group-item list-group-item-action ripple"><i className="fa-regular fa-folder-open fa-fw me-3"></i><span>Documents</span></span>

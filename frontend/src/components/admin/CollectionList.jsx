@@ -122,10 +122,10 @@ export default class CollectionList extends Component {
                                 headers={
                                     MetaData[this.state.collectionSelected]["headers"].concat([{
                                         prop: "button",
-                                        title: (<Button href={"/"+this.state.collectionSelected+"/new"} style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button>),
+                                        title: (<Button href={this.state.collectionSelected + "/add"} style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button>),
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
-                                                <Button variant="warning" size="sm"><Link to={"/"+this.state.collectionSelected+"/update/" + row['_id']} className="nav-link"><i className="fa fa-pencil" /></Link></Button>
+                                                <Button variant="warning" size="sm"><Link to={this.state.collectionSelected + "/update/" + row['_id']} className="nav-link"><i className="fa fa-pencil" /></Link></Button>
                                                 <Button variant="danger" size="sm" onClick={() => { alert(`Deleting ${JSON.stringify(row)}`); }}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )
