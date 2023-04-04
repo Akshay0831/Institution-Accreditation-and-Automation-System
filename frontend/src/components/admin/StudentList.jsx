@@ -76,7 +76,7 @@ export default class StudentList extends Component {
                                                                                     <tr className="text-center">
                                                                                         <td colSpan={2}>
                                                                                             <button className="btn btn-warning py-1">
-                                                                                                <Link to={`/${sessionStorage.getItem("userType")}/updatestudent/${classObj._id}/${dept._id}/${student.USN}/${student["Student Name"]}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
+                                                                                                <Link to={`/${sessionStorage.getItem("userType")}/student/update/${student._id}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
                                                                                             </button>
                                                                                             <button className="btn btn-danger" onClick={() => { this.deleteClicked(student.USN) }}>
                                                                                                 <i className="fa fa-solid fa-user-minus" aria-hidden="true"></i>

@@ -103,6 +103,18 @@ export default class CollectionList extends Component {
         let json = await (await fetch(this.serverURL + "/documents/" + this.state.collectionSelected)).json();
         this.setState({ documents: json });
     }
+    
+    deleteDocument(id) {
+        fetch(this.serverURL + "/documents/" + this.state.collectionSelected + "/delete/" + id)
+            .then((res) => {
+                console.log("Called API: Delete " + id);
+                if (res.status == 200)
+                    this.setState({
+                        documents: this.state.documents.filter((doc) => doc._id !== id),
+                    });
+            })
+            .catch((err) => console.error(err));
+    }
 
     render() {
         return (
@@ -125,8 +137,8 @@ export default class CollectionList extends Component {
                                         title: (<Button href={this.state.collectionSelected + "/add"} style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button>),
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
-                                                <Button variant="warning" size="sm"><Link to={this.state.collectionSelected + "/update/" + row['_id']} className="nav-link"><i className="fa fa-pencil" /></Link></Button>
-                                                <Button variant="danger" size="sm" onClick={() => { alert(`Deleting ${JSON.stringify(row)}`); }}><i className="fa fa-trash" /></Button>
+                                                <Button href={this.state.collectionSelected + "/update/" + row['_id']} variant="warning" size="sm"><Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="nav-link"><i className="fa fa-pencil" /></Link></Button>
+                                                <Button variant="danger" size="sm" onClick={() => this.deleteDocument(row._id)}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )
                                     }])

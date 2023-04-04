@@ -13,7 +13,7 @@ import "./App.css";
 import Dashboard from "./components/Dashboard";
 import COPOMapper from "./components/teacher/COPOMapper";
 import CollectionList from "./components/admin/CollectionList";
-import AddStudent from "./components/admin/AddStudent";
+import UpdateStudent from "./components/admin/UpdateStudent";
 import StudentList from "./components/admin/StudentList";
 
 function App() {
@@ -38,8 +38,8 @@ function App() {
                             <Route exact path="analytics" element={<><Admin /><Analytics /></>} />
                             <Route exact path="mapping" element={<><Admin /><COPOMapper /></>} />
                             <Route exact path="collectionlist" element={<><Admin /><CollectionList collection="Teacher" /></>} />
-                            <Route exact path="student/add" element={<><Admin /><AddStudent /></>} />
-                            <Route exact path="updatestudent/:classId/:departmentId/:USN/:studentName" element={<><Admin /><AddStudent /></>} />
+                            <Route exact path="student/add" element={<><Admin /><UpdateStudent /></>} />
+                            <Route exact path="student/update/:id" element={<><Admin /><UpdateStudent /></>} />
                             <Route exact path="studentlist" element={<><Admin /><StudentList /></>} />
                         </Route>
                     </Route>
