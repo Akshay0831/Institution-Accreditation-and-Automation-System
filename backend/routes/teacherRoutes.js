@@ -38,3 +38,4 @@ router.route("/")
         res.status(teacherDeleted ? "200" : "400").json(teacherDeleted ? "Teacher deleted" : "Couldn't delete teacher");
     });
 
+module.exports = router;

@@ -1,12 +1,14 @@
 const express = require("express");
 const cors = require("cors");
-const { ObjectId } = require("mongodb");
 const mongo = require("./db/mongodb");
-const models = require("./models");
 
 //.............routes...........
 const studentRoutes = require("./routes/studentRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
+const teacherRoutes = require("./routes/teacherRoutes");
+const marksRoutes = require("./routes/marksRoutes");
+const loginRoutes = require("./routes/loginRoutes");
+const teacherAllocationRoutes = require("./routes/teacherAllocationRoutes")
 
 const fs = require('fs');
 require("dotenv").config();
@@ -19,6 +21,7 @@ app.use(express.static("public"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.listen(port, () => {
     console.log(`app listening on port ${port}`);
 });
@@ -27,13 +30,9 @@ app.get("/", (req, res) => {
     res.redirect("/login");
 });
 
-app.get("/login", (req, res) => {
-    res.json({ message: "Hello from server!" });
-});
+//---------Login routes--------------
 
-app.post("/login", (req, res) => {
-    res.json({ message: "hello" });
-});
+app.use("/login", loginRoutes);
 
 app.get("/documents/:collection", async (req, res) => {
     res.json(await mongo.getDocs(req.params["collection"]));
@@ -73,11 +72,6 @@ app.post("/documents/:collection/add", (req, res) => {
         .catch(err => res.status(500).send(err));
 });
 
-app.get("/update_marks", async (req, res) => {
-    let data = await mongo.getMarks();
-    res.json({ marks: data });
-});
-
 app.post("/documents/:collection/add", (req, res) => {
     mongo.addDoc(req.params["collection"], req.body)
         .then((result) => {
@@ -111,13 +105,27 @@ app.get("/listOfDocuments", async (req, res) => {
     });
 });
 
-//---------students routes--------------
+//---------Student routes--------------
 
 app.use("/Student", studentRoutes);
+
+//.........Teacher routes.............
+
+app.use("/Teacher", teacherRoutes);
+
+//.........Marks routes...............
+
+app.use("Marks", marksRoutes);
 
 //.........Analytics routes.............
 
 app.use("/Analytics", analyticsRoutes);
+
+//.......Teacher Allocation routes........
+
+app.use("/TeacherAllocation", teacherAllocationRoutes);
+
+
 
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
