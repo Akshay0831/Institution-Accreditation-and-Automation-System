@@ -66,7 +66,7 @@ export default function UpdateClass() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Semester: </Form.Label>
-                                <Form.Control type="num" name="semester" id="semester" value={semester} placeholder={"Semester"} onChange={(event) => { setSemester(event.target.value) }} required/>
+                                <Form.Control type="number" name="semester" id="semester" value={semester} placeholder={"Semester"} onChange={(event) => { setSemester(event.target.value) }} required/>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Section: </Form.Label>
