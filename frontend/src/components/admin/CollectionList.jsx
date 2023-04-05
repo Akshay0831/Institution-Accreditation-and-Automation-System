@@ -7,8 +7,8 @@ const MetaData = {
     "CO PO Map": {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Subject Code', title: 'Subject Code' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject' },
             { isFilterable: true, isSortable: true, prop: 'CO', title: 'CO' },
             { isFilterable: true, isSortable: true, prop: 'PO', title: 'PO' },
             { isFilterable: true, isSortable: true, prop: 'Value', title: 'Value' },
@@ -17,8 +17,8 @@ const MetaData = {
     Class: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
             { isFilterable: true, isSortable: true, prop: 'Semester', title: 'Semester' },
             { isFilterable: true, isSortable: true, prop: 'Section', title: 'Section' },
         ]
@@ -26,67 +26,67 @@ const MetaData = {
     "Class Allocation": {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Class ID', title: 'Class' },
-            { isFilterable: true, isSortable: true, prop: 'fk_USN', title: 'USN' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            { isFilterable: true, isSortable: true, prop: 'Class', title: 'Class' },
+            { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
         ]
     },
     Department: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Department Name', title: 'Name' },
-            { isFilterable: true, isSortable: false, prop: 'fk_HoD ID', title: 'Head of Department' },
+            { isFilterable: true, isSortable: false, prop: 'HoD', title: 'Head of Department' },
         ]
     },
     Marks: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
-            { isFilterable: true, isSortable: true, prop: 'fk_USN', title: 'USN' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Subject Code', title: 'Subject Code' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
+            { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject' },
             // { isFilterable: true, isSortable: false, prop: 'Marks Gained', title: 'Marks Gained' },
         ]
     },
     Student: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'USN', title: 'USN' },
             { isFilterable: true, isSortable: true, prop: 'Student Name', title: 'Name' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ]
     },
     Subject: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Scheme Code', title: 'Scheme Code' },
             { isFilterable: true, isSortable: true, prop: 'Subject Code', title: 'Subject Code' },
             { isFilterable: true, isSortable: true, prop: 'Subject Name', title: 'Name' },
             { isFilterable: true, isSortable: true, prop: 'Semester', title: 'Semester' },
             // { isFilterable: false, isSortable: false, prop: 'Max Marks', title: 'Max Marks' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ]
     },
     Teacher: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Teacher Name', title: 'Name' },
-            { isFilterable: true, isSortable: true, prop: 'Mail', title: 'Mail Id' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: true, isSortable: true, prop: 'Mail', title: 'Mail ID' },
+            { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
             { isFilterable: true, isSortable: false, prop: 'Role', title: 'Role' },
         ]
     },
     "Teacher Allocation": {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'Id' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Teacher ID', title: 'Teacher' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Subject Code', title: 'Subject Code' },
-            { isFilterable: true, isSortable: false, prop: 'fk_Class ID', title: 'Class' },
-            { isFilterable: true, isSortable: true, prop: 'fk_Department', title: 'Department' },
+            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            { isFilterable: true, isSortable: true, prop: 'Teacher', title: 'Teacher' },
+            { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject Code' },
+            { isFilterable: true, isSortable: false, prop: 'Class', title: 'Class' },
+            { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ]
     },
 };

@@ -14,6 +14,7 @@ import Dashboard from "./components/Dashboard";
 import COPOMapper from "./components/teacher/COPOMapper";
 import CollectionList from "./components/admin/CollectionList";
 import UpdateStudent from "./components/admin/UpdateStudent";
+import UpdateDepartment from "./components/admin/UpdateDepartment";
 import StudentList from "./components/admin/StudentList";
 
 function App() {
@@ -40,6 +41,8 @@ function App() {
                             <Route exact path="collectionlist" element={<><Admin /><CollectionList collection="Teacher" /></>} />
                             <Route exact path="student/add" element={<><Admin /><UpdateStudent /></>} />
                             <Route exact path="student/update/:id" element={<><Admin /><UpdateStudent /></>} />
+                            <Route exact path="department/add" element={<><Admin /><UpdateDepartment /></>} />
+                            <Route exact path="department/update/:id" element={<><Admin /><UpdateDepartment /></>} />
                             <Route exact path="studentlist" element={<><Admin /><StudentList /></>} />
                         </Route>
                     </Route>
