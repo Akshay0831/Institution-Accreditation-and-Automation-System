@@ -8,7 +8,12 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 const teacherRoutes = require("./routes/teacherRoutes");
 const marksRoutes = require("./routes/marksRoutes");
 const loginRoutes = require("./routes/loginRoutes");
-const teacherAllocationRoutes = require("./routes/teacherAllocationRoutes")
+const teacherAllocationRoutes = require("./routes/teacherAllocationRoutes");
+const departmentRoutes = require("./routes/departmentRoutes");
+const classAllocationRoutes = require("./routes/classAllocationRoutes");
+const coPoMapRoutes = require("./routes/coPoMapRoutes");
+const subjectRoutes = require("./routes/subjectRoutes");
+const classRoutes = require("./routes/classRoutes");
 
 const fs = require('fs');
 require("dotenv").config();
@@ -104,6 +109,9 @@ app.get("/listOfDocuments", async (req, res) => {
         else res.json(files);
     });
 });
+//.........Analytics routes.............
+
+app.use("/Analytics", analyticsRoutes);
 
 //---------Student routes--------------
 
@@ -117,16 +125,30 @@ app.use("/Teacher", teacherRoutes);
 
 app.use("/Marks", marksRoutes);
 
-//.........Analytics routes.............
-
-app.use("/Analytics", analyticsRoutes);
 
 //.......Teacher Allocation routes........
 
-app.use("/TeacherAllocation", teacherAllocationRoutes);
+app.use("/Teacher Allocation", teacherAllocationRoutes);
 
+//..........Department routes...........
 
+app.use("/Department", departmentRoutes);
 
+//........Class Allocation routes.........
+
+app.use("/Class Allocation", classAllocationRoutes);
+
+//............CO PO Map routes.............
+
+app.use("/CO PO Map", coPoMapRoutes);
+
+//............Subject routes.............
+
+app.use("/Subject", subjectRoutes);
+
+//............Class routes.............
+
+app.use("/Class", classRoutes);
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));
