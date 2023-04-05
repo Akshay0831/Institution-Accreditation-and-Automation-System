@@ -17,6 +17,7 @@ import UpdateStudent from "./components/admin/UpdateStudent";
 import UpdateDepartment from "./components/admin/UpdateDepartment";
 import UpdateClass from "./components/admin/UpdateClass";
 import UpdateCOPOMap from "./components/admin/UpdateCOPOMap";
+import UpdateSubject from "./components/admin/UpdateSubject";
 import StudentList from "./components/admin/StudentList";
 
 function App() {
@@ -49,6 +50,8 @@ function App() {
                             <Route exact path="class/update/:id" element={<><Admin /><UpdateClass /></>} />
                             <Route exact path="co po map/add" element={<><Admin /><UpdateCOPOMap /></>} />
                             <Route exact path="co po map/update/:id" element={<><Admin /><UpdateCOPOMap /></>} />
+                            <Route exact path="subject/add" element={<><Admin /><UpdateSubject /></>} />
+                            <Route exact path="subject/update/:id" element={<><Admin /><UpdateSubject /></>} />
                             <Route exact path="studentlist" element={<><Admin /><StudentList /></>} />
                         </Route>
                     </Route>
