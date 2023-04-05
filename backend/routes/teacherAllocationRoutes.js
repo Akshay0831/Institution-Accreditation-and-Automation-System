@@ -11,7 +11,11 @@ router.route("/")
             ca["Class"] = await mongo.getDoc("Class", { _id: ca["fk_Class ID"] });
             ca["Teacher"] = await mongo.getDoc("Teacher", { _id: ca["fk_Teacher ID"] });
             ca["Subject"] = await mongo.getDoc("Subject", { "Subject Code": ca["fk_Subject Code"] });
+            return ca;
         });
+
+        let gotResult = result.length > 0;
+        res.status(gotResult ? 200 : 400).json(gotResult ? result : "Couldn't get class allocations");
     })
 
 

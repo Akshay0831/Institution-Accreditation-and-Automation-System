@@ -2,6 +2,7 @@ const express = require('express');
 const mongo = require("../db/mongodb");
 const models = require("../models");
 const router = express.Router();
+const { ObjectId } = require("mongodb");
 
 router.route("/")
     .get(async (req, res) => {
@@ -11,28 +12,30 @@ router.route("/")
 
 
     .post(async (req, res) => {
+        const studentId = (new ObjectId()).toString();
         //Creating a Student document
         const studentObj = { ...models.Student }
-        studentObj["Student Name"] = req.body["Student Name"];
-        studentObj.USN = req.body.USN;
-        studentObj["fk_Department"] = req.body["fk_Department"];
+        studentObj._id = studentId;
+        studentObj["Student Name"] = req.body.Student["Student Name"];
+        studentObj.USN = req.body.Student.USN;
+        studentObj.Department = req.body.Department._id;
         const studentAdded = await mongo.addDoc("Student", studentObj);
 
         //Creating a Class Allocation document
         const classAllocationObj = { ...models["Class Allocation"] };
-        classAllocationObj["fk_Class ID"] = req.body["Class ID"];
-        classAllocationObj.fk_USN = req.body.USN;
+        classAllocationObj.Class = req.body.Class._id;
+        classAllocationObj.Student = studentId;
         const classAllocationAdded = await mongo.addDoc("Class Allocation", classAllocationObj);
 
-        let subjects = await mongo.getDocs("Subject");
-        subjects = subjects.filter(subject => subject["fk_Department"] === studentObj["fk_Department"]);
+        let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department });
+
         let marksAdded;
 
         subjects.forEach(async (subject) => {
             //Creating a Subject document for all subjects
             const marksObj = { ...models.Marks };
-            marksObj["fk_Subject Code"] = subject["Subject Code"];
-            marksObj.fk_USN = studentObj.USN;
+            marksObj.Subject = subject._id;
+            marksObj.Student = studentId;
             marksAdded = await mongo.addDoc("Marks", { ...marksObj });
         });
 
@@ -44,18 +47,44 @@ router.route("/")
 
     .put(async (req, res) => {
 
-        const studentObj = {
-            "fk_Department": req.body["fk_Department"],
-            "Student Name": req.body["Student Name"],
-            USN: req.body["USN"]
-        };
-        const classAllocationObj = {
-            "fk_Class ID": req.body["Class ID"],
-            "fk_USN": req.body["USN"]
-        };
+        const studentObj = { ...models.Student };
+        studentObj._id = req.body.Student._id;
+        studentObj.Department = req.body.Department._id;
+        studentObj['Student Name'] = req.body.Student["Student Name"];
+        studentObj.USN = req.body.Student.USN;
 
-        const studentUpdated = await mongo.updateDoc("Student", { USN: req.body["USN"] }, studentObj);
-        const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { fk_USN: req.body["USN"] }, classAllocationObj);
+        let oldStudent = await mongo.getDoc("Student", { _id: studentObj._id, Department: studentObj.Department });
+
+        const isStudentDepartmentChanged = Object.keys(oldStudent).length == 0;
+
+        let marksAdded;
+        if (isStudentDepartmentChanged) {
+            // Adding marks document to subjects in new department
+            let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department });
+            subjects.forEach(async (subject) => {
+                //Creating a Subject document for all subjects
+                const marksObj = { ...models.Marks };
+                marksObj.Subject = subject._id;
+                marksObj.Student = studentObj._id;
+                marksAdded = await mongo.addDoc("Marks", { ...marksObj });
+            });
+
+            // Deleting marks documents in old department
+            let oldStudentDepartment = (await mongo.getDoc("Student", { _id: studentObj._id })).Department;
+            let oldDepartmentSubjects = await mongo.getDocs("Subject", { Department: oldStudentDepartment });
+            oldDepartmentSubjects.forEach(async (subject) => {
+                await mongo.deleteDoc("Marks", { Student: studentObj._id, Subject: subject._id })
+            });
+
+
+        }
+
+        const studentUpdated = await mongo.updateDoc("Student", { _id: studentObj._id }, studentObj);
+
+        const classAllocationObj = { ...models['Class Allocation'] };
+        classAllocationObj.Class = req.body.Class._id;
+        classAllocationObj.Student = req.body.Student._id;
+        const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { _id: classAllocationObj._id }, classAllocationObj);
 
         const isSuccess = studentUpdated && classAllocationUpdated;
 
@@ -64,9 +93,9 @@ router.route("/")
 
 
     .delete(async (req, res) => {
-        const isStudentDeleted = await mongo.deleteDoc("Student", { USN: req.body["USN"] });
-        const isMarksDeleted = await mongo.deleteDoc("Marks", { fk_USN: req.body["USN"] });
-        const isAllocationDeleted = await mongo.deleteDoc("Class Allocation", { fk_USN: req.body["USN"] });
+        const isStudentDeleted = await mongo.deleteDoc("Student", { _id: req.body.Student._id });
+        const isMarksDeleted = await mongo.deleteDoc("Marks", { Student: req.body.Student._id });
+        const isAllocationDeleted = await mongo.deleteDoc("Class Allocation", { Student: req.body.Student._id });
 
         const isDeleteSuccess = isStudentDeleted && isAllocationDeleted && isMarksDeleted;
 

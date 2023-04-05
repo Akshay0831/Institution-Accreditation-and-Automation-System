@@ -115,7 +115,7 @@ app.use("/Teacher", teacherRoutes);
 
 //.........Marks routes...............
 
-app.use("Marks", marksRoutes);
+app.use("/Marks", marksRoutes);
 
 //.........Analytics routes.............
 

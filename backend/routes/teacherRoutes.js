@@ -13,8 +13,13 @@ let getTeacherObj = req => {
 
 router.route("/")
     .get(async (req, res) => {
-        let teachers = mongo.getDocs("Teacher");
-        res.status(teachers ? 200 : 400).json(teachers ? teachers : "Couldn't fetch teachers");
+        let teachers = await mongo.getDocs("Teacher");
+        result = teachers.map(async (teacherObj) => {
+            teacherObj.fk_Department = await mongo.getDoc("Department", { "Department Name": teacherObj.fk_Department });
+            return teacherObj;
+        });
+        let gotTeachers = teachers.length > 0;
+        res.status(gotTeachers ? 200 : 400).json(gotTeachers ? teachers : "Couldn't fetch teachers");
     })
 
 

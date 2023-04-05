@@ -1,24 +1,29 @@
 const models = {
     Class: {
+        "_id": "",
         "Section": "",
         "Semester": "",
-        "fk_Department": ""
+        "Department": ""
     },
     "Class Allocation": {
-        "fk_Class ID": "",
-        "fk_USN": ""
+        "_id": "",
+        "Class": "",
+        "Student": ""
     },
     "CO PO Map": {
-        "fk_Subject Code": "",
+        "_id": "",
+        "Subject": "",
         "CO": "",
         "PO": "",
         "Value": ""
     },
     Department: {
+        "_id": "",
         "Department Name": "",
-        "fk_HoD ID": ""
+        "HoD": ""
     },
     Marks: {
+        "_id": "",
         "Marks Gained": {
             "IA1": {
                 "CO1": 0,
@@ -48,62 +53,65 @@ const models = {
             },
             "SEE": 0
         },
-        "fk_Subject Code": "",
-        "fk_USN": ""
+        "Subject": "",
+        "Student": ""
     },
     Student: {
+        "_id": "",
         "Student Name": "",
         "USN": "",
-        "fk_Department": ""
+        "Department": ""
     },
     Subject: {
+        "_id": "",
         "Scheme Code": "",
         "Subject Code": "",
         "Subject Name": "",
-        "Test Assignment Ratio": 0,
-        "fk_Department": "",
         "Max Marks": {
             "IA1": {
-                "CO1": 18,
-                "CO2": 12
+                "CO1": 0,
+                "CO2": 0
             },
             "A1": {
-                "CO1": 6,
-                "CO2": 4
+                "CO1": 0,
+                "CO2": 0
             },
             "IA2": {
-                "CO2": 6,
-                "CO3": 18,
-                "CO4": 6
+                "CO2": 0,
+                "CO3": 0,
+                "CO4": 0
             },
             "A2": {
-                "CO2": 2,
-                "CO3": 6,
-                "CO4": 2
+                "CO2": 0,
+                "CO3": 0,
+                "CO4": 0
             },
             "IA3": {
-                "CO4": 12,
-                "CO5": 18
+                "CO4": 0,
+                "CO5": 0
             },
             "A3": {
-                "CO4": 4,
-                "CO5": 6
+                "CO4": 0,
+                "CO5": 0
             },
-            "SEE": 60
+            "SEE": 0
         },
-        "Semester": 0
+        "Semester": 0,
+        "Department": ""
     },
     Teacher: {
+        "_id": "",
         "Mail": "",
         "Role": "",
         "Teacher Name": "",
-        "fk_Department": ""
+        "Department": ""
     },
     "Teacher Allocation": {
-        "fk_Class ID": "",
-        "fk_Department": "",
-        "fk_Subject Code": "",
-        "fk_Teacher ID": ""
+        "_id": "",
+        "Class": "",
+        "Subject": "",
+        "Teacher": "",
+        "Department": ""
     }
 };
 

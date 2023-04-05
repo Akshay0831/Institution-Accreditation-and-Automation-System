@@ -40,7 +40,8 @@ class MongoDB {
     }
 
     async addDoc(collectionName, body) {
-        body['_id'] = (new ObjectId).toString();
+        // body['_id'] = (new ObjectId).toString();
+        body._id = body._id.length > 0 ? body._id : (new ObjectId).toString();
         let insertedResult = await this.db
             .collection(collectionName)
             .insertOne(body);
@@ -59,24 +60,24 @@ class MongoDB {
             //Adding classes to department
             department.Classes = [];
             resultClasses.forEach((classObj) => {
-                if (department["Department Name"] == classObj["fk_Department"]) {
+                if (department._id == classObj.Department) {
 
                     //Adding Subjects to classes
                     classObj.Subjects = [];
                     resultSubjects.forEach((subject) => {
-                        if (subject["fk_Department"] == department["Department Name"] && subject.Semester == classObj.Semester) {
+                        if (subject.Department == department._id && subject.Semester == classObj.Semester) {
                             // Adding Students to classes
                             subject.Students = [];
                             resultStudents.forEach((student) => {
                                 resultClassAllocation.forEach((ca) => {
-                                    if (ca.fk_USN == student.USN &&
-                                        student["fk_Department"] == department["Department Name"] &&
-                                        ca["fk_Class ID"] == classObj._id) {
+                                    if (ca.Student == student._id &&
+                                        student.Department == department._id &&
+                                        ca.Class == classObj._id) {
 
                                         // Adding marks to each student in each subject
                                         student["Marks Gained"] = {};
                                         resultMarks.forEach((marks) => {
-                                            if (marks["fk_Subject Code"] == subject["Subject Code"] && marks.fk_USN == student.USN) {
+                                            if (marks.Subject == subject._id && marks.Student == student._id) {
                                                 student["Marks Gained"] = { ...marks };
                                             }
                                         });
@@ -111,13 +112,13 @@ class MongoDB {
         let result = resultDepartments.map(department => {
             department.Classes = [];
             resultClasses.forEach(classObj => {
-                if (department["Department Name"] == classObj["fk_Department"]) {
+                if (department._id == classObj.Department) {
                     classObj.Students = [];
                     resultStudents.forEach(student => {
                         resultClassAllocations.forEach(ca => {
-                            if (ca.fk_USN == student.USN &&
-                                student["fk_Department"] == department["Department Name"] &&
-                                ca["fk_Class ID"] == classObj._id) {
+                            if (ca.Student == student._id &&
+                                student.Department == department._id &&
+                                ca.Class == classObj._id) {
                                 classObj.Students.push({ ...student });
                             }
                         })
@@ -132,4 +133,5 @@ class MongoDB {
 }
 
 const mongo = new MongoDB("projectdb");
+
 module.exports = mongo;
