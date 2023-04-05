@@ -58,10 +58,10 @@ export default function UpdateDepartment() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Head of Department: </Form.Label>
-                                <Form.Select name="department" onChange={handleHODChange}>
-                                    <option value="">Open this select menu</option>
+                                <Form.Select name="department" value={hod} onChange={handleHODChange}>
+                                    <option value="">Select HOD from teachers</option>
                                     {teachers.map((teacher) => {
-                                        return <option key={teacher._id} value={teacher._id}>{teacher["Teacher Name"] + " " + teacher["Mail"]}</option>
+                                        return <option key={teacher._id} value={teacher._id}>{teacher["Teacher Name"] + " (" + teacher["Mail"] +")"}</option>
                                     })}
                                 </Form.Select>
                             </Form.Group>
