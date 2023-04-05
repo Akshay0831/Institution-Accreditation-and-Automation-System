@@ -28,24 +28,19 @@ export default function UpdateDepartment() {
     }, []);
 
     const onSubmitClicked = (event) => {
-        console.log(name, hod);
-        if (hod.length) {
-            event.preventDefault();
-            let department = {
-                "Department Name": name,
-                "HoD": hod,
-            }
-            fetch(`http://localhost:4000/Department`, {
-                // Adding method type
-                method: (isUpdate ? "PUT" : "POST"),
-                // Adding body or contents to send
-                body: JSON.stringify(department),
-                // Adding headers to the request
-                headers: { "Content-type": "application/json; charset=UTF-8" },
-            });
-        } else {
-            alert("Please fill all fields");
+        event.preventDefault();
+        let department = {
+            "Department Name": name,
+            "HoD": hod,
         }
+        fetch(`http://localhost:4000/Department`, {
+            // Adding method type
+            method: (isUpdate ? "PUT" : "POST"),
+            // Adding body or contents to send
+            body: JSON.stringify(department),
+            // Adding headers to the request
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        });
     }
 
     const handleHODChange = (event) => setHOD(event.target.value);
@@ -63,7 +58,7 @@ export default function UpdateDepartment() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Head of Department: </Form.Label>
-                                <Form.Select name="department" onChange={handleHODChange} required>
+                                <Form.Select name="department" onChange={handleHODChange}>
                                     <option value="">Open this select menu</option>
                                     {teachers.map((teacher) => {
                                         return <option key={teacher._id} value={teacher._id}>{teacher["Teacher Name"] + " " + teacher["Mail"]}</option>
