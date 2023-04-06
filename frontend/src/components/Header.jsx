@@ -30,14 +30,14 @@ const Header = (props) => {
                             </li>
                             {
                                 (props.links)
-                                ?props.links.map((entry)=>{
-                                    return <li key={entry[0]} className="nav-item">
+                                    ? props.links.map((entry) => {
+                                        return <li key={entry[0]} className="nav-item">
                                             <Link to={entry[1]} className="nav-link">
                                                 {entry[0]}
                                             </Link>
                                         </li>
-                                })
-                                :<></>
+                                    })
+                                    : <></>
                             }
                         </ul>
                         <SignOutBtn />

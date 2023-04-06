@@ -28,7 +28,7 @@ body {
         margin: auto;
     }
 
-    .container{
+    .container {
         margin: 20px auto 0px;
         max-width: 96%;
     }
@@ -48,12 +48,12 @@ body {
     overflow-y: auto;
 }
 
-.container{
+.container {
     margin: 45px auto 0px;
     /* max-width: 90%; */
 }
 
-.card{
+.card {
     max-width: 96%;
     margin: 15px auto;
 }
