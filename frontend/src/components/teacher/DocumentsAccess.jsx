@@ -8,7 +8,7 @@ export default class DocumentsAccess extends Component {
     constructor(props) {
         super(props);
         this.docsDIR = 'http://localhost:4000/documents/';
-        // Make docs dynamic in future versions
+        document.title = "Documents Access"
         let docs = [];
         this.state = { activeDocument: "", docs: docs };
     }

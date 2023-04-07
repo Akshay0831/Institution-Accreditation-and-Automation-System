@@ -6,6 +6,7 @@ export default function UpdateCOPOMap() {
 
     const { id } = useParams();
     const isUpdate = Boolean(id);
+    document.title = (isUpdate?"Update":"Add") + " CO-PO Map";
 
     const [subjects, setSubjects] = useState([]);
     const [subjectId, setSubjectID] = useState("");

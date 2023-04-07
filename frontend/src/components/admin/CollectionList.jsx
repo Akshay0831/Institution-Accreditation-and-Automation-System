@@ -95,6 +95,7 @@ export default class CollectionList extends Component {
     constructor(props) {
         super(props);
         this.serverURL = 'http://localhost:4000';
+        document.title = "Collection List";
         this.state = { collectionSelected: this.props.collection, documents: [], deleteID:"" };
     }
 
@@ -149,10 +150,10 @@ export default class CollectionList extends Component {
                                 headers={
                                     MetaData[this.state.collectionSelected]["headers"].concat([{
                                         prop: "button",
-                                        title: (<Button href={this.state.collectionSelected + "/add"} style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button>),
+                                        title: (<Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "add"].join("/")}><Button style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button></Link>),
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
-                                                <Button href={this.state.collectionSelected + "/update/" + row['_id']} variant="warning" size="sm"><Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="nav-link"><i className="fa fa-pencil" /></Link></Button>
+                                                <Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="nav-link"><Button variant="warning" size="sm"><i className="fa fa-pencil" /></Button></Link>
                                                 <Button variant="danger" size="sm" onClick={() => this.setState({deleteID:row._id})}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )

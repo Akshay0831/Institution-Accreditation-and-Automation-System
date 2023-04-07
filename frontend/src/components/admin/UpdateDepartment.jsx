@@ -6,6 +6,7 @@ export default function UpdateDepartment() {
 
     const { id } = useParams();
     const isUpdate = Boolean(id);
+    document.title = (isUpdate?"Update":"Add") + " Department";
 
     const [teachers, setTeachers] = useState([]);
     const [name, setName] = useState("");

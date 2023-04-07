@@ -6,6 +6,7 @@ export default function UpdateStudentMarks() {
 
     const { id } = useParams();
     const isUpdate = Boolean(id);
+    document.title = (isUpdate?"Update":"Add") + " Marks";
 
     const [subjects, setSubjects] = useState([]);
     const [subjectID, setSubjectID] = useState("");

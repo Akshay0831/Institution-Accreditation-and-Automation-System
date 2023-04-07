@@ -6,6 +6,7 @@ export default function UpdateSubject() {
 
     const { id } = useParams();
     const isUpdate = Boolean(id);
+    document.title = (isUpdate?"Update":"Add") + " Subject";
 
     const [departments, setDepartments] = useState([]);
     const [schemeCode, setSchemeCode] = useState("");

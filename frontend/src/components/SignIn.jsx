@@ -12,6 +12,7 @@ function SignIn() {
     const refPassword = useRef(null);
     const navigate = useNavigate();
 
+    document.title = "Login";
     const toasts = (message, type) => {
         type(message, {
             position: "top-center",

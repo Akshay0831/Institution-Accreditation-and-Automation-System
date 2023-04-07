@@ -5,6 +5,7 @@ import Table from "react-bootstrap/Table";
 export default class COPOMapper extends Component {
     constructor(props) {
         super(props);
+        document.title = "CO PO Mapper";
         this.serverURL = 'http://localhost:4000';
         this.userType = sessionStorage.getItem("userType");
         this.state = { COs: [], POs: [], subjects: [], subjectSelected: "", COPOMaps: [[], []] };

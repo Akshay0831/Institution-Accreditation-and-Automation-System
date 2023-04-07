@@ -1,9 +1,9 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "../../public/css/styles.css"
 import { Link } from "react-router-dom";
 const Dashboard = props => {
-    document.title = "Dashboard"
+    document.title = sessionStorage.getItem("userType") + " Dashboard"
     return (
         <main className="mt-5">
             <div className="container p-2">
