@@ -153,7 +153,7 @@ export default class CollectionList extends Component {
                                         title: (<Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "add"].join("/")}><Button style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button></Link>),
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
-                                                <Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="nav-link"><Button variant="warning" size="sm"><i className="fa fa-pencil" /></Button></Link>
+                                                <Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="btn btn-warning btn-sm"><i className="fa fa-pencil" /></Link>
                                                 <Button variant="danger" size="sm" onClick={() => this.setState({deleteID:row._id})}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )

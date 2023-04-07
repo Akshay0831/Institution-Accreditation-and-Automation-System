@@ -16,9 +16,11 @@ import CollectionList from "./components/admin/CollectionList";
 import UpdateStudent from "./components/admin/UpdateStudent";
 import UpdateDepartment from "./components/admin/UpdateDepartment";
 import UpdateClass from "./components/admin/UpdateClass";
+import UpdateClassAllocation from "./components/admin/UpdateClassAllocation";
 import UpdateCOPOMap from "./components/admin/UpdateCOPOMap";
 import UpdateSubject from "./components/admin/UpdateSubject";
 import UpdateTeacher from "./components/admin/UpdateTeacher";
+import UpdateTeacherAllocation from "./components/admin/UpdateTeacherAllocation";
 import UpdateStudentMarks from "./components/admin/UpdateStudentMarks";
 import StudentList from "./components/admin/StudentList";
 
@@ -50,6 +52,8 @@ function App() {
                             <Route exact path="department/update/:id" element={<><Admin /><UpdateDepartment /></>} />
                             <Route exact path="class/add" element={<><Admin /><UpdateClass /></>} />
                             <Route exact path="class/update/:id" element={<><Admin /><UpdateClass /></>} />
+                            <Route exact path="class allocation/add" element={<><Admin /><UpdateClassAllocation /></>} />
+                            <Route exact path="class allocation/update/:id" element={<><Admin /><UpdateClassAllocation /></>} />
                             <Route exact path="co po map/add" element={<><Admin /><UpdateCOPOMap /></>} />
                             <Route exact path="co po map/update/:id" element={<><Admin /><UpdateCOPOMap /></>} />
                             <Route exact path="marks/add" element={<><Admin /><UpdateStudentMarks /></>} />
@@ -58,6 +62,8 @@ function App() {
                             <Route exact path="subject/update/:id" element={<><Admin /><UpdateSubject /></>} />
                             <Route exact path="teacher/add" element={<><Admin /><UpdateTeacher /></>} />
                             <Route exact path="teacher/update/:id" element={<><Admin /><UpdateTeacher /></>} />
+                            <Route exact path="teacher allocation/add" element={<><Admin /><UpdateTeacherAllocation /></>} />
+                            <Route exact path="teacher allocation/update/:id" element={<><Admin /><UpdateTeacherAllocation /></>} />
                             <Route exact path="studentlist" element={<><Admin /><StudentList /></>} />
                         </Route>
                     </Route>
