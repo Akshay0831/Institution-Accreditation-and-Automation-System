@@ -53,7 +53,7 @@ export default function UpdateTeacher() {
         <main className="pt-5">
             <div className="container">
                 <Card>
-                    <Card.Header className="fs-3">{isUpdate ? "Update" : "Add"} Subject</Card.Header>
+                    <Card.Header className="fs-3">{isUpdate ? "Update" : "Add"} Teacher</Card.Header>
                     <Card.Body>
                         <Form onSubmit={onSubmitClicked}>
                             <Form.Group className="mb-3">
