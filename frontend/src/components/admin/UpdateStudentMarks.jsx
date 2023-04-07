@@ -9,23 +9,25 @@ export default function UpdateStudentMarks() {
 
     const [subjects, setSubjects] = useState([]);
     const [subjectID, setSubjectID] = useState("");
+    const [maxMarks, setMaxMarks] = useState({});
     const [students, setStudents] = useState([]);
     const [studentID, setStudentID] = useState("");
     const [marksGained, setMarksGained] = useState({ IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 18, CO2: 12 }, IA2: { CO2: 6, CO3: 12, CO4: 6 }, A2: { CO2: 6, CO3: 12, CO4: 6 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 12, CO5: 18 }, SEE: 60 });
 
     useEffect(() => {
         const fetchData = async () => {
-            // console.log((await (await fetch("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
+            setStudents(await (await fetch("http://localhost:4000/documents/Student")).json());
+            let subjectsData = await (await fetch("http://localhost:4000/documents/Subject")).json()
+            setSubjects(subjectsData); 
+
             if (isUpdate) {
                 const marksData = (await (await fetch("http://localhost:4000/documents/Marks")).json()).filter(doc => doc._id == id)[0];
-                console.log(marksData);
                 setMarksGained(marksData["Marks Gained"]);
                 setSubjectID(marksData["Subject"]);
                 setStudentID(marksData["Student"]);
+                setMaxMarks((subjectsData.filter(doc => (doc._id==marksData["Subject"]))[0])["Max Marks"]);
             }
 
-            setSubjects(await (await fetch("http://localhost:4000/documents/Subject")).json());
-            setStudents(await (await fetch("http://localhost:4000/documents/Student")).json());
         }
         fetchData();
     }, []);
@@ -47,6 +49,19 @@ export default function UpdateStudentMarks() {
         });
     }
 
+    const handleSEEChange = (col, event) => {
+        let marks = {};
+        marks[col] = event.target.value;
+        setMarksGained(marksGained => ({...marksGained, ...marks}));
+    }
+
+    const handleCOChange = (col, CO, event) => {
+        let marks = marksGained;
+        marks[col][CO] = parseInt(event.target.value);
+        setMarksGained(marksGained => ({...marksGained, ...marks}));
+    }
+
+    console.log(marksGained);
     return (
         <main className="pt-5">
             <div className="container">
@@ -58,23 +73,38 @@ export default function UpdateStudentMarks() {
                                 <Form.Label>Student: </Form.Label>
                                 <Form.Select name="student" value={studentID} onChange={(event) => setStudentID(event.target.value)} required>
                                     <option value="">Select Student</option>
-                                    {subjects.map((student) => {
+                                    {students.map((student) => {
                                         return <option key={student._id} value={student._id}>{`${student["Student Name"]} (${student["USN"]})`}</option>
                                     })}
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Subject: </Form.Label>
-                                <Form.Select name="subject" value={subjectID} onChange={(event) => setSubjectID(event.target.value)} required>
+                                <Form.Select name="subject" value={subjectID} onChange={(event) => {setSubjectID(event.target.value); setMaxMarks((subjects.filter(doc => (doc._id==event.target.value))[0])["Max Marks"]);}} required>
                                     <option value="">Select Subject</option>
                                     {subjects.map((subj) => {
                                         return <option key={subj._id} value={subj._id}>{`${subj["Subject Name"]} (${subj["Subject Code"]})`}</option>
                                     })}
                                 </Form.Select>
                             </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Marks Gained:</Form.Label>
-                                <Form.Control type="text" name="marksGained" id="marksGained" value={JSON.stringify(marksGained)} placeholder={"Enter Max Marks"} onChange={(event) => { setMarksGained(JSON.parse(event.target.value)) }} required />
+                            <Form.Group className="m-0 p-0 border rounded bg-light">
+                                <Form.Label className="p-1"> Marks Gained:</Form.Label>
+                                {maxMarks
+                                    ?
+                                        Object.keys(maxMarks).map(test => {
+                                            if (typeof maxMarks[test]==='object'){
+                                                return <Card key={test} className="ps-2">{test}
+                                                        <Card.Body className="row">
+                                                            {Object.keys(maxMarks[test]).map(CO=>{
+                                                            return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={marksGained[test][CO]} min="0" max={maxMarks[test][CO]} onChange={handleCOChange.bind(this, test, CO)}/></Form.Group>
+                                                            })}
+                                                        </Card.Body>
+                                                    </Card>
+                                            }
+                                            else return <Card key={test} className="p-3"> {test} <Form.Control type="number" placeholder={test} value={marksGained[test]} min="0" max={maxMarks[test]} onChange={handleSEEChange.bind(this, test)}/></Card>
+                                        })
+                                    : <>Max Marks not defined</>
+                                }
                             </Form.Group>
                             <Button variant="success" type="submit">Submit</Button>
                         </Form>
