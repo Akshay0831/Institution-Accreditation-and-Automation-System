@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Button, ButtonGroup, Col, Row, Table, Card, Tab, Tabs } from 'react-bootstrap';
-import { DatatableWrapper, Filter, Pagination, PaginationOptions, TableBody, TableHeader, TableRow } from 'react-bs-datatable';
+import { Button, ButtonGroup, Card, Col, Modal, Row, Table, Tab, Tabs } from 'react-bootstrap';
+import { DatatableWrapper, Filter, Pagination, PaginationOptions, TableBody, TableHeader } from 'react-bs-datatable';
 
 const MetaData = {
     "CO PO Map": {
@@ -95,7 +95,7 @@ export default class CollectionList extends Component {
     constructor(props) {
         super(props);
         this.serverURL = 'http://localhost:4000';
-        this.state = { collectionSelected: this.props.collection, documents: [] };
+        this.state = { collectionSelected: this.props.collection, documents: [], deleteID:"" };
     }
 
     async componentDidMount() {
@@ -116,11 +116,26 @@ export default class CollectionList extends Component {
             .catch((err) => console.error(err));
     }
 
+    handleDeleteModalClose = () => this.setState({deleteID:""});
+
     render() {
         return (
             <main className="pt-5">
+                <Modal show={this.state.deleteID} onHide={this.handleDeleteModalClose} backdrop="static" keyboard={false}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete Document</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body> Are you sure you want to DELETE {this.state.deleteID} from {this.state.collectionSelected.toUpperCase()} </Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={this.handleDeleteModalClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={()=>{this.deleteDocument(this.state.deleteID); this.handleDeleteModalClose()}}>Delete</Button>
+                    </Modal.Footer>
+                </Modal>
+
                 <div className="container">
-                    <Card className="card">
+                    <Card>
                         <Card.Header className="fs-3">Collections CRUD</Card.Header>
                         <Tabs id="documentsSelector" activeKey={this.state.collectionSelected} onSelect={(collectionKey) => { this.setState({ collectionSelected: collectionKey }); this.forceUpdate(this.componentDidMount) }}>
                             {Object.keys(MetaData).map(collection => {
@@ -138,7 +153,7 @@ export default class CollectionList extends Component {
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
                                                 <Button href={this.state.collectionSelected + "/update/" + row['_id']} variant="warning" size="sm"><Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="nav-link"><i className="fa fa-pencil" /></Link></Button>
-                                                <Button variant="danger" size="sm" onClick={() => this.deleteDocument(row._id)}><i className="fa fa-trash" /></Button>
+                                                <Button variant="danger" size="sm" onClick={() => this.setState({deleteID:row._id})}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )
                                     }])

@@ -61,7 +61,6 @@ export default function UpdateStudentMarks() {
         setMarksGained(marksGained => ({...marksGained, ...marks}));
     }
 
-    console.log(marksGained);
     return (
         <main className="pt-5">
             <div className="container">
