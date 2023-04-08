@@ -70,15 +70,15 @@ export default function UpdateCOPOMap() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Course Outcome:</Form.Label>
-                                <Form.Control type="text" name="CO" id="CO" value={CO} pattern="CO/d{2}" placeholder={"Course Outcome in format COn"} onChange={(event) => { setCO(event.target.value) }} required/>
+                                <Form.Control type="text" name="CO" id="CO" value={CO} placeholder={"Course Outcome in format COn"} onChange={(event) => { setCO(event.target.value) }} required/>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Program Outcome:</Form.Label>
-                                <Form.Control type="text" name="PO" id="PO" value={PO} pattern="PO/d{2}" placeholder={"Program Outcome in format POn"} onChange={(event) => { setPO(event.target.value) }} required/>
+                                <Form.Control type="text" name="PO" id="PO" value={PO} placeholder={"Program Outcome in format POn"} onChange={(event) => { setPO(event.target.value) }} required/>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Value:</Form.Label>
-                                <Form.Control type="number" name="value" id="value" value={val} placeholder={"Value"} onChange={(event) => { setValue(event.target.value) }} required/>
+                                <Form.Control type="number" name="value" id="value" value={val} placeholder={"Value"} min="0" max="3" onChange={(event) => { setValue(parseInt(event.target.value)) }} required/>
                             </Form.Group>
                             <Button variant="success" type="submit">Submit</Button>
                         </Form>
