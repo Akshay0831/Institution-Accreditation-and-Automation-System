@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.route("/")
     .get(async (req, res) => {
-        const data = await mongo.getMarks();
-
-        res.status(data ? 200 : 400).json(data ? data : "Couldn't fetch marks");
+        const marks = await mongo.getMarks();
+        let gotMarks = marks.length > 0;
+        res.status(gotMarks ? 200 : 400).json(gotMarks ? marks : "Couldn't fetch marks");
     })
 
 

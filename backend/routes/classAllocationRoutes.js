@@ -7,11 +7,10 @@ const { ObjectId } = require("mongodb");
 router.route("/")
     .get(async (req, res) => {
         let classAllocations = await mongo.getDocs("Class Allocation");
-        classAllocations = classAllocations.map(async ca => {
+        for (let ca of classAllocations) {
             ca.Class = await mongo.getDoc("Class", { _id: ca.Class });
             ca.Student = await mongo.getDoc("Student", { _id: ca.Student });
-            return ca;
-        });
+        }
 
         let classAllocationsFetched = classAllocations.length > 0;
 

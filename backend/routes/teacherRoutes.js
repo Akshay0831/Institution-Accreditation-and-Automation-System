@@ -6,10 +6,10 @@ const router = express.Router();
 router.route("/")
     .get(async (req, res) => {
         let teachers = await mongo.getDocs("Teacher");
-        result = teachers.map(async (teacherObj) => {
-            teacherObj.fk_Department = await mongo.getDoc("Department", { "Department Name": teacherObj.fk_Department });
+        teachers = await Promise.all(teachers.map(async (teacherObj) => {
+            teacherObj.Department = await mongo.getDoc("Department", { _id: teacherObj.Department });
             return teacherObj;
-        });
+        }));
         let gotTeachers = teachers.length > 0;
         res.status(gotTeachers ? 200 : 400).json(gotTeachers ? teachers : "Couldn't fetch teachers");
     })

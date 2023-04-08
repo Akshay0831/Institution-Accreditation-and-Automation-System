@@ -19,10 +19,9 @@ export default class UpdateMarks extends Component {
     };
 
     async componentDidMount() {
-        let res = await fetch("http://localhost:4000/update_marks");
-        let data = await res.json();
-        console.log(data);
-        this.setState(data);
+        let res = await fetch("http://localhost:4000/Marks");
+        let marks = await res.json();
+        this.setState({ marks });
         this.validated = true;
         document.title = "Update Marks";
     }

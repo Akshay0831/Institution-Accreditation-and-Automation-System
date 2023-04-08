@@ -6,11 +6,12 @@ const { ObjectId } = require("mongodb");
 
 router.route("/")
     .get(async (req, res) => {
-        let subjects = await mongo.getDocs("Class");
-        subjects = subjects.map(async (classObj) => {
+        let classes = await mongo.getDocs("Class");
+        for (let classObj of classes)
             classObj.Department = await mongo.getDoc("Department", { _id: classObj.Department });
-            return classObj;
-        });
+        console.log(classes);
+        let gotClasses = classes.length > 0;
+        res.status(gotClasses ? 200 : 400).json(gotClasses ? classes : "Couldn't fetch classes");
     })
 
 module.exports = router;

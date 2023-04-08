@@ -94,11 +94,11 @@ app.post("/teacher/COPOMapper/update/:subjectSelected", (req, res) => {
 })
 
 app.get("/getDirectoryTree", async (req, res) => {
-    const getAllFiles = function(dirPath, dirTree) {
+    const getAllFiles = function (dirPath, dirTree) {
         files = fs.readdirSync(dirPath);
         dirTree = {};
         dirTree[dirPath] = [];
-        files.forEach(function(file) {
+        files.forEach(function (file) {
             if (fs.statSync(dirPath + "/" + file).isDirectory())
                 dirTree[dirPath].push(getAllFiles(dirPath + "/" + file, dirTree[dirPath]));
             else
@@ -127,27 +127,28 @@ app.use("/Marks", marksRoutes);
 
 //.......Teacher Allocation routes........
 
-app.use("/Teacher Allocation", teacherAllocationRoutes);
+app.use("/Teacher%20Allocation", teacherAllocationRoutes);
 
 //..........Department routes...........
 
 app.use("/Department", departmentRoutes);
 
+//............Class routes.............
+
+app.use("/Class", classRoutes);
+
 //........Class Allocation routes.........
 
-app.use("/Class Allocation", classAllocationRoutes);
+app.use("/Class%20Allocation", classAllocationRoutes);
 
 //............CO PO Map routes.............
 
-app.use("/CO PO Map", coPoMapRoutes);
+app.use("/CO%20PO%20Map", coPoMapRoutes);
 
 //............Subject routes.............
 
 app.use("/Subject", subjectRoutes);
 
-//............Class routes.............
-
-app.use("/Class", classRoutes);
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));

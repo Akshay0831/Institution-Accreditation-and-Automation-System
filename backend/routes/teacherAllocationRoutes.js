@@ -5,17 +5,17 @@ const router = express.Router();
 
 router.route("/")
     .get(async (req, res) => {
-        const classAllocations = await mongo.getDocs("Class Allocation");
+        const teacherAllocations = await mongo.getDocs("Teacher Allocation");
 
-        let result = classAllocations.map(async ca => {
-            ca["Class"] = await mongo.getDoc("Class", { _id: ca["fk_Class ID"] });
-            ca["Teacher"] = await mongo.getDoc("Teacher", { _id: ca["fk_Teacher ID"] });
-            ca["Subject"] = await mongo.getDoc("Subject", { "Subject Code": ca["fk_Subject Code"] });
-            return ca;
-        });
+        for (let ta of teacherAllocations) {
+            ta.Class = await mongo.getDoc("Class", { _id: ta.Class });
+            ta.Teacher = await mongo.getDoc("Teacher", { _id: ta.Teacher });
+            ta.Subject = await mongo.getDoc("Subject", { _id: ta.Subject });
+            ta.Department = await mongo.getDoc("Department", { _id: ta.Department });
+        }
 
-        let gotResult = result.length > 0;
-        res.status(gotResult ? 200 : 400).json(gotResult ? result : "Couldn't get class allocations");
+        let gotResult = teacherAllocations.length > 0;
+        res.status(gotResult ? 200 : 400).json(gotResult ? teacherAllocations : "Couldn't get class allocations");
     })
 
 

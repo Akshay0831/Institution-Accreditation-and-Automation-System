@@ -7,7 +7,7 @@ export default class StudentList extends Component {
     async componentDidMount() {
         let res = await fetch("http://localhost:4000/Student");
         let data = await res.json();
-        this.setState(data);
+        this.setState({ Students: data });
         document.title = "Update Marks";
     }
 
@@ -32,7 +32,8 @@ export default class StudentList extends Component {
                     <hr />
                     {this.state != null ? (
                         <div className="accordion" id="DepartmentsAccordion">
-                            {this.state.students.map((dept, deptIndex) => {
+                            {console.log(this.state)}
+                            {this.state.Students.map((dept, deptIndex) => {
                                 return (
                                     <AccordionItem
                                         key={dept._id}

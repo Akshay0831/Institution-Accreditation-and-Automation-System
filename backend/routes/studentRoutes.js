@@ -7,10 +7,7 @@ const { ObjectId } = require("mongodb");
 router.route("/")
     .get(async (req, res) => {
         let students = await mongo.getStudents();
-        students = students.map(async student => {
-            student.Department = await mongo.getDoc("Department", { _id: student.Department });
-            return student;
-        });
+
         let studentsFetched = students.length > 0;
 
         res.status(studentsFetched ? 200 : 400).json(studentsFetched ? students : "Couldn't fetch students");

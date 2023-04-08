@@ -7,10 +7,9 @@ const { ObjectId } = require("mongodb");
 router.route("/")
     .get(async (req, res) => {
         let departments = await mongo.getDocs("Department");
-        departments = departments.map(async department => {
+
+        for (let department of departments)
             department.HoD = await mongo.getDoc("Teacher", { _id: department.HoD });
-            return department;
-        });
 
         let departmentsFetched = departments.length > 0;
 
