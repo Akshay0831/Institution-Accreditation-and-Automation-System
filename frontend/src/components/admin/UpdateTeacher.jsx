@@ -34,12 +34,12 @@ export default function UpdateTeacher() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let teacher = {
+        let teacher = {"Teacher":{
             "Mail": mail,
             "Role": role,
             "Teacher Name": teacherName,
             "Department": departmentId
-        }
+        }}
         fetch(`http://localhost:4000/Teacher`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

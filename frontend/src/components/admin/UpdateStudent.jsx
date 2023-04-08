@@ -45,12 +45,12 @@ export default function UpdateStudent() {
         console.log(name, usn, departmentID, classID);
         if (!disabled && classID.length != 0 && departmentID.length != 0) {
             event.preventDefault();
-            const student = {
+            const student = {"Student":{
                 "Student Name": name,
                 USN: usn,
                 "fk_Department": departmentID,
                 "Class ID": classID
-            }
+            }}
             fetch(`http://localhost:4000/Student`, {
                 // Adding method type
                 method: (isUpdate ? "PUT" : "POST"),

@@ -37,12 +37,12 @@ export default function UpdateTeacherAllocation() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let teacherAllocData = {
+        let teacherAllocData = {"Teacher Allocation":{
             "Class": classID,
             "Subject": subjectID,
             "Teacher": teacherID,
             "Department": departmentID,
-        };
+        }};
         fetch(`http://localhost:4000/Teacher Allocation`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

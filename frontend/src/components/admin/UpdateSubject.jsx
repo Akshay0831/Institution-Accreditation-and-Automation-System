@@ -40,7 +40,7 @@ export default function UpdateSubject() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let subject = {
+        let subject = {"Subject":{
             "Scheme Code": schemeCode,
             "Subject Code": subjectCode,
             "Subject Name": subjectName,
@@ -48,7 +48,7 @@ export default function UpdateSubject() {
             "Max Marks": maxMarks,
             "Semester": semester,
             "Department": departmentId
-        }
+        }}
         fetch(`http://localhost:4000/Subject`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

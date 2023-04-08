@@ -32,11 +32,11 @@ export default function UpdateClass() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let classData = {
+        let classData = {"Class":{
             "Department": departmentID,
             "Semester": semester,
             "Section": section,
-        };
+        }};
         fetch(`http://localhost:4000/Class`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
