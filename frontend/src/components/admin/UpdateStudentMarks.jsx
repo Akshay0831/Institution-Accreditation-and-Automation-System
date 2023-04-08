@@ -52,7 +52,7 @@ export default function UpdateStudentMarks() {
 
     const handleSEEChange = (col, event) => {
         let marks = {};
-        marks[col] = event.target.value;
+        marks[col] = parseInt(event.target.value);
         setMarksGained(marksGained => ({...marksGained, ...marks}));
     }
 

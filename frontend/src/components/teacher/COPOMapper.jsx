@@ -145,7 +145,7 @@ export default class COPOMapper extends Component {
                                 <td>CO attainment is 90% of Direct attainment + 10% of Indirect attainment </td>
                             </tr>
                             <tr>
-                                <td>Level</td>
+                                <td>Level 1</td>
                                 <td>50% to 54% of students should have scored {'>='} 60% of total marks</td>
                                 <td>PO attainment = CO-PO mapping strength / 3 * CO attainment</td>
                             </tr>
