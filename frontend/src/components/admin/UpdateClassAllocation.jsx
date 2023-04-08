@@ -29,10 +29,10 @@ export default function UpdateClassAllocation() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let classAllocData = {
+        let classAllocData = {"Class Allocation":{
             "Class": classID,
             "Student": studentID,
-        };
+        }};
         fetch(`http://localhost:4000/Class Allocation`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

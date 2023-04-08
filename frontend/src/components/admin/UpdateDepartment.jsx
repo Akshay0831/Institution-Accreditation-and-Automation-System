@@ -30,10 +30,10 @@ export default function UpdateDepartment() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let department = {
+        let department = {"Department":{
             "Department Name": name,
             "HoD": hod,
-        }
+        }}
         fetch(`http://localhost:4000/Department`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

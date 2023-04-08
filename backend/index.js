@@ -77,16 +77,6 @@ app.post("/documents/:collection/add", (req, res) => {
         .catch(err => res.status(500).send(err));
 });
 
-app.post("/documents/:collection/add", (req, res) => {
-    mongo.addDoc(req.params["collection"], req.body)
-        .then((result) => {
-            if (!result.acknowledged)
-                throw "Failed to add!"
-            res.status(200).send(result.insertedId);
-        })
-        .catch(err => res.status(500).send(err));
-});
-
 app.post("/teacher/COPOMapper/update/:subjectSelected", (req, res) => {
     let body = Object(req.body);
     let subjectSelected = req.params["subjectSelected"]
@@ -103,11 +93,20 @@ app.post("/teacher/COPOMapper/update/:subjectSelected", (req, res) => {
         .catch(err => res.status(500).send(err));
 })
 
-app.get("/listOfDocuments", async (req, res) => {
-    fs.readdir("public/documents", (err, files) => {
-        if (err) console.log(err);
-        else res.json(files);
-    });
+app.get("/getDirectoryTree", async (req, res) => {
+    const getAllFiles = function(dirPath, dirTree) {
+        files = fs.readdirSync(dirPath);
+        dirTree = {};
+        dirTree[dirPath] = [];
+        files.forEach(function(file) {
+            if (fs.statSync(dirPath + "/" + file).isDirectory())
+                dirTree[dirPath].push(getAllFiles(dirPath + "/" + file, dirTree[dirPath]));
+            else
+                dirTree[dirPath].push(dirPath + "/" + file);
+        });
+        return dirTree;
+    }
+    res.json(getAllFiles("public"));
 });
 //.........Analytics routes.............
 

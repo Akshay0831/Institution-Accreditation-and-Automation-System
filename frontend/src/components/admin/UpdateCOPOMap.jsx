@@ -34,12 +34,12 @@ export default function UpdateCOPOMap() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let copoMap = {
+        let copoMap = {"CO PO Map":{
             "Subject": subjectId,
             "CO": CO,
             "PO": PO,
             "Value": val,
-        }
+        }}
         fetch(`http://localhost:4000/CO PO Map`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

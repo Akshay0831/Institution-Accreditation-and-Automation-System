@@ -35,11 +35,11 @@ export default function UpdateStudentMarks() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let marks = {
+        let marks = {"Marks":{
             "Marks Gained": marksGained,
             "Subject": subjectID,
             "Student": studentID,
-        }
+        }}
         fetch(`http://localhost:4000/Marks`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
