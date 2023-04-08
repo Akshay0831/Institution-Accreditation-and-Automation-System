@@ -1,3 +1,6 @@
+// place in backend/routes
+// const mongo = require("../db/mongodb");
+
 //Can change the below json values dynamically by using: X = Y% of COx (eg. 60% of 18)
 let xPercentageOfMaxMarks = {
     "IA1": {
@@ -201,7 +204,7 @@ for (let i = 0; i < jsonData.length; i++) {
 
     for (const objectName in marksGained) {
         if (objectName === "SEE") {
-            if (marksGained[objectName] != null) {
+            if (marksGained[objectName] != null || marksGained[objectName] != "NA") {
                 totalStudents["SEE"] += 1
             }
             if (marksGained[objectName] > studentsAboveX[objectName]) {
@@ -209,7 +212,7 @@ for (let i = 0; i < jsonData.length; i++) {
             }
         }
         for (const objectName1 in marksGained[objectName]) {
-            if (marksGained[objectName][objectName1] != null) {
+            if (marksGained[objectName][objectName1] != null || marksGained[objectName][objectName1] != "NA") {
                 totalStudents[objectName][objectName1] += 1
             }
             if (marksGained[objectName][objectName1] > studentsAboveX[objectName][objectName1]) {
@@ -259,6 +262,8 @@ for (const objectName in studentsAboveX) {
     }
 }
 
+// console.log(coPercentage)
+
 let directAttainment = {
     "CO1": 0,
     "CO2": 0,
@@ -302,9 +307,9 @@ for (const key in averages) {
 // console.log(directAttainment)
 
 // let targetLevels = {
-//   "60" : 3,
-//   "55" : 2,
-//   "50" : 1
+//   "3" : 60,
+//   "2" : 55,
+//   "1" : 50
 // }
 
 //hardcoded targetLevels, it can be fetched from db
@@ -360,7 +365,16 @@ for (const key in directAttainmentTargetLevels) {
     finalAttainment[key] = Number(((directAttainmentWeightage * directAttainmentTargetLevels[key]) + (indirectAttainmentWeightage * indirectAttainmentTargetLevels[key])).toFixed(2))
 }
 
-console.log(finalAttainment)
+// console.log(finalAttainment)
+
+let sumForAvg = 0;
+let countForAvg = 0;
+
+for(let key in finalAttainment) {
+    sumForAvg += finalAttainment[key]
+    countForAvg += 1
+} 
+let coAttainmentAverage = sumForAvg/countForAvg
 
 let copoMappingTable = [
     {
@@ -489,7 +503,7 @@ for (const obj of copoMappingTable) {
     }
 }
 
-console.log(poAverages)
+// console.log(poAverages)
 
 // const rowsToAdd = jsonData.map(obj => Object.values(obj));
 function flattenObject(obj) {
@@ -526,8 +540,6 @@ jsonData.forEach((obj) => {
     filteredArr.splice(index, 0, forFifty);
     studentsForExcel.push(filteredArr)
 });
-
-
 // const arr = objectToArray(jsonData);
 // console.log(arr);
 
@@ -535,7 +547,7 @@ const XLSX = require('xlsx');
 
 const workbook = XLSX.readFile('test.xlsx');
 const worksheet = workbook.Sheets['Sheet1'];
-const startRow = 116;
+const startRow = 15;
 const newRows = XLSX.utils.sheet_add_aoa(worksheet, studentsForExcel, { origin: { r: startRow, c: 0 } });
 // XLSX.writeFile(workbook, 'test.xlsx');
 
@@ -580,8 +592,86 @@ let headingsRow = [' ', "C01", "CO2","C01", "CO2","C02", "CO3","C04", "CO2","C03
 calculatedRows.push(headingsRow)
 
 const newRows1 = XLSX.utils.sheet_add_aoa(worksheet, calculatedRows, { origin: { r: calculatedRowNumber, c: 0 } });
-XLSX.writeFile(workbook, 'test.xlsx');
 
+attainmentTable = []
+
+attainmentTableForExcelHeadings = ["CO", "CIE", "SEE", "Direct Attainment", "Level", "Course Exit Survey", "Level", "Attainment"]
+attainmentTable.push(attainmentTableForExcelHeadings)
+
+for(let j = 0; j<5; j++) {
+    let subArray = []
+    let coLevel = "CO" + (j+1)
+    subArray.push(coLevel)
+    subArray.push(averages[coLevel])
+    subArray.push(averages["SEE"])
+    subArray.push(directAttainment[coLevel])
+    subArray.push(directAttainmentTargetLevels[coLevel])
+    subArray.push(indirectAttainment[coLevel])
+    subArray.push(indirectAttainmentTargetLevels[coLevel])
+    subArray.push(finalAttainment[coLevel])
+    attainmentTable.push(subArray)
+}
+
+coAttainmentAverageSubArray = ["Average", " ", " ", " ", " ", " ", " ", coAttainmentAverage]
+attainmentTable.push(coAttainmentAverageSubArray)
+// console.log(attainmentTable)
+
+calculatedRowNumber1 = calculatedRowNumber + 7
+const newRows2 = XLSX.utils.sheet_add_aoa(worksheet, attainmentTable, { origin: { r: calculatedRowNumber1, c: 0 } });
+
+coAverageTable = []
+coAverageTableHeading = [' ']
+for (const key in coPercentage){
+    if(key != "SEE"){
+        coAverageTableHeading.push(key)
+    }
+}
+coAverageTableHeading.push('AVG')
+coAverageTable.push(coAverageTableHeading)
+
+for(let j=0; j<5; j++){
+    let subArray = []
+    let coLevel = "CO" + (j+1)
+    subArray.push(coLevel)
+    for (const key in coPercentage) {
+        if (typeof coPercentage[key] === 'object') {
+            let flag = false
+            for (const nestedKey in coPercentage[key]) {
+                if(coLevel === nestedKey){
+                    subArray.push(coPercentage[key][nestedKey])
+                    flag = true
+                }
+            }
+            if(!flag){
+                subArray.push(' ')
+            }
+        } else {
+            continue
+        }
+    }
+    subArray.push(averages[coLevel])
+    coAverageTable.push(subArray)
+}
+// console.log(coAverageTable)
+// let startCol = 11; - Formatting tables next to each other as per sample report
+// for (let j = 0; j < coAverageTable.length; j++) {
+//     for (let k = 0; k < j.length; k++){
+//         let cell = worksheet.Cells(calculatedRowNumber1 + j, startCol + k);
+//         cell.Value = coAverageTable[j][k];
+//     }
+// }
+
+const newRows3 = XLSX.utils.sheet_add_aoa(worksheet, coAverageTable, { origin: { r: calculatedRowNumber1, c: 10 } });
+
+//hardcoded for now, can use db values in place of target levels later on
+let significanceTable = [['CO Attainment Level', 'Significance', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'], 
+['Level 3', '60% and above students should have scored >= 60% of Total marks', 'For indirect attainment, Course end survey is considered.'], 
+['Level 2', '55% to 59% of students should have scored >= 60% of Total marks', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'], 
+['Level 1', '50% to 54% of students should have scored >= 60% of Total marks', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
+calculatedRowNumber2 = calculatedRowNumber1 + 9
+const newRows4 = XLSX.utils.sheet_add_aoa(worksheet, significanceTable, { origin: { r: calculatedRowNumber2, c: 0 } });
+
+XLSX.writeFile(workbook, 'test.xlsx');
 
 
 
@@ -610,3 +700,28 @@ XLSX.writeFile(workbook, 'test.xlsx');
 
 // Save the workbook
 // XLSX.writeFile(workbook, 'test.xlsx');
+
+// const ws = XLSX.utils.aoa_to_sheet([  ['Name', 'Age', 'Gender'],
+//   ['John', 25, 'Male'],
+//   ['Jane', 30, 'Female'],
+//   ['Bob', 40, 'Male']
+// ]);
+
+// // set border style for cells
+// const borderStyle = { 
+//   top: { style: 'thin' }, 
+//   bottom: { style: 'thin' }, 
+//   left: { style: 'thin' }, 
+//   right: { style: 'thin' } 
+// };
+// const range = XLSX.utils.decode_range(ws['!ref']);
+// for (let R = range.s.r; R <= range.e.r; ++R) {
+//   for (let C = range.s.c; C <= range.e.c; ++C) {
+//     const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+//     ws[cellAddress].s = borderStyle;
+//   }
+// }
+
+// // add worksheet to workbook and save
+// XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+// XLSX.writeFile(wb, 'example.xlsx');
