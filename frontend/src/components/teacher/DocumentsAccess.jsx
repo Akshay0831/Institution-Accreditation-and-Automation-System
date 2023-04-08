@@ -1,60 +1,46 @@
 import React from "react";
-import "../../../public/css/styles.css"
 import { Component } from "react";
-import { Card, Tab, Tabs } from 'react-bootstrap';
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
+import { Accordion, Button, Card } from 'react-bootstrap';
 
 export default class DocumentsAccess extends Component {
     constructor(props) {
         super(props);
-        this.docsDIR = 'http://localhost:4000/documents/';
+        this.serverLink = 'http://localhost:4000/';
         document.title = "Documents Access"
-        let docs = [];
-        this.state = { activeDocument: "", docs: docs };
+        this.state = { listOfDocs: [] };
     }
 
     async componentDidMount() {
-        let listOfDocs = (await (await fetch("http://localhost:4000/listOfDocuments")).json());
-        let docs = []
-        listOfDocs.forEach(fileName => {
-            docs.push({ uri: this.docsDIR + fileName , fileType : 'xls'});
-        });
-        this.setState({ activeDocument: docs.at(0), docs: docs });
+        let listOfDocs = (await (await fetch("http://localhost:4000/getDirectoryTree")).json())['public'];
+        this.setState({ listOfDocs: listOfDocs });
+    }
+
+    displayFiles(files) {
+        return <Accordion className="d-grid border rounded" defaultActiveKey="0">
+            {(files) ?
+                files.map((file, fileIndex) => {
+                    if (typeof file === "object") {
+                        let key = Object.keys(file)[0];
+                        return <Accordion.Item key={fileIndex}>
+                            <Accordion.Header>{`${fileIndex}. ${key.split('/').at(-1)}...`}</Accordion.Header>
+                            <Accordion.Body className="p-2">{this.displayFiles(file[key])}</Accordion.Body>
+                        </Accordion.Item>
+
+                    }
+                    else
+                        return <Button key={fileIndex} variant="outline-info" href={this.serverLink + file.replace("public", "")} style={{ "textAlign": "left" }} className="border-light text-dark">{`${fileIndex}. ${file.split('/').at(-1)}`}</Button>
+                }) : ""}
+        </Accordion>
     }
 
     render() {
         return (
             <main className="pt-5">
                 <Card className="p-0">
-                    <Card.Header>Documents</Card.Header>
-                    {
-                        (this.state.docs.length > 0)
-                            ? <Card.Body>
-                                <Tabs id="documentsSelector" activeKey={this.state.activeDocument['uri']} onSelect={(k) => this.setState({ activeDocument: { 'uri': k } })}>
-                                    {this.state.docs.map(doc => {
-                                        return <Tab eventKey={doc['uri']} key={doc['uri']} title={doc['uri'].split('/').at(-1)} />
-                                    })}
-                                </Tabs>
-                                <DocViewer
-                                    documents={this.state.docs}
-                                    activeDocument={this.state.activeDocument}
-                                    pluginRenderers={DocViewerRenderers}
-                                    config={{
-                                        header: {
-                                            disableHeader: false,
-                                            disableFileName: false,
-                                            retainURLParams: false
-                                        },
-                                        csvDelimiter: ",",
-                                        pdfZoom: {
-                                            defaultZoom: 1.1,
-                                        },
-                                        pdfVerticalScrollByDefault: true,
-                                    }}
-                                />
-                            </Card.Body>
-                            : <Card.Body>No Documents Found</Card.Body>
-                    }
+                    <Card.Header className="fs-3">Documents Access</Card.Header>
+                    <Card.Body>
+                        {this.displayFiles(this.state.listOfDocs)}
+                    </Card.Body>
                 </Card>
             </main>
         )
