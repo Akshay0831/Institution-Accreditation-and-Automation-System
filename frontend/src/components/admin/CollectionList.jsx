@@ -75,7 +75,7 @@ const MetaData = {
                 for (let col of Object.keys(doc)) {
                     if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                     else if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
-                    else if (col == "Max Gained" && doc[col]) doc[col] = JSON.stringify(doc["Max Gained"]);
+                    else if (col == "Marks Gained" && doc[col]) doc[col] = JSON.stringify(doc["Marks Gained"]);
                 }
         }
     },
