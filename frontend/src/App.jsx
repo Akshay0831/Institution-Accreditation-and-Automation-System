@@ -45,7 +45,7 @@ function App() {
                             <Route exact path="documents" element={<><Admin /><DocumentsAccess /></>} />
                             <Route exact path="analytics" element={<><Admin /><Analytics /></>} />
                             <Route exact path="mapping" element={<><Admin /><COPOMapper /></>} />
-                            <Route exact path="collectionlist" element={<><Admin /><CollectionList collection="Teacher" /></>} />
+                            <Route exact path="collectionlist" element={<><Admin /><CollectionList /></>} />
                             <Route exact path="student/add" element={<><Admin /><UpdateStudent /></>} />
                             <Route exact path="student/update/:id" element={<><Admin /><UpdateStudent /></>} />
                             <Route exact path="department/add" element={<><Admin /><UpdateDepartment /></>} />
