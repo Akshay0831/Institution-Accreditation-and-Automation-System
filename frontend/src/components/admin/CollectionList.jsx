@@ -16,8 +16,7 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc)){
-                    console.log(doc);
-                    if (col=="Subject") doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+                    if (col=="Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                 }
         }
     },
@@ -32,7 +31,7 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="Department") doc[col] = doc[col]["Department Name"];
+                    if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     "Class Allocation": {
@@ -45,8 +44,8 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc)){
-                    if (col=="Class") doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
-                    else if (col=="Student") doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
+                    if (col=="Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
+                    else if (col=="Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                 }
         }
     },
@@ -60,7 +59,7 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="HoD") doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
+                    if (col=="HoD" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
         }
     },
     Marks: {
@@ -75,9 +74,9 @@ const MetaData = {
             for(let doc of json)
                 for (let col of Object.keys(doc)){
                     console.log(doc)
-                    if (col=="Student") doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
-                    else if (col=="Subject") doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
-                    else if (col=="Max Gained") doc[col] = JSON.stringify(doc["Max Gained"]);
+                    if (col=="Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
+                    else if (col=="Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+                    else if (col=="Max Gained" && doc[col]) doc[col] = JSON.stringify(doc["Max Gained"]);
                 }
         }
     },
@@ -92,7 +91,7 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="Department") doc[col] = doc[col]["Department Name"];
+                    if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     Subject: {
@@ -109,8 +108,8 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc)){
-                    if (col=="Max Marks") doc[col] = JSON.stringify(doc["Max Marks"]);
-                    else if (col=="Department") doc[col] = doc[col]["Department Name"];
+                    if (col=="Max Marks" && doc[col]) doc[col] = JSON.stringify(doc["Max Marks"]);
+                    else if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
         }
     },
@@ -126,7 +125,7 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="Department") doc[col] = doc[col]["Department Name"];
+                    if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     "Teacher Allocation": {
@@ -141,10 +140,10 @@ const MetaData = {
         bodyParseFunc: (json)=>{
             for(let doc of json)
                 for (let col of Object.keys(doc)){
-                    if (col=="Teacher") doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
-                    else if (col=="Subject") doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
-                    else if (col=="Class") doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
-                    else if (col=="Department") doc[col] = doc[col]["Department Name"];
+                    if (col=="Teacher" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
+                    else if (col=="Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+                    else if (col=="Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
+                    else if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
         }
     },
