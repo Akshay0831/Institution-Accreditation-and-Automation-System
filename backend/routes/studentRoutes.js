@@ -6,11 +6,14 @@ const { ObjectId } = require("mongodb");
 
 router.route("/")
     .get(async (req, res) => {
-        let students = await mongo.getStudents();
+        let students = await mongo.getDocs("Student");
+        students = await Promise.all(students.map(async student => {
+            student.Department = await mongo.getDoc("Department", { _id: student.Department });
+            return student;
+        }));
+        let gotStudents = students.length > 0;
 
-        let studentsFetched = students.length > 0;
-
-        res.status(studentsFetched ? 200 : 400).json(studentsFetched ? students : "Couldn't fetch students");
+        res.status(gotStudents ? 200 : 400).json(gotStudents ? students : "Couldn't fetch students");
     })
 
 
@@ -104,5 +107,16 @@ router.route("/")
 
         res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
     });
+
+
+router.route("/update")
+    .get(async (req, res) => {
+        let students = await mongo.getStudents();
+
+        let gotStudents = students.length > 0;
+
+        res.status(gotStudents ? 200 : 400).json(gotStudents ? students : "Couldn't fetch students");
+    });
+
 
 module.exports = router;
