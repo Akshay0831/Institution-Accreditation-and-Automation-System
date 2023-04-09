@@ -19,7 +19,7 @@ export default class UpdateMarks extends Component {
     };
 
     async componentDidMount() {
-        let res = await fetch("http://localhost:4000/Marks");
+        let res = await fetch("http://localhost:4000/Marks/update");
         let marks = await res.json();
         this.setState({ marks });
         this.validated = true;

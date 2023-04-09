@@ -12,7 +12,6 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/:department/:classid", async (req, res) => {
-    console.log(req.params.department, req.params.classid);
 
     let marksData = await mongo.getMarks();
 

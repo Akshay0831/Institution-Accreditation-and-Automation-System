@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default class StudentList extends Component {
 
     async componentDidMount() {
-        let res = await fetch("http://localhost:4000/Student");
+        let res = await fetch("http://localhost:4000/Student/update");
         let data = await res.json();
         this.setState({ Students: data });
         document.title = "Update Marks";

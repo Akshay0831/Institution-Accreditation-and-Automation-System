@@ -9,7 +9,6 @@ router.route("/")
         let classes = await mongo.getDocs("Class");
         for (let classObj of classes)
             classObj.Department = await mongo.getDoc("Department", { _id: classObj.Department });
-        console.log(classes);
         let gotClasses = classes.length > 0;
         res.status(gotClasses ? 200 : 400).json(gotClasses ? classes : "Couldn't fetch classes");
     })
