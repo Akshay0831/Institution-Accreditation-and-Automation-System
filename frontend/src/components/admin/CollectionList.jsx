@@ -13,10 +13,10 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'PO', title: 'PO' },
             { isFilterable: true, isSortable: true, prop: 'Value', title: 'Value' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
-                for (let col of Object.keys(doc)){
-                    if (col=="Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+        bodyParseFunc: (json) => {
+            for (let doc of json)
+                for (let col of Object.keys(doc)) {
+                    if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                 }
         }
     },
@@ -28,10 +28,10 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Semester', title: 'Semester' },
             { isFilterable: true, isSortable: true, prop: 'Section', title: 'Section' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
+        bodyParseFunc: (json) => {
+            for (let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+                    if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     "Class Allocation": {
@@ -41,11 +41,11 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Class', title: 'Class' },
             { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
-                for (let col of Object.keys(doc)){
-                    if (col=="Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
-                    else if (col=="Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
+        bodyParseFunc: (json) => {
+            for (let doc of json)
+                for (let col of Object.keys(doc)) {
+                    if (col == "Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
+                    else if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                 }
         }
     },
@@ -56,10 +56,10 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Department Name', title: 'Name' },
             { isFilterable: true, isSortable: false, prop: 'HoD', title: 'Head of Department' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
+        bodyParseFunc: (json) => {
+            for (let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="HoD" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
+                    if (col == "HoD" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
         }
     },
     Marks: {
@@ -70,13 +70,12 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject' },
             { isFilterable: true, isSortable: false, prop: 'Marks Gained', title: 'Marks Gained' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
-                for (let col of Object.keys(doc)){
-                    console.log(doc)
-                    if (col=="Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
-                    else if (col=="Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
-                    else if (col=="Max Gained" && doc[col]) doc[col] = JSON.stringify(doc["Max Gained"]);
+        bodyParseFunc: (json) => {
+            for (let doc of json)
+                for (let col of Object.keys(doc)) {
+                    if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
+                    else if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+                    else if (col == "Max Gained" && doc[col]) doc[col] = JSON.stringify(doc["Max Gained"]);
                 }
         }
     },
@@ -88,10 +87,10 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Student Name', title: 'Name' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
+        bodyParseFunc: (json) => {
+            for (let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+                    if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     Subject: {
@@ -105,11 +104,11 @@ const MetaData = {
             { isFilterable: false, isSortable: false, prop: 'Max Marks', title: 'Max Marks' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
-                for (let col of Object.keys(doc)){
-                    if (col=="Max Marks" && doc[col]) doc[col] = JSON.stringify(doc["Max Marks"]);
-                    else if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+        bodyParseFunc: (json) => {
+            for (let doc of json)
+                for (let col of Object.keys(doc)) {
+                    if (col == "Max Marks" && doc[col]) doc[col] = JSON.stringify(doc["Max Marks"]);
+                    else if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
         }
     },
@@ -122,10 +121,10 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
             { isFilterable: true, isSortable: false, prop: 'Role', title: 'Role' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
+        bodyParseFunc: (json) => {
+            for (let doc of json)
                 for (let col of Object.keys(doc))
-                    if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+                    if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     "Teacher Allocation": {
@@ -137,13 +136,13 @@ const MetaData = {
             { isFilterable: true, isSortable: false, prop: 'Class', title: 'Class' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ],
-        bodyParseFunc: (json)=>{
-            for(let doc of json)
-                for (let col of Object.keys(doc)){
-                    if (col=="Teacher" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
-                    else if (col=="Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
-                    else if (col=="Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
-                    else if (col=="Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+        bodyParseFunc: (json) => {
+            for (let doc of json)
+                for (let col of Object.keys(doc)) {
+                    if (col == "Teacher" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
+                    else if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+                    else if (col == "Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
+                    else if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
         }
     },
@@ -154,7 +153,7 @@ export default class CollectionList extends Component {
         super(props);
         this.serverURL = 'http://localhost:4000/';
         document.title = "Collection List";
-        this.state = { collectionSelected: this.props.collection, documents: [], deleteID:"" };
+        this.state = { collectionSelected: this.props.collection, documents: [], deleteID: "" };
     }
 
     async componentDidMount() {
@@ -163,7 +162,7 @@ export default class CollectionList extends Component {
         MetaData[this.state.collectionSelected].bodyParseFunc(json)
         this.setState({ documents: json });
     }
-    
+
     deleteDocument(id) {
         fetch(this.serverURL + "/documents/" + this.state.collectionSelected + "/delete/" + id)
             .then((res) => {
@@ -176,21 +175,21 @@ export default class CollectionList extends Component {
             .catch((err) => console.error(err));
     }
 
-    handleDeleteModalClose = () => this.setState({deleteID:""});
+    handleDeleteModalClose = () => this.setState({ deleteID: "" });
 
     render() {
         return (
             <main className="pt-5">
                 <Modal show={this.state.deleteID} onHide={this.handleDeleteModalClose} backdrop="static" keyboard={false}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete Document</Modal.Title>
+                        <Modal.Title>Confirm Delete Document</Modal.Title>
                     </Modal.Header>
                     <Modal.Body> Are you sure you want to DELETE {this.state.deleteID} from {this.state.collectionSelected.toUpperCase()} </Modal.Body>
                     <Modal.Footer>
-                    <Button variant="secondary" onClick={this.handleDeleteModalClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={()=>{this.deleteDocument(this.state.deleteID); this.handleDeleteModalClose()}}>Delete</Button>
+                        <Button variant="secondary" onClick={this.handleDeleteModalClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={() => { this.deleteDocument(this.state.deleteID); this.handleDeleteModalClose() }}>Delete</Button>
                     </Modal.Footer>
                 </Modal>
 
@@ -213,7 +212,7 @@ export default class CollectionList extends Component {
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
                                                 <Link to={["", sessionStorage.getItem("userType").toLowerCase(), this.state.collectionSelected, "update", row['_id']].join("/")} className="btn btn-warning btn-sm"><i className="fa fa-pencil" /></Link>
-                                                <Button variant="danger" size="sm" onClick={() => this.setState({deleteID:row._id})}><i className="fa fa-trash" /></Button>
+                                                <Button variant="danger" size="sm" onClick={() => this.setState({ deleteID: row._id })}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )
                                     }])

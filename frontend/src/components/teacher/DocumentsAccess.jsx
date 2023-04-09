@@ -28,7 +28,7 @@ export default class DocumentsAccess extends Component {
 
                     }
                     else
-                        return <Button key={fileIndex} variant="outline-info" href={this.serverLink + file.replace("public", "")} style={{ "textAlign": "left" }} className="border-light text-dark">{`${fileIndex}. ${file.split('/').at(-1)}`}</Button>
+                        return <Button key={fileIndex} variant="outline-info" href={this.serverLink + file.replace("public/", "")} style={{ "textAlign": "left" }} className="border-light text-dark">{`${fileIndex}. ${file.split('/').at(-1)}`}</Button>
                 }) : ""}
         </Accordion>
     }
@@ -36,12 +36,14 @@ export default class DocumentsAccess extends Component {
     render() {
         return (
             <main className="pt-5">
-                <Card className="p-0">
-                    <Card.Header className="fs-3">Documents Access</Card.Header>
-                    <Card.Body>
-                        {this.displayFiles(this.state.listOfDocs)}
-                    </Card.Body>
-                </Card>
+                <div className="container">
+                    <Card className="p-0">
+                        <Card.Header className="fs-3">Documents Access</Card.Header>
+                        <Card.Body>
+                            {this.displayFiles(this.state.listOfDocs)}
+                        </Card.Body>
+                    </Card>
+                </div>
             </main>
         )
     }
