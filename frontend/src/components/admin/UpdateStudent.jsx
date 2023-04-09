@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
 export default function UpdateStudent() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
     document.title = (isUpdate?"Update":"Add") + " Student";
@@ -11,7 +12,6 @@ export default function UpdateStudent() {
     const [departments, setDepartments] = useState([]);
     const [classes, setClasses] = useState([]);
     const [originalClasses, setOriginalClasses] = useState([]);
-    const [disabled, setDisabled] = useState(true);
     const [name, setName] = useState("");
     const [usn, setUsn] = useState("");
     const [departmentID, setDepartmentID] = useState("");
@@ -19,38 +19,36 @@ export default function UpdateStudent() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // console.log((await (await fetch("http://localhost:4000/documents/Student")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
+            const departmentsData = await (await fetch("http://localhost:4000/documents/Department")).json();
+            setDepartments(departmentsData);
+
+            const classesData = await (await fetch("http://localhost:4000/documents/Class")).json();
+            setOriginalClasses(classesData);
+
             if (isUpdate){
                 const studentData =  (await (await fetch("http://localhost:4000/documents/Student")).json()).filter(doc => doc._id==id)[0];
                 console.log(studentData);
                 setName(studentData["Student Name"]);
                 setUsn(studentData["USN"]);
-                setDepartmentID("");
-                setClassID("");
+                setDepartmentID(studentData["Department"]);
+                setClasses(classesData.filter(obj => obj["Department"] == studentData["Department"]))
+                const classAllocData =  (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc.Student==studentData._id)[0];
+                setClassID(classAllocData["Class"]);
             }
-
-            const departmentsData = await (await fetch("http://localhost:4000/documents/Department")).json();
-            setDepartments(departmentsData);
-
-            const classesData = await (await fetch("http://localhost:4000/documents/Class")).json();
-            setClasses(classesData);
-            setOriginalClasses(classesData);
-
-            setDisabled(true);
         }
         fetchData();
     }, []);
 
     const onSubmitClicked = (event) => {
-        console.log(name, usn, departmentID, classID);
-        if (!disabled && classID.length != 0 && departmentID.length != 0) {
+        if (classes && classID.length && departmentID.length) {
             event.preventDefault();
             const student = {"Student":{
                 "Student Name": name,
                 USN: usn,
-                "fk_Department": departmentID,
-                "Class ID": classID
-            }}
+                "Department": departmentID
+            },
+            "Class":{_id:classID}
+            }
             fetch(`http://localhost:4000/Student`, {
                 // Adding method type
                 method: (isUpdate ? "PUT" : "POST"),
@@ -59,20 +57,17 @@ export default function UpdateStudent() {
                 // Adding headers to the request
                 headers: { "Content-type": "application/json; charset=UTF-8" },
             });
+            navigate("/admin/collectionlist",
+                { state: "Student" }
+            );
         } else {
             alert("Please fill all fields");
         }
     }
 
     const handleDepartmentChange = (event) => {
-        setDisabled(false);
         setDepartmentID(event.target.value);
-        setClasses(originalClasses.filter(obj => obj["fk_Department"] === event.target.value));
-    }
-
-    const handleClassChange = (event) => {
-        const value = event.target.value;
-        setClassID(value !== "null" ? value : "")
+        setClasses(originalClasses.filter(obj => obj["Department"] == event.target.value));
     }
 
     return (
@@ -92,28 +87,22 @@ export default function UpdateStudent() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Department: </Form.Label>
-                                <Form.Select name="department" required onChange={handleDepartmentChange}>
-                                    {disabled ? <option>Open this select menu</option> : null}
-                                    {departments.map((department) => {
-                                        return <option key={department["Department Name"]} value={department["Department Name"]}>{department["Department Name"]}</option>
+                                <Form.Select name="department" value={departmentID} required onChange={handleDepartmentChange}>
+                                    <option value="">Open this select menu</option>
+                                    {departments.map((dept) => {
+                                        return <option key={dept._id} value={dept._id}>{dept["Department Name"]}</option>
                                     })}
                                 </Form.Select>
-                                <p>{departmentID}</p>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Class: </Form.Label>
-                                <select
-                                    name="class"
-                                    className="form-select"
-                                    required
-                                    disabled={disabled}
-                                    onChange={handleClassChange}>
-                                    <option value={"null"}>Open this select menu</option>
+                                <Form.Select name="class" required value={classID} disabled={!departmentID} onChange={(event)=>setClassID(event.target.value)}>
+                                    <option value="">Open this select menu</option>
                                     {classes.map((classObj) => {
                                         return <option key={classObj["_id"]} value={classObj["_id"]}>{classObj["Semester"] + classObj["Section"]}</option>
                                     })}
-                                </select>
-                                {disabled ? <p style={{ color: 'red' }}>Select department first</p> : null}
+                                </Form.Select>
+                                {!departmentID ? <p style={{ color: 'red' }}>Select department first</p> : null}
                             </Form.Group>
                             <Button variant="success" type="submit">Submit</Button>
                         </Form>

@@ -153,7 +153,7 @@ export default function CollectionList() {
     document.title = "Collection List";
 
     const location = useLocation();
-    const [collectionSelected, setCollectionSelected] = useState(location.collection || "Teacher");
+    const [collectionSelected, setCollectionSelected] = useState(location.state || "Teacher");
     const [deleteID, setDeleteID] = useState("");
     const [documents, setDocuments] = useState([]);
 
