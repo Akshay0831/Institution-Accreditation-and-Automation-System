@@ -24,7 +24,7 @@ router.route("/")
         studentObj._id = studentId;
         studentObj["Student Name"] = req.body.Student["Student Name"];
         studentObj.USN = req.body.Student.USN;
-        studentObj.Department = req.body.Department._id;
+        studentObj.Department = req.body.Student.Department;
         const studentAdded = await mongo.addDoc("Student", studentObj);
 
         //Creating a Class Allocation document
@@ -55,15 +55,14 @@ router.route("/")
 
         const studentObj = { ...models.Student };
         studentObj._id = req.body.Student._id;
-        studentObj.Department = req.body.Department._id;
+        studentObj.Department = req.body.Student.Department;
         studentObj['Student Name'] = req.body.Student["Student Name"];
         studentObj.USN = req.body.Student.USN;
 
-        let oldStudent = await mongo.getDoc("Student", { _id: studentObj._id, Department: studentObj.Department });
+        let oldStudent = await mongo.getDoc("Student", { _id: studentObj._id });
 
         const isStudentDepartmentChanged = Object.keys(oldStudent).length == 0;
 
-        let marksAdded;
         if (isStudentDepartmentChanged) {
             // Adding marks document to subjects in new department
             let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department });
@@ -84,10 +83,10 @@ router.route("/")
 
 
         }
-
         const studentUpdated = await mongo.updateDoc("Student", { _id: studentObj._id }, studentObj);
 
         const classAllocationObj = { ...models['Class Allocation'] };
+        delete classAllocationObj._id;
         classAllocationObj.Class = req.body.Class._id;
         classAllocationObj.Student = req.body.Student._id;
         const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { _id: classAllocationObj._id }, classAllocationObj);

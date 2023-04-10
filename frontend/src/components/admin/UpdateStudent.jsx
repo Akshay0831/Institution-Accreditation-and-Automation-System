@@ -7,7 +7,7 @@ export default function UpdateStudent() {
     const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
-    document.title = (isUpdate?"Update":"Add") + " Student";
+    document.title = (isUpdate ? "Update" : "Add") + " Student";
 
     const [departments, setDepartments] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -25,14 +25,14 @@ export default function UpdateStudent() {
             const classesData = await (await fetch("http://localhost:4000/documents/Class")).json();
             setOriginalClasses(classesData);
 
-            if (isUpdate){
-                const studentData =  (await (await fetch("http://localhost:4000/documents/Student")).json()).filter(doc => doc._id==id)[0];
+            if (isUpdate) {
+                const studentData = (await (await fetch("http://localhost:4000/documents/Student")).json()).filter(doc => doc._id == id)[0];
                 console.log(studentData);
                 setName(studentData["Student Name"]);
                 setUsn(studentData["USN"]);
                 setDepartmentID(studentData["Department"]);
                 setClasses(classesData.filter(obj => obj["Department"] == studentData["Department"]))
-                const classAllocData =  (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc.Student==studentData._id)[0];
+                const classAllocData = (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc.Student == studentData._id)[0];
                 setClassID(classAllocData["Class"]);
             }
         }
@@ -42,13 +42,15 @@ export default function UpdateStudent() {
     const onSubmitClicked = (event) => {
         if (classes && classID.length && departmentID.length) {
             event.preventDefault();
-            const student = {"Student":{
-                "Student Name": name,
-                USN: usn,
-                "Department": departmentID
-            },
-            "Class":{_id:classID}
-            }
+            const student = {
+                "Student": {
+                    "Student Name": name,
+                    USN: usn,
+                    "Department": departmentID
+                },
+                "Class": { _id: classID }
+            };
+            if (isUpdate) student.Student._id = id;
             fetch(`http://localhost:4000/Student`, {
                 // Adding method type
                 method: (isUpdate ? "PUT" : "POST"),
@@ -74,7 +76,7 @@ export default function UpdateStudent() {
         <main className="pt-5">
             <div className="container">
                 <Card>
-                    <Card.Header className="fs-3">{isUpdate? "Update": "Add"} Student</Card.Header>
+                    <Card.Header className="fs-3">{isUpdate ? "Update" : "Add"} Student</Card.Header>
                     <Card.Body>
                         <Form onSubmit={onSubmitClicked}>
                             <Form.Group className="mb-3">
@@ -96,7 +98,7 @@ export default function UpdateStudent() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Class: </Form.Label>
-                                <Form.Select name="class" required value={classID} disabled={!departmentID} onChange={(event)=>setClassID(event.target.value)}>
+                                <Form.Select name="class" required value={classID} disabled={!departmentID} onChange={(event) => setClassID(event.target.value)}>
                                     <option value="">Open this select menu</option>
                                     {classes.map((classObj) => {
                                         return <option key={classObj["_id"]} value={classObj["_id"]}>{classObj["Semester"] + classObj["Section"]}</option>
