@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
 export default function UpdateTeacherAllocation() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
-    document.title = (isUpdate?"Update":"Add") + " Teacher Allocation";
+    document.title = (isUpdate ? "Update" : "Add") + " Teacher Allocation";
 
     const [classes, setClasses] = useState([]);
     const [classID, setClassID] = useState("");
@@ -19,8 +20,8 @@ export default function UpdateTeacherAllocation() {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (isUpdate){
-                const teacherAllocData =  (await (await fetch("http://localhost:4000/documents/Teacher Allocation")).json()).filter(doc => doc._id==id)[0];
+            if (isUpdate) {
+                const teacherAllocData = (await (await fetch("http://localhost:4000/documents/Teacher Allocation")).json()).filter(doc => doc._id == id)[0];
                 setClassID(teacherAllocData["Class"]);
                 setSubjectID(teacherAllocData["Subject"]);
                 setTeacherID(teacherAllocData["Teacher"]);
@@ -37,12 +38,15 @@ export default function UpdateTeacherAllocation() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let teacherAllocData = {"Teacher Allocation":{
-            "Class": classID,
-            "Subject": subjectID,
-            "Teacher": teacherID,
-            "Department": departmentID,
-        }};
+        let teacherAllocData = {
+            "Teacher Allocation": {
+                "Class": classID,
+                "Subject": subjectID,
+                "Teacher": teacherID,
+                "Department": departmentID,
+            }
+        };
+        if (isUpdate) teacherAllocData._id = id;
         fetch(`http://localhost:4000/Teacher Allocation`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
@@ -50,6 +54,11 @@ export default function UpdateTeacherAllocation() {
             body: JSON.stringify(teacherAllocData),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
+        }).then(res => {
+            if (res.status == 200)
+                navigate("/admin/collectionlist",
+                    { state: "Teacher Allocation", });
+            console.log(res.status, res.statusText);
         });
     }
 
@@ -57,7 +66,7 @@ export default function UpdateTeacherAllocation() {
         <main className="pt-5">
             <div className="container">
                 <Card>
-                    <Card.Header className="fs-3">{isUpdate? "Update": "Add"} Teacher Allocation</Card.Header>
+                    <Card.Header className="fs-3">{isUpdate ? "Update" : "Add"} Teacher Allocation</Card.Header>
                     <Card.Body>
                         <Form onSubmit={onSubmitClicked}>
                             <Form.Group className="mb-3">

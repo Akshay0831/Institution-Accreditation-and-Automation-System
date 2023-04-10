@@ -37,7 +37,7 @@ export default function UpdateDepartment() {
                 "HoD": hod,
             }
         }
-        department._id = id;
+        if (isUpdate) department._id = id;
         fetch(`http://localhost:4000/Department`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),

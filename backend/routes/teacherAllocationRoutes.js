@@ -1,6 +1,5 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
-const models = require("../models");
 const router = express.Router();
 
 router.route("/")
@@ -15,8 +14,29 @@ router.route("/")
         }
 
         let gotResult = teacherAllocations.length > 0;
-        res.status(gotResult ? 200 : 400).json(gotResult ? teacherAllocations : "Couldn't get class allocations");
+        res.status(gotResult ? 200 : 400).json(gotResult ? teacherAllocations : "Couldn't get teacher allocations");
     })
+
+    .post(async (req, res) => {
+        const teacherAllocObj = req.body["Teacher Allocation"];
+        const teacherAllocAdded = await mongo.addDoc("Teacher Allocation", teacherAllocObj);
+
+        res.status(teacherAllocAdded ? 200 : 400).json(teacherAllocAdded ? "Created new teacher allocation" : "Couldn't create new teacher allocation");
+    })
+
+    .put(async (req, res) => {
+
+        const teacherAllocObj = req.body["Teacher Allocation"];
+        const teacherAllocUpdated = await mongo.updateDoc("Teacher Allocation", { _id: req.body._id }, teacherAllocObj);
+
+        res.status(teacherAllocUpdated ? 200 : 400).json(teacherAllocUpdated ? "Updated Teacher Allocation" : "Couldn't update Teacher Allocation");
+    })
+
+    .delete(async (req, res) => {
+        const teacherAllocDeleted = await mongo.deleteDoc("Teacher Allocation", { _id: req.body._id });
+
+        res.status(teacherAllocDeleted ? 200 : 400).json(teacherAllocDeleted ? "Teacher Allocation deleted" : "Couldn't delete Teacher Allocation");
+    });
 
 
 module.exports = router;
