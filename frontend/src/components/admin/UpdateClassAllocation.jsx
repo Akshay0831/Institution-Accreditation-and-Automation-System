@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
 export default function UpdateClassAllocation() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
-    document.title = (isUpdate?"Update":"Add") + " Class Allocation";
+    document.title = (isUpdate ? "Update" : "Add") + " Class Allocation";
 
     const [classes, setClasses] = useState([]);
     const [classID, setClassID] = useState("");
@@ -15,13 +16,13 @@ export default function UpdateClassAllocation() {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (isUpdate){
-                const classAllocData =  (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc._id==id)[0];
+            if (isUpdate) {
+                const classAllocData = (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc._id == id)[0];
                 setClassID(classAllocData["Class"]);
                 setStudentID(classAllocData["Student"]);
             }
 
-            setClasses(await (await fetch("http://localhost:4000/documents/Class")).json());
+            setClasses(await (await fetch("http://localhost:4000/Class")).json());
             setStudents(await (await fetch("http://localhost:4000/documents/Student")).json());
         }
         fetchData();
@@ -29,10 +30,13 @@ export default function UpdateClassAllocation() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let classAllocData = {"Class Allocation":{
-            "Class": classID,
-            "Student": studentID,
-        }};
+        let classAllocData = {
+            "Class Allocation": {
+                "Class": classID,
+                "Student": studentID,
+            }
+        };
+        if (isUpdate) classAllocData._id = id;
         fetch(`http://localhost:4000/Class Allocation`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
@@ -40,6 +44,13 @@ export default function UpdateClassAllocation() {
             body: JSON.stringify(classAllocData),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
+        }).then(res => {
+            if (res.status == 200)
+                navigate("/admin/collectionlist",
+                    {
+                        state: "Class Allocation",
+                    });
+            console.log(res.status, res.statusText);
         });
     }
 
@@ -47,7 +58,7 @@ export default function UpdateClassAllocation() {
         <main className="pt-5">
             <div className="container">
                 <Card>
-                    <Card.Header className="fs-3">{isUpdate? "Update": "Add"} Class Allocation</Card.Header>
+                    <Card.Header className="fs-3">{isUpdate ? "Update" : "Add"} Class Allocation</Card.Header>
                     <Card.Body>
                         <Form onSubmit={onSubmitClicked}>
                             <Form.Group className="mb-3">
@@ -64,7 +75,7 @@ export default function UpdateClassAllocation() {
                                 <Form.Select name="class" value={classID} onChange={(event) => setClassID(event.target.value)} required>
                                     <option value="">Select Class</option>
                                     {classes.map((classObj) => {
-                                        return <option key={classObj._id} value={classObj._id}>{`${classObj["Semester"]} ${classObj["Section"]}`}</option>
+                                        return <option key={classObj._id} value={classObj._id}>{`${classObj["Semester"]} ${classObj["Section"]} (${classObj["Department"]["Department Name"]})`}</option>
                                     })}
                                 </Form.Select>
                             </Form.Group>

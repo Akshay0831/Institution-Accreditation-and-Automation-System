@@ -41,10 +41,14 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Class', title: 'Class' },
             { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
         ],
-        bodyParseFunc: (json) => {
+        bodyParseFunc: async (json) => {
+            let depts = await (await fetch("http://localhost:4000/" + "documents/Department")).json();
             for (let doc of json)
                 for (let col of Object.keys(doc)) {
-                    if (col == "Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
+                    if (col == "Class" && doc[col]) {
+                        let dept = depts.filter(department => doc[col]["Department"] == department._id)[0];
+                        doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]} (${dept["Department Name"]})`;
+                    }
                     else if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                 }
         }
@@ -161,7 +165,7 @@ export default function CollectionList() {
         const fetchData = async () => {
             console.log("Called API: " + serverURL + collectionSelected);
             let json = await (await fetch(serverURL + collectionSelected)).json();
-            MetaData[collectionSelected].bodyParseFunc(json);
+            await MetaData[collectionSelected].bodyParseFunc(json);
             setDocuments(json);
         }
         fetchData();
