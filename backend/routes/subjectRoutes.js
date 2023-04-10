@@ -1,8 +1,6 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
-const models = require("../models");
 const router = express.Router();
-const { ObjectId } = require("mongodb");
 
 router.route("/")
     .get(async (req, res) => {
@@ -14,5 +12,27 @@ router.route("/")
 
         res.status(gotSubjects ? 200 : 400).json(gotSubjects ? subjects : "Couldn't fetch subjects");
     })
+
+
+    .post(async (req, res) => {
+        const subjectObj = req.body.Subject;
+        const subjectAdded = await mongo.addDoc("Subject", subjectObj);
+
+        res.status(subjectAdded ? 200 : 400).json(subjectAdded ? "Created new subject" : "Couldn't create new subject");
+    })
+
+    .put(async (req, res) => {
+
+        const subjectObj = req.body.Subject;
+        const subjectUpdated = await mongo.updateDoc("Subject", { _id: req.body._id }, subjectObj);
+
+        res.status(subjectUpdated ? 200 : 400).json(subjectUpdated ? "Updated subject" : "Couldn't update subject");
+    })
+
+    .delete(async (req, res) => {
+        const subjectDeleted = await mongo.deleteDoc("Subject", { _id: req.body._id });
+
+        res.status(subjectDeleted ? 200 : 400).json(subjectDeleted ? "Subject deleted" : "Couldn't delete subject");
+    });
 
 module.exports = router;

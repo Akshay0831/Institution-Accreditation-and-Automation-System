@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button, Modal, ButtonGroup } from "react-bootstrap";
 
 export default function UpdateSubject() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
     document.title = (isUpdate?"Update":"Add") + " Subject";
@@ -39,14 +40,12 @@ export default function UpdateSubject() {
     }, []);
 
     const handleSEEChange = (col, event) => {
-        console.log(addModalBuffer);
         let marks = {};
         marks[col] = parseInt(event.target.value);
         setMaxMarks(maxMarks => ({...maxMarks, ...marks}));
     }
 
     const handleCOChange = (col, CO, event) => {
-        console.log(maxMarks);
         let marks = maxMarks;
         marks[col][CO] = parseInt(event.target.value);
         setMaxMarks(maxMarks => ({...maxMarks, ...marks}));
@@ -62,7 +61,9 @@ export default function UpdateSubject() {
             "Max Marks": maxMarks,
             "Semester": semester,
             "Department": departmentId
-        }}
+        }};
+        subject._id = id;
+
         fetch(`http://localhost:4000/Subject`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
@@ -70,6 +71,12 @@ export default function UpdateSubject() {
             body: JSON.stringify(subject),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
+        }).then(res=>{
+            if(res.status == 200)
+                navigate("/admin/collectionlist",
+                    {state: "Subject",
+                });
+            console.log(res.status, res.statusText);
         });
     }
 
