@@ -58,78 +58,80 @@ export default function COPOMapper() {
 
     return (
         <main className="pt-5">
-            <Card className="m-3">
-                <Card.Header className="fs-3">CO PO Mapper</Card.Header>
-                {
-                    subjects.length
-                        ? <Card.Body className="overflow-auto">
-                            <select className="form-select mb-3" value={subjectSelected} aria-label="Select subject" onChange={() => setSubjectSelected(event.target.value)}>
-                                <option value="">Select Subject</option>
-                                {subjects
-                                    ? subjects.map(sub => {
-                                        return <option key={sub._id} value={sub._id}>
-                                            {sub["Subject Name"]} ({sub["Subject Code"]})
-                                        </option>
-                                    })
-                                    : ""}
-                            </select>
-                            {COPOMaps
-                                ? <Table striped bordered hover size="sm">
-                                    <thead className="thead-light">
-                                        <tr>
-                                            <th></th>
-                                            {COs.map(COn => <th key={COn}>{COn}</th>)}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {POs.map(POn => {
-                                            return <tr key={POn}>
-                                                <th>{POn}</th>
-                                                {COs.map(COn => {
-                                                    return <td key={COn}>
-                                                        <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn + "/" + POn} value={COPOMaps[COn][POn]} onChange={() => setCOPOMaps(COPOMap => ({ ...COPOMap, [COn]: { ...COPOMap[COn], [POn]: event.target.value } }))} />
-                                                    </td>
-                                                })}
+            <div className="container">
+                <Card>
+                    <Card.Header className="fs-3">CO PO Mapper</Card.Header>
+                    {
+                        subjects.length
+                            ? <Card.Body className="overflow-auto">
+                                <select className="form-select mb-3" value={subjectSelected} aria-label="Select subject" onChange={() => setSubjectSelected(event.target.value)}>
+                                    <option value="">Select Subject</option>
+                                    {subjects
+                                        ? subjects.map(sub => {
+                                            return <option key={sub._id} value={sub._id}>
+                                                {sub["Subject Name"]} ({sub["Subject Code"]})
+                                            </option>
+                                        })
+                                        : ""}
+                                </select>
+                                {COPOMaps
+                                    ? <Table striped bordered hover size="sm">
+                                        <thead className="thead-light">
+                                            <tr>
+                                                <th></th>
+                                                {COs.map(COn => <th key={COn}>{COn}</th>)}
                                             </tr>
-                                        })}
-                                    </tbody>
-                                </Table>
-                                : <p>No Values Found</p>}
-                            <button className="btn btn-success" onClick={() => updateCOPOMapping()}>Save&nbsp; Changes</button>
-                        </Card.Body>
-                        :
-                        <Card.Body>No Subjects Allocated to you. Please Contact Admininistrator</Card.Body>
-                }
-            </Card>
+                                        </thead>
+                                        <tbody>
+                                            {POs.map(POn => {
+                                                return <tr key={POn}>
+                                                    <th>{POn}</th>
+                                                    {COs.map(COn => {
+                                                        return <td key={COn}>
+                                                            <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn + "/" + POn} value={COPOMaps[COn][POn]} onChange={() => setCOPOMaps(COPOMap => ({ ...COPOMap, [COn]: { ...COPOMap[COn], [POn]: event.target.value } }))} />
+                                                        </td>
+                                                    })}
+                                                </tr>
+                                            })}
+                                        </tbody>
+                                    </Table>
+                                    : <p>No Values Found</p>}
+                                <button className="btn btn-success" onClick={() => updateCOPOMapping()}>Save&nbsp; Changes</button>
+                            </Card.Body>
+                            :
+                            <Card.Body>No Subjects Allocated to you. Please Contact Admininistrator</Card.Body>
+                    }
+                </Card>
 
-            <Card className="table-responsive p-3">
-                <Table bordered className="p-0">
-                    <thead>
-                        <tr>
-                            <th>CO Attainment Level</th>
-                            <th>Significance</th>
-                            <th>For direct attainment, 50% of CIE and 50% of SEE marks are considered</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Level 3</td>
-                            <td>60% and above students should have scored {'>='} 60% of total marks</td>
-                            <td>For Indirect attainment, course end survey is considered</td>
-                        </tr>
-                        <tr>
-                            <td>Level 2</td>
-                            <td>55% to 59% of students should have scored {'>='} 60% of total marks</td>
-                            <td>CO attainment is 90% of Direct attainment + 10% of Indirect attainment </td>
-                        </tr>
-                        <tr>
-                            <td>Level 1</td>
-                            <td>50% to 54% of students should have scored {'>='} 60% of total marks</td>
-                            <td>PO attainment = CO-PO mapping strength / 3 * CO attainment</td>
-                        </tr>
-                    </tbody>
-                </Table>
-            </Card>
+                <Card className="table-responsive p-3">
+                    <Table bordered className="p-0">
+                        <thead>
+                            <tr>
+                                <th>CO Attainment Level</th>
+                                <th>Significance</th>
+                                <th>For direct attainment, 50% of CIE and 50% of SEE marks are considered</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Level 3</td>
+                                <td>60% and above students should have scored {'>='} 60% of total marks</td>
+                                <td>For Indirect attainment, course end survey is considered</td>
+                            </tr>
+                            <tr>
+                                <td>Level 2</td>
+                                <td>55% to 59% of students should have scored {'>='} 60% of total marks</td>
+                                <td>CO attainment is 90% of Direct attainment + 10% of Indirect attainment </td>
+                            </tr>
+                            <tr>
+                                <td>Level 1</td>
+                                <td>50% to 54% of students should have scored {'>='} 60% of total marks</td>
+                                <td>PO attainment = CO-PO mapping strength / 3 * CO attainment</td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                </Card>
+            </div>
         </main>
     );
 }
