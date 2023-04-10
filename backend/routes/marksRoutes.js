@@ -1,6 +1,5 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
-const models = require("../models");
 const router = express.Router();
 
 router.route("/update")
@@ -24,11 +23,23 @@ router.route("/")
 
     })
 
+    .post(async (req, res) => {
+        const marksObj = req.body["Marks"];
+        const marksAdded = await mongo.addDoc("Marks", marksObj);
+
+        res.status(marksAdded ? 200 : 400).json(marksAdded ? "Created new marks" : "Couldn't create new marks");
+    })
 
     .put(async (req, res) => {
         const marksUpdated = await mongo.updateDoc("Marks", { _id: req.body.Marks._id }, req.body.Marks);
 
         res.status(marksUpdated ? 200 : 400).json(marksUpdated ? "Updated marks" : "Couldn't update marks");
+    })
+
+    .delete(async (req, res) => {
+        const marksDeleted = await mongo.deleteDoc("Marks", { _id: req.body._id });
+
+        res.status(marksDeleted ? 200 : 400).json(marksDeleted ? "Marks deleted" : "Couldn't delete Marks");
     });
 
 module.exports = router;

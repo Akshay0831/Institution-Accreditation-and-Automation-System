@@ -28,7 +28,7 @@ export default function UpdateTeacherAllocation() {
                 setDeparmentID(teacherAllocData["Department"]);
             }
 
-            setClasses(await (await fetch("http://localhost:4000/documents/Class")).json());
+            setClasses(await (await fetch("http://localhost:4000/Class")).json());
             setSubjects(await (await fetch("http://localhost:4000/documents/Subject")).json());
             setTeachers(await (await fetch("http://localhost:4000/documents/Teacher")).json());
             setDepartments(await (await fetch("http://localhost:4000/documents/Department")).json());
@@ -74,7 +74,7 @@ export default function UpdateTeacherAllocation() {
                                 <Form.Select name="class" value={classID} onChange={(event) => setClassID(event.target.value)} required>
                                     <option value="">Select Class</option>
                                     {classes.map((classObj) => {
-                                        return <option key={classObj._id} value={classObj._id}>{`${classObj["Semester"]} ${classObj["Section"]}`}</option>
+                                        return <option key={classObj._id} value={classObj._id}>{`${classObj["Semester"]}${classObj["Section"]} (${classObj["Department"]["Department Name"]})`}</option>
                                     })}
                                 </Form.Select>
                             </Form.Group>

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
 export default function UpdateStudentMarks() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
-    document.title = (isUpdate?"Update":"Add") + " Marks";
+    document.title = (isUpdate ? "Update" : "Add") + " Marks";
 
     const [subjects, setSubjects] = useState([]);
     const [subjectID, setSubjectID] = useState("");
@@ -19,14 +20,14 @@ export default function UpdateStudentMarks() {
         const fetchData = async () => {
             setStudents(await (await fetch("http://localhost:4000/documents/Student")).json());
             let subjectsData = await (await fetch("http://localhost:4000/documents/Subject")).json()
-            setSubjects(subjectsData); 
+            setSubjects(subjectsData);
 
             if (isUpdate) {
                 const marksData = (await (await fetch("http://localhost:4000/documents/Marks")).json()).filter(doc => doc._id == id)[0];
                 setMarksGained(marksData["Marks Gained"]);
                 setSubjectID(marksData["Subject"]);
                 setStudentID(marksData["Student"]);
-                setMaxMarks((subjectsData.filter(doc => (doc._id==marksData["Subject"]))[0])["Max Marks"]);
+                setMaxMarks((subjectsData.filter(doc => (doc._id == marksData["Subject"]))[0])["Max Marks"]);
             }
 
         }
@@ -35,11 +36,14 @@ export default function UpdateStudentMarks() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let marks = {"Marks":{
-            "Marks Gained": marksGained,
-            "Subject": subjectID,
-            "Student": studentID,
-        }}
+        let marks = {
+            "Marks": {
+                "Marks Gained": marksGained,
+                "Subject": subjectID,
+                "Student": studentID,
+            }
+        }
+        if (isUpdate) marks.Marks._id = id;
         fetch(`http://localhost:4000/Marks`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
@@ -47,19 +51,24 @@ export default function UpdateStudentMarks() {
             body: JSON.stringify(marks),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
+        }).then(res => {
+            if (res.status == 200)
+                navigate("/admin/collectionlist",
+                    { state: "Marks", });
+            console.log(res.status, res.statusText);
         });
     }
 
     const handleSEEChange = (col, event) => {
         let marks = {};
         marks[col] = parseInt(event.target.value);
-        setMarksGained(marksGained => ({...marksGained, ...marks}));
+        setMarksGained(marksGained => ({ ...marksGained, ...marks }));
     }
 
     const handleCOChange = (col, CO, event) => {
         let marks = marksGained;
         marks[col][CO] = parseInt(event.target.value);
-        setMarksGained(marksGained => ({...marksGained, ...marks}));
+        setMarksGained(marksGained => ({ ...marksGained, ...marks }));
     }
 
     return (
@@ -80,7 +89,7 @@ export default function UpdateStudentMarks() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Subject: </Form.Label>
-                                <Form.Select name="subject" value={subjectID} onChange={(event) => {setSubjectID(event.target.value); setMaxMarks((subjects.filter(doc => (doc._id==event.target.value))[0])["Max Marks"]);}} required>
+                                <Form.Select name="subject" value={subjectID} onChange={(event) => { setSubjectID(event.target.value); setMaxMarks((subjects.filter(doc => (doc._id == event.target.value))[0])["Max Marks"]); }} required>
                                     <option value="">Select Subject</option>
                                     {subjects.map((subj) => {
                                         return <option key={subj._id} value={subj._id}>{`${subj["Subject Name"]} (${subj["Subject Code"]})`}</option>
@@ -91,18 +100,18 @@ export default function UpdateStudentMarks() {
                                 <Form.Label className="p-1"> Marks Gained:</Form.Label>
                                 {maxMarks
                                     ?
-                                        Object.keys(maxMarks).map(test => {
-                                            if (typeof maxMarks[test]==='object'){
-                                                return <Card key={test} className="ps-2">{test}
-                                                        <Card.Body className="row">
-                                                            {Object.keys(maxMarks[test]).map(CO=>{
-                                                            return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={marksGained[test][CO]} min="0" max={maxMarks[test][CO]} onChange={handleCOChange.bind(this, test, CO)}/></Form.Group>
-                                                            })}
-                                                        </Card.Body>
-                                                    </Card>
-                                            }
-                                            else return <Card key={test} className="p-3"> {test} <Form.Control type="number" placeholder={test} value={marksGained[test]} min="0" max={maxMarks[test]} onChange={handleSEEChange.bind(this, test)}/></Card>
-                                        })
+                                    Object.keys(maxMarks).map(test => {
+                                        if (typeof maxMarks[test] === 'object') {
+                                            return <Card key={test} className="ps-2">{test}
+                                                <Card.Body className="row">
+                                                    {Object.keys(maxMarks[test]).map(CO => {
+                                                        return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={marksGained[test][CO]} min="0" max={maxMarks[test][CO]} onChange={handleCOChange.bind(this, test, CO)} /></Form.Group>
+                                                    })}
+                                                </Card.Body>
+                                            </Card>
+                                        }
+                                        else return <Card key={test} className="p-3"> {test} <Form.Control type="number" placeholder={test} value={marksGained[test]} min="0" max={maxMarks[test]} onChange={handleSEEChange.bind(this, test)} /></Card>
+                                    })
                                     : <>Max Marks not defined</>
                                 }
                             </Form.Group>
