@@ -1,8 +1,6 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
-const models = require("../models");
 const router = express.Router();
-const { ObjectId } = require("mongodb");
 
 router.route("/")
     .get(async (req, res) => {
@@ -12,6 +10,27 @@ router.route("/")
         let fetchedCoPOMaps = coPoMaps.length > 0;
 
         res.status(fetchedCoPOMaps ? 200 : 400).json(fetchedCoPOMaps ? coPoMaps : "Couldn't fetch CO PO Mappings");
+    })
+
+    .post(async (req, res) => {
+        const copoMapObj = req.body["CO PO Map"];
+        const copoMapAdded = await mongo.addDoc("CO PO Map", copoMapObj);
+
+        res.status(copoMapAdded ? 200 : 400).json(copoMapAdded ? "Created new class allocation" : "Couldn't create new class allocation");
+    })
+
+    .put(async (req, res) => {
+
+        const copoMapObj = req.body["CO PO Map"];
+        const copoMapUpdated = await mongo.updateDoc("CO PO Map", { _id: req.body._id }, copoMapObj);
+
+        res.status(copoMapUpdated ? 200 : 400).json(copoMapUpdated ? "Updated CO PO Map" : "Couldn't update CO PO Map");
+    })
+
+    .delete(async (req, res) => {
+        const copoMapDeleted = await mongo.deleteDoc("CO PO Map", { _id: req.body._id });
+
+        res.status(copoMapDeleted ? 200 : 400).json(copoMapDeleted ? "CO PO Map deleted" : "Couldn't delete CO PO Map");
     });
 
 router.route("/:Subject")
