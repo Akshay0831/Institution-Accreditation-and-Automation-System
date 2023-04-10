@@ -58,10 +58,11 @@ export default function UpdateStudent() {
                 body: JSON.stringify(student),
                 // Adding headers to the request
                 headers: { "Content-type": "application/json; charset=UTF-8" },
+            }).then(res => {
+                if (res.status == 200)
+                    navigate("/admin/collectionlist", { state: "Student", });
+                console.log(res.status, res.statusText);
             });
-            navigate("/admin/collectionlist",
-                { state: "Student" }
-            );
         } else {
             alert("Please fill all fields");
         }
