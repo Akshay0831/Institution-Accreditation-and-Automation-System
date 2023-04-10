@@ -19,7 +19,7 @@ router.route("/")
         const teacherObj = req.body.Teacher;
         const teacherAdded = await mongo.addDoc("Teacher", teacherObj);
 
-        res.status(teacherAdded ? 201 : 400).json(teacherAdded ? "Created new teacher" : "Couldn't create new teacher");
+        res.status(teacherAdded ? 200 : 400).json(teacherAdded ? "Created new teacher" : "Couldn't create new teacher");
     })
 
     .put(async (req, res) => {

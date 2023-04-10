@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
 export default function UpdateTeacher() {
 
+    const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
     document.title = (isUpdate?"Update":"Add") + " Teacher";
@@ -16,7 +17,6 @@ export default function UpdateTeacher() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // console.log((await (await fetch("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
             if (isUpdate) {
                 const teachersData = (await (await fetch("http://localhost:4000/documents/Teacher")).json()).filter(doc => doc._id == id)[0];
                 console.log(teachersData);
@@ -40,6 +40,7 @@ export default function UpdateTeacher() {
             "Teacher Name": teacherName,
             "Department": departmentId
         }}
+        if (isUpdate) teacher._id=id;
         fetch(`http://localhost:4000/Teacher`, {
             // Adding method type
             method: (isUpdate ? "PUT" : "POST"),
@@ -47,6 +48,12 @@ export default function UpdateTeacher() {
             body: JSON.stringify(teacher),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
+        }).then((res)=>{
+            if (res.status == 200)
+                navigate("/admin/collectionlist",
+                    {state: "Teacher",
+                });
+            console.log(res.status, res.statusText);
         });
     }
 
