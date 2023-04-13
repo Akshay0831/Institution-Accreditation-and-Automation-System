@@ -1,8 +1,7 @@
-import React, { Component, lazy, Suspense } from "react";
-import Table from "react-bootstrap/Table";
+import React, { Component } from "react";
+import { Accordion, Card, Table } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-const Header = lazy(() => import("./Header"));
-const AccordionItem = lazy(() => import("./AccordionItem"));// const BatchInput = lazy(() => import("./teacher/BatchInput"));
+
 export default class UpdateMarks extends Component {
 
     toasts(message, type) {
@@ -77,134 +76,132 @@ export default class UpdateMarks extends Component {
     render() {
         return (
             <main className="pt-5" >
-                <Suspense>
-                    <ToastContainer />
-                    <Header links={[["About Us", "#"], ["Contact Us", "#"], ["Teacher Dashboard", "/home"], ["Update Marks", "/update_marks"]]} />
-                    <div className="container">
-                        {this.state != null ? (
-                            <div className="accordion" id="DepartmentsAccordion">
-                                {this.state.marks.map((dept, deptIndex) => {
-                                    return (
-                                        <AccordionItem
-                                            key={dept._id}
-                                            accHeadingId={dept["Department Name"]}
-                                            accId="DepartmentsAccordion"
-                                            targetAndControls={dept["Department Name"]}
-                                            headContent={dept["Department Name"]}>
-                                            <div className="accordion" id="ClassesAccordion">
-                                                <h4>Classes</h4>
-                                                {dept.Classes?.map((classObj, classIndex) => {
-                                                    return (
-                                                        <AccordionItem key={classObj._id}
-                                                            accHeadingId={dept["Department Name"] + classObj.Semester + classObj.Section}
-                                                            accId="ClassesAccordion"
-                                                            targetAndControls={dept["Department Name"] + classObj.Semester + classObj.Section}
-                                                            headContent={classObj.Semester + classObj.Section}>
-                                                            <div className="accordion" id="SubjectsAccordion" >
-                                                                <h4>Subjects</h4>
-                                                                {classObj.Subjects?.map((subject, subjectIndex) => {
-                                                                    return (
-                                                                        <AccordionItem
-                                                                            key={subject._id}
-                                                                            accHeadingId={subject["Subject Code"]}
-                                                                            accId="SubjectsAccordion"
-                                                                            targetAndControls={classObj.Section + classObj.Semester + "_" + subject["Subject Name"]}
-                                                                            headContent={`${subject["Subject Name"]} (${subject["Subject Code"]})`}>
-                                                                            <div className="accordion overflow-auto" id="StudentsAccordion">
-                                                                                <h4>Students</h4>
-                                                                                <table className="table table-striped table-hover table-bordered" style={{ fontSize: "15px" }}>
-                                                                                    <thead>
-                                                                                        <tr>
-                                                                                            <th scope="col" className="text-center" rowSpan="2">Sl. No</th>
-                                                                                            <th scope="col" className="text-center" rowSpan="2">USN</th>
-                                                                                            <th scope="col" className="text-center" rowSpan="2">Name</th>
-                                                                                            {Object.keys(subject["Max Marks"]).map(i => {
-                                                                                                return (
-                                                                                                    <th
-                                                                                                        colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
-                                                                                                        rowSpan={i === "SEE" ? 2 : 1}
-                                                                                                        scope="col"
-                                                                                                        className="text-center"
-                                                                                                        key={i}>
-                                                                                                        {i}
-                                                                                                    </th>
-                                                                                                )
-                                                                                            })}
-                                                                                        </tr>
-                                                                                        <tr>
-                                                                                            {Object.keys(subject["Max Marks"]).filter(obj => obj !== "SEE").map((ia, i) => {
-                                                                                                return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
-                                                                                                    return (
-                                                                                                        <th scope="col" className="text-center" key={ia + co}>{co}</th>
-                                                                                                    );
-                                                                                                }), <th scope="col" className="text-center" key={i}>Total</th>])
-                                                                                            })}
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                        {subject.Students.map((student, studentIndex) => {
-                                                                                            return (
-                                                                                                <tr key={student.USN}>
-                                                                                                    <td>{studentIndex + 1}</td>
-                                                                                                    <td>{student.USN}</td>
-                                                                                                    <td>{student["Student Name"]}</td>
-                                                                                                    {Object.keys(student["Marks Gained"]["Marks Gained"]).map((ia, i) => {
-                                                                                                        return [(Object.keys(student["Marks Gained"]["Marks Gained"][ia]).map((co, c) => {
-                                                                                                            if (ia !== "SEE") {
-                                                                                                                return (
-                                                                                                                    <td key={ia + co} style={{ minWidth: "100px" }}>
-                                                                                                                        <input type="number"
-                                                                                                                            className="form-control"
-                                                                                                                            style={{ fontSize: "15px" }}
-                                                                                                                            min="0"
-                                                                                                                            max={subject["Max Marks"][ia][co]}
-                                                                                                                            placeholder={student["Marks Gained"]["Marks Gained"][ia][co] + "/" + subject["Max Marks"][ia][co]}
-                                                                                                                            onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, co)} />
-                                                                                                                    </td>
-                                                                                                                )
-                                                                                                            }
-                                                                                                        })
-                                                                                                        ), ia !== "SEE" ? <td key={"total_" + ia}>{this.totalIA(student["Marks Gained"]["Marks Gained"][ia]) + "/" + this.totalIA(subject["Max Marks"][ia])}</td> : (
-                                                                                                            <td key={"SEE"} style={{ minWidth: "100px" }}>
-                                                                                                                <input type="number"
-                                                                                                                    className="form-control"
-                                                                                                                    style={{ fontSize: "15px" }}
-                                                                                                                    min="0"
-                                                                                                                    max={subject["Max Marks"][ia]}
-                                                                                                                    placeholder={student["Marks Gained"]["Marks Gained"][ia] + "/" + subject["Max Marks"][ia]}
-                                                                                                                    onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, "SEE", null)} />
-                                                                                                            </td>
-                                                                                                        )]
-                                                                                                    })}
-                                                                                                    <td>
-                                                                                                        <button
-                                                                                                            className="btn btn-warning py-1"
-                                                                                                            onClick={() => this.updateDocument(student["Marks Gained"])}>
-                                                                                                            <i className="fa fa-pencil" aria-hidden="true" />
-                                                                                                        </button>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            )
-                                                                                        })}
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </div>{/* <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/> */}
-                                                                        </AccordionItem>
-                                                                    );
+                <ToastContainer />
+                <div className="container">
+                    <Card>
+                        <Card.Header className="fs-3">Update Marks</Card.Header>
+                        <Card.Body>
+                            {
+                                this.state
+                                    ? <Accordion defaultActiveKey="0">
+                                        {this.state.marks && this.state.marks.map((dept, deptIndex) => {
+                                            return (<Accordion.Item key={deptIndex} eventKey={deptIndex}>
+                                                <Accordion.Header>{dept["Department Name"]}</Accordion.Header>
+                                                <Accordion.Body>
+                                                    {
+                                                        dept.Classes
+                                                            ? <Accordion defaultActiveKey="0">Classes{
+                                                                dept.Classes.map((classObj, classIndex) => {
+                                                                    return <Accordion.Item key={classIndex} eventKey={classIndex}>
+                                                                        <Accordion.Header>{`${classObj.Semester}${classObj.Section} (${dept["Department Name"]})`}</Accordion.Header>
+                                                                        <Accordion.Body>
+                                                                            {
+                                                                                classObj.Subjects
+                                                                                    ? <Accordion defaultActiveKey="0">Subjects{
+                                                                                        classObj.Subjects.map((subject, subjectIndex) => {
+                                                                                            return <Accordion.Item key={subjectIndex} eventKey={subjectIndex}>
+                                                                                                <Accordion.Header>{`${subject["Subject Name"]} (${subject["Subject Code"]})`}</Accordion.Header>
+                                                                                                <Accordion.Body className="table-responsive overflow-auto">{
+                                                                                                    subject.Students.filter(student => student["Marks Gained"]["Marks Gained"]).length ?
+                                                                                                        <Table striped hover bordered style={{ fontSize: "15px" }}>
+                                                                                                            <thead>
+                                                                                                                <tr>
+                                                                                                                    <th scope="col" className="text-center" rowSpan="2">Sl. No</th>
+                                                                                                                    <th scope="col" className="text-center" rowSpan="2">USN</th>
+                                                                                                                    <th scope="col" className="text-center" rowSpan="2">Name</th>
+                                                                                                                    {Object.keys(subject["Max Marks"]).map(i => {
+                                                                                                                        return (
+                                                                                                                            <th
+                                                                                                                                colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
+                                                                                                                                rowSpan={i === "SEE" ? 2 : 1}
+                                                                                                                                scope="col"
+                                                                                                                                className="text-center"
+                                                                                                                                key={i}>
+                                                                                                                                {i}
+                                                                                                                            </th>
+                                                                                                                        )
+                                                                                                                    })}
+                                                                                                                </tr>
+                                                                                                                <tr>
+                                                                                                                    {Object.keys(subject["Max Marks"]).filter(obj => obj !== "SEE").map((ia, i) => {
+                                                                                                                        return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
+                                                                                                                            return (
+                                                                                                                                <th scope="col" className="text-center" key={ia + co}>{co}</th>
+                                                                                                                            );
+                                                                                                                        }), <th scope="col" className="text-center" key={i}>Total</th>])
+                                                                                                                    })}
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody>
+                                                                                                                {subject.Students.map((student, studentIndex) => {
+                                                                                                                    // { <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/> }
+                                                                                                                    return (
+                                                                                                                        <tr key={student.USN}>
+                                                                                                                            <td>{studentIndex + 1}</td>
+                                                                                                                            <td>{student.USN}</td>
+                                                                                                                            <td>{student["Student Name"]}</td>
+                                                                                                                            {Object.keys(student["Marks Gained"]["Marks Gained"]).map((ia, i) => {
+                                                                                                                                return [(Object.keys(student["Marks Gained"]["Marks Gained"][ia]).map((co, c) => {
+                                                                                                                                    if (ia !== "SEE") {
+                                                                                                                                        return (
+                                                                                                                                            <td key={ia + co} style={{ minWidth: "100px" }}>
+                                                                                                                                                <input type="number"
+                                                                                                                                                    className="form-control"
+                                                                                                                                                    style={{ fontSize: "15px" }}
+                                                                                                                                                    min="0"
+                                                                                                                                                    max={subject["Max Marks"][ia][co]}
+                                                                                                                                                    placeholder={student["Marks Gained"]["Marks Gained"][ia][co] + "/" + subject["Max Marks"][ia][co]}
+                                                                                                                                                    onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, co)} />
+                                                                                                                                            </td>
+                                                                                                                                        )
+                                                                                                                                    }
+                                                                                                                                })
+                                                                                                                                ), ia !== "SEE" ? <td key={"total_" + ia}>{this.totalIA(student["Marks Gained"]["Marks Gained"][ia]) + "/" + this.totalIA(subject["Max Marks"][ia])}</td> : (
+                                                                                                                                    <td key={"SEE"} style={{ minWidth: "100px" }}>
+                                                                                                                                        <input type="number"
+                                                                                                                                            className="form-control"
+                                                                                                                                            style={{ fontSize: "15px" }}
+                                                                                                                                            min="0"
+                                                                                                                                            max={subject["Max Marks"][ia]}
+                                                                                                                                            placeholder={student["Marks Gained"]["Marks Gained"][ia] + "/" + subject["Max Marks"][ia]}
+                                                                                                                                            onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, "SEE", null)} />
+                                                                                                                                    </td>
+                                                                                                                                )]
+                                                                                                                            })}
+                                                                                                                            <td>
+                                                                                                                                <button
+                                                                                                                                    className="btn btn-warning py-1"
+                                                                                                                                    onClick={() => this.updateDocument(student["Marks Gained"])}>
+                                                                                                                                    <i className="fa fa-pencil" aria-hidden="true" />
+                                                                                                                                </button>
+                                                                                                                            </td>
+                                                                                                                        </tr>
+                                                                                                                    )
+                                                                                                                })}
+                                                                                                            </tbody>
+                                                                                                        </Table>
+                                                                                                        : "No Marks found for Subject"
+                                                                                                }
+                                                                                                </Accordion.Body>
+                                                                                            </Accordion.Item>
+                                                                                        })
+                                                                                    }</Accordion>
+                                                                                    : "No Subjects"
+                                                                            }
+                                                                        </Accordion.Body>
+                                                                    </Accordion.Item>
                                                                 })}
-                                                            </div>
-                                                        </AccordionItem>
-                                                    );
-                                                })}
-                                            </div>
-                                        </AccordionItem>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <p>empty</p>
-                        )}
-                    </div>
+                                                            </Accordion>
+                                                            : "Non Classes"
+                                                    }
+                                                </Accordion.Body>
+                                            </Accordion.Item>)
+                                        })}
+                                    </Accordion>
+                                    : "Empty"
+                            }
+                        </Card.Body>
+                    </Card>
                     <div className="table-responsive card p-3">
                         <Table bordered className="p-0">
                             <thead>
@@ -233,7 +230,7 @@ export default class UpdateMarks extends Component {
                             </tbody>
                         </Table>
                     </div>
-                </Suspense>
+                </div>
             </main>
         );
     }

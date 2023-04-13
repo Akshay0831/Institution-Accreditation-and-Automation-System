@@ -81,13 +81,10 @@ app.post("/teacher/COPOMapper/update/:subjectSelected", (req, res) => {
     let body = Object(req.body);
     let subjectSelected = req.params["subjectSelected"]
     let updates = [];
-    for (let CO in body) {
-        for (let PO in body[CO]) {
-            if (body[CO][PO]) {
-                updates.push({ "fk_Subject Code": subjectSelected, "CO": CO, "PO": PO, "Value": body[CO][PO] })
-            }
-        }
-    }
+    for (let CO in body)
+        for (let PO in body[CO])
+            if (body[CO][PO])
+                updates.push({ "Subject": subjectSelected, "CO": CO, "PO": PO, "Value": body[CO][PO] });
     mongo.deleteThenInsert("CO PO Map", { "fk_Subject Code": subjectSelected }, updates)
         .then(() => res.status(200).send("Updated Mapping!"))
         .catch(err => res.status(500).send(err));
