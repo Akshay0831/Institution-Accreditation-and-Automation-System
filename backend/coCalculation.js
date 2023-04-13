@@ -531,9 +531,9 @@ jsonData.forEach((obj) => {
     const filteredArr = valuesArray.filter((value) => {
         return (value === "NA" || value === undefined || Number.isInteger(value));
     });
+    filteredArr.unshift("Name")
     filteredArr.unshift(usnArray[i])
     i += 1
-    filteredArr.unshift("Name")
     filteredArr.unshift(i)
     let index = filteredArr.length - 1; // get the index of the last but one element
     let forFifty = parseInt(((filteredArr[index])/60) * 50)
@@ -664,14 +664,275 @@ for(let j=0; j<5; j++){
 const newRows3 = XLSX.utils.sheet_add_aoa(worksheet, coAverageTable, { origin: { r: calculatedRowNumber1, c: 10 } });
 
 //hardcoded for now, can use db values in place of target levels later on
-let significanceTable = [['CO Attainment Level', 'Significance', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'], 
-['Level 3', '60% and above students should have scored >= 60% of Total marks', 'For indirect attainment, Course end survey is considered.'], 
-['Level 2', '55% to 59% of students should have scored >= 60% of Total marks', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'], 
-['Level 1', '50% to 54% of students should have scored >= 60% of Total marks', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
+let significanceTable = [['CO Attainment Level', 'Significance','','','','','','', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'], 
+['Level 3', '60% and above students should have scored >= 60% of Total marks','','','','','','', 'For indirect attainment, Course end survey is considered.'], 
+['Level 2', '55% to 59% of students should have scored >= 60% of Total marks','','','','','','', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'], 
+['Level 1', '50% to 54% of students should have scored >= 60% of Total marks','','','','','','', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
 calculatedRowNumber2 = calculatedRowNumber1 + 9
 const newRows4 = XLSX.utils.sheet_add_aoa(worksheet, significanceTable, { origin: { r: calculatedRowNumber2, c: 0 } });
 
-XLSX.writeFile(workbook, 'test.xlsx');
+worksheet['!merges'] = [
+    {
+        s: { r: calculatedRowNumber2, c: 1 },
+        e: { r: calculatedRowNumber2, c: 7 }
+    },{
+        s: { r: calculatedRowNumber2, c: 8 },
+        e: { r: calculatedRowNumber2, c: 14 }
+    },
+    {
+        s: { r: calculatedRowNumber2+1, c: 1 },
+        e: { r: calculatedRowNumber2+1, c: 7 }
+    },{
+        s: { r: calculatedRowNumber2+2, c: 1 },
+        e: { r: calculatedRowNumber2+2, c: 7 }
+    },
+    {
+        s: { r: calculatedRowNumber2+3, c: 1 },
+        e: { r: calculatedRowNumber2+3, c: 7 }
+    },{
+        s: { r: calculatedRowNumber2+1, c: 8 },
+        e: { r: calculatedRowNumber2+1, c: 14 }
+    },{
+        s: { r: calculatedRowNumber2+2, c: 8 },
+        e: { r: calculatedRowNumber2+2, c: 14 }
+    },
+    {
+        s: { r: calculatedRowNumber2+3, c: 8 },
+        e: { r: calculatedRowNumber2+3, c: 14 }
+    },
+    {
+        s: { r: calculatedRowNumber2+6, c: 12 },
+        e: { r: calculatedRowNumber2+6, c: 14 }
+    },
+    {
+        s: { r: calculatedRowNumber2+16, c: 9 },
+        e: { r: calculatedRowNumber2+16, c: 11 }
+    }
+];
+
+
+const copoMappingTableForExcel = []
+const copoMappingTableMainHeading = ['','','','','','','Co-Po Mapping Table','','','','','','']
+copoMappingTableForExcel.push(copoMappingTableMainHeading)
+const copoMappingTableHeading = ['CO\'s', 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
+copoMappingTableForExcel.push(copoMappingTableHeading)
+
+
+for (let j = 0; j < 5; j++) {
+    for (const obj of copoMappingTable) {
+        const subArray = []
+        coLevel = "CO" + (j+1)
+        subArray.push(coLevel)
+        for (const key in obj) {
+            if (key.startsWith("P")) {
+                if(obj[key][coLevel] != null){
+                    subArray.push(obj[key][coLevel])
+                } else {
+                    subArray.push('-')
+                }
+            }
+        }
+        copoMappingTableForExcel.push(subArray)
+    }
+}
+
+const avgArray = Object.values(poAverages).map(value => (value === null ? '-' : value));
+avgArray.unshift("AVG")
+copoMappingTableForExcel.push(avgArray)
+
+// console.log(copoMappingTableForExcel)
+calculatedRowNumber3 = calculatedRowNumber2 + 6
+const newRows5 = XLSX.utils.sheet_add_aoa(worksheet, copoMappingTableForExcel, { origin: { r: calculatedRowNumber3, c: 6 } });
+
+const poAttainmentTable = []
+const poAttainmentTableMainHeading = ['','','','','','','','','PO Attainment Table','','','','','','','']
+poAttainmentTable.push(poAttainmentTableMainHeading)
+const poAttainmentTableHeading = ['CO\'s', "CO Attainment in %", "CO RESULT", 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
+poAttainmentTable.push(poAttainmentTableHeading)
+
+
+for (let j = 0; j < 5; j++) {
+    for (const obj of copoMappingTable) {
+        const subArray = []
+        coLevel = "CO" + (j+1)
+        subArray.push(coLevel)
+        subArray.push(finalAttainment[coLevel])
+        if(finalAttainment[coLevel] == 3){
+            subArray.push('Y')
+        }
+        else{
+            subArray.push("N")
+        }
+        for (const key in obj) {
+            if (key.startsWith("P")) {
+                if(obj[key][coLevel] != null){
+                    subArray.push(obj[key][coLevel])
+                } else {
+                    subArray.push('-')
+                }
+            }
+        }
+        poAttainmentTable.push(subArray)
+    }
+}
+
+const avgArray1 = Object.values(poAverages).map(value => (value === null ? '-' : value));
+avgArray1.unshift("")
+avgArray1.unshift("")
+avgArray1.unshift("Average")
+poAttainmentTable.push(avgArray1)
+
+calculatedRowNumber4 = calculatedRowNumber3 + 10
+const newRows6 = XLSX.utils.sheet_add_aoa(worksheet, poAttainmentTable, { origin: { r: calculatedRowNumber4, c: 1 } });
+
+XLSX.writeFile(workbook, 'output.xlsx');
+// XLSX.writeFile(workbook, 'test.xlsx');
+
+
+
+
+// // const XLSX = require('xlsx');
+// const Chart = require('chart.js');
+// const { createCanvas } = require('canvas');
+// const fs = require('fs');
+
+// Register fonts for Chart.js to use
+// registerFont('./fonts/Roboto-Regular.ttf', { family: 'Roboto' });
+// registerFont('./fonts/Roboto-Bold.ttf', { family: 'Roboto', weight: 'bold' });
+
+// Load the existing workbook
+// workbook = XLSX.readFile('test.xlsx');
+
+// Get the worksheet
+// worksheet = workbook.Sheets['Sheet1'];
+
+// Create a Chart.js chart
+// const chartData = {
+//   labels: ['John Doe', 'Jane Smith'],
+//   datasets: [{
+//     label: 'Age',
+//     data: [30, 25],
+//     backgroundColor: 'rgba(75, 192, 192, 0.2)',
+//     borderColor: 'rgba(75, 192, 192, 1)',
+//     borderWidth: 1
+//   }]
+// };
+// const chartOptions = {
+//   scales: {
+//     y: {
+//       beginAtZero: true,
+//       max: 40
+//     }
+//   }
+// };
+// const canvas = createCanvas(500, 300); // Create a canvas
+// const ctx = canvas.getContext('2d');
+// const chart = new Chart(ctx, {
+//   type: 'bar',
+//   data: chartData,
+//   options: chartOptions
+// });
+
+// // Save the chart as an image file
+// const buffer = canvas.toBuffer('image/png');
+// fs.writeFileSync('chart.png', buffer);
+
+// // Read the image file as a base64-encoded string
+// const imageBase64 = fs.readFileSync('chart.png').toString('base64');
+
+// // Create a worksheet image object
+// const image = XLSX.utils.base64_to_img(imageBase64);
+
+// // Set the position and dimensions of the image on the worksheet
+// image['!pos'] = {
+//   x: 'B2',
+//   y: 60, // Set the row number to 40
+//   w: 10,
+//   h: 7
+// };
+
+// // Add the image to the worksheet
+// worksheet['!images'] = [image];
+
+// Write the updated workbook to a file
+
+// console.log('Chart image inserted into Excel file at row 40 successfully!');
+
+// const Excel = require('exceljs');
+// const Chart = require('chartjs-node');
+
+// // Read existing Excel file
+// workbook = new Excel.Workbook();
+// workbook.xlsx.readFile('test.xlsx')
+// .then(() => {
+//   // Reference a specific worksheet by its name
+//   const sheetName = 'Sheet1';
+//   const worksheet = workbook.getWorksheet(sheetName);
+
+//   // Modify the worksheet as needed
+//   // For example, add data to the worksheet
+//   const data = [
+//     ['Year', 'Sales'],
+//     ['2018', 100],
+//     ['2019', 200],
+//     ['2020', 300]
+//   ];
+//   worksheet.addRows(data);
+
+//   // Create a chart using chartjs-node
+//   const chartNode = new Chart(800, 600);
+//   chartNode.drawChart({
+//     type: 'bar',
+//     data: {
+//       labels: ['2018', '2019', '2020'],
+//       datasets: [{
+//         label: 'Sales',
+//         data: [100, 200, 300],
+//         backgroundColor: 'rgba(75, 192, 192, 0.2)',
+//         borderColor: 'rgba(75, 192, 192, 1)',
+//         borderWidth: 1
+//       }]
+//     },
+//     options: {
+//       title: {
+//         display: true,
+//         text: 'CO Attainment'
+//       },
+//       legend: {
+//         display: true,
+//         position: 'top'
+//       },
+//       scales: {
+//         yAxes: [{
+//           ticks: {
+//             beginAtZero: true
+//           }
+//         }]
+//       }
+//     }
+//   });
+
+//   // Save the chart as an image
+//   const chartImage = chartNode.getImageBuffer('image/png');
+
+//   // Insert the chart image into the worksheet
+//   return worksheet.addImage(chartImage, {
+//     tl: { col: 1, row: 40 },
+//     br: { col: 6, row: 50 },
+//     editAs: 'oneCell'
+//   });
+// })
+// .then(() => {
+//   // Save the modified workbook back to the same file
+//   return workbook.xlsx.writeFile('test.xlsx');
+// })
+// .then(() => {
+//   console.log('Chart added successfully!');
+// })
+// .catch((err) => {
+//   console.error(err);
+// });
+
 
 
 
