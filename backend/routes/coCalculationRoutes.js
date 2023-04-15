@@ -1,4 +1,3 @@
-// place in backend/routes
 // const mongo = require("../db/mongodb");
 
 //Can change the below json values dynamically by using: X = Y% of COx (eg. 60% of 18)
@@ -92,6 +91,12 @@ let totalStudents = {
     },
     "SEE": 0
 };
+
+// async function testFun() {
+//     let testss = await mongo.getDocs("Students")
+//     console.log(testss)
+// }
+// testFun()
 
 let jsonData = [
     {
@@ -204,7 +209,7 @@ for (let i = 0; i < jsonData.length; i++) {
 
     for (const objectName in marksGained) {
         if (objectName === "SEE") {
-            if (marksGained[objectName] != null || marksGained[objectName] != "NA") {
+            if (marksGained[objectName] != null && marksGained[objectName] != "NA") {
                 totalStudents["SEE"] += 1
             }
             if (marksGained[objectName] > studentsAboveX[objectName]) {
@@ -212,7 +217,7 @@ for (let i = 0; i < jsonData.length; i++) {
             }
         }
         for (const objectName1 in marksGained[objectName]) {
-            if (marksGained[objectName][objectName1] != null || marksGained[objectName][objectName1] != "NA") {
+            if (marksGained[objectName][objectName1] != null && marksGained[objectName][objectName1] != "NA") {
                 totalStudents[objectName][objectName1] += 1
             }
             if (marksGained[objectName][objectName1] > studentsAboveX[objectName][objectName1]) {
@@ -529,7 +534,7 @@ jsonData.forEach((obj) => {
     let flattened = flattenObject(obj);
     const valuesArray = Object.values(flattened);
     const filteredArr = valuesArray.filter((value) => {
-        return (value === "NA" || value === undefined || Number.isInteger(value));
+        return (value == "NA" || value === undefined || Number.isInteger(value));
     });
     filteredArr.unshift("Name")
     filteredArr.unshift(usnArray[i])
@@ -545,11 +550,10 @@ jsonData.forEach((obj) => {
 
 const XLSX = require('xlsx');
 
-const workbook = XLSX.readFile('test.xlsx');
+const workbook = XLSX.readFile('../test.xlsx');
 const worksheet = workbook.Sheets['Sheet1'];
 const startRow = 15;
 const newRows = XLSX.utils.sheet_add_aoa(worksheet, studentsForExcel, { origin: { r: startRow, c: 0 } });
-// XLSX.writeFile(workbook, 'test.xlsx');
 
 calculatedRowNumber = startRow + i + 1
 calculatedRows = []
@@ -785,7 +789,88 @@ poAttainmentTable.push(avgArray1)
 calculatedRowNumber4 = calculatedRowNumber3 + 10
 const newRows6 = XLSX.utils.sheet_add_aoa(worksheet, poAttainmentTable, { origin: { r: calculatedRowNumber4, c: 1 } });
 
-XLSX.writeFile(workbook, 'output.xlsx');
+XLSX.writeFile(workbook, '../output.xlsx');
+
+
+const ExcelJS = require('exceljs');
+
+const workbook1 = new ExcelJS.Workbook();
+workbook1.xlsx.readFile('../output.xlsx')
+    .then(() => {
+    const worksheet1 = workbook1.getWorksheet('Sheet1');
+    addBorders(12, calculatedRowNumber-1, 1, 19, worksheet1)
+    addBorders(calculatedRowNumber+1, calculatedRowNumber+5, 1, 17, worksheet1)
+    addBorders(calculatedRowNumber1+1, calculatedRowNumber1+7, 1, 8, worksheet1)
+    addBorders(calculatedRowNumber1+1, calculatedRowNumber1+6, 11, 18, worksheet1)
+    addBorders(calculatedRowNumber2+1, calculatedRowNumber2+4, 1, 15, worksheet1)
+    return workbook1.xlsx.writeFile('../formatted_output.xlsx');
+})
+
+function addBorders (row1, row2, col1, col2, worksheet1) {
+    let startRow = row1;
+    let endRow = row2;
+    let startCol = col1;
+    let endCol = col2;
+
+    const border = {
+        top: { style: 'medium' },
+        bottom: { style: 'medium' },
+        left: { style: 'medium' },
+        right: { style: 'medium' }
+    };
+
+    for (let row = startRow; row <= endRow; row++) {
+    for (let col = startCol; col <= endCol; col++) {
+        const cell = worksheet1.getCell(row, col);
+        cell.border = border;
+    }
+    }
+}
+
+
+// const ExcelJS = require('exceljs');
+
+// // Create a new Excel workbook
+// const workbook1 = new ExcelJS.Workbook();
+
+// // Add a new worksheet to the workbook
+// const worksheet1 = workbook1.addWorksheet('Sheet2');
+
+// // Define the range of rows and columns to add borders to
+// const startRow1 = 1;
+// const endRow = 10;
+// const startCol = 1;
+// const endCol = 5;
+
+// // Define the border style
+// const border = {
+//   top: { style: 'thin' },
+//   bottom: { style: 'thin' },
+//   left: { style: 'thin' },
+//   right: { style: 'thin' }
+// };
+
+// // Loop through each row in the range
+// for (let row = startRow1; row <= endRow; row++) {
+//   // Loop through each column in the range
+//   for (let col = startCol; col <= endCol; col++) {
+//     // Get the cell object
+//     const cell = worksheet1.getCell(row, col);
+
+//     // Set the border style for the cell
+//     cell.border = border;
+//   }
+// }
+
+// // Write the workbook to a new file
+// workbook1.xlsx.writeFile('../test_with_borders.xlsx')
+//   .then(() => {
+//     console.log('Workbook with borders written successfully.');
+//   })
+//   .catch((err) => {
+//     console.error('Error writing workbook with borders:', err);
+//   });
+
 // XLSX.writeFile(workbook, 'test.xlsx');
 
 
