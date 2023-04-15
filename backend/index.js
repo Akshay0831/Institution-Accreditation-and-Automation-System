@@ -44,6 +44,10 @@ app.get("/documents/:collection", async (req, res) => {
     res.json(await mongo.getDocs(req.params["collection"]));
 });
 
+app.post("/documents/:collection", async (req, res) => {
+    res.json(await mongo.getDocs(req.params["collection"], req.body.searchObj));
+});
+
 app.get("/copomaps/:subjectId", async (req, res) => {
     let docs = await mongodb.getDocs("CO PO Map");
     let COPOs = { 'PO1': {}, 'PO2': {}, 'PO3': {}, 'PO4': {}, 'PO5': {}, 'PO6': {}, 'PO7': {}, 'PO8': {}, 'PO9': {}, 'PO10': {}, 'PO11': {}, 'PO12': {}, 'PSO1': {}, 'PSO2': {} };
@@ -155,10 +159,10 @@ app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));
     if (teacherDoc) {
         let teacherId = teacherDoc._id;
-        let teacherAllocation = await mongo.getDocs("Teacher Allocation", { "fk_Teacher ID": teacherId });
+        let teacherAllocation = await mongo.getDocs("Teacher Allocation", { "Teacher": teacherId });
         let subjects = []
-        teacherAllocation.forEach(doc => { if (!subjects.includes(doc["fk_Subject Code"])) subjects.push(doc['fk_Subject Code']) });
-        subjects = await mongo.getDocs("Subject", { "Subject Code": { $in: subjects } });
+        teacherAllocation.forEach(doc => { if (!subjects.includes(doc["Subject"])) subjects.push(doc['Subject']) });
+        subjects = await mongo.getDocs("Subject", { _id: { $in: subjects } });
         res.json(subjects);
     }
     else
