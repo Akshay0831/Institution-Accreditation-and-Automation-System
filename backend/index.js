@@ -15,6 +15,7 @@ const coPoMapRoutes = require("./routes/coPoMapRoutes");
 const subjectRoutes = require("./routes/subjectRoutes");
 const classRoutes = require("./routes/classRoutes");
 const reportGenerationRoutes = require("./routes/reportGenerationRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 
 const fs = require('fs');
 require("dotenv").config();
@@ -154,6 +155,10 @@ app.use("/Subject", subjectRoutes);
 //............Report Generation routes.............
 
 app.use("/report_generation", reportGenerationRoutes);
+
+//............Feedback routes.............
+
+app.use("/feedback", feedbackRoutes);
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));
