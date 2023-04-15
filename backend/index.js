@@ -14,6 +14,7 @@ const classAllocationRoutes = require("./routes/classAllocationRoutes");
 const coPoMapRoutes = require("./routes/coPoMapRoutes");
 const subjectRoutes = require("./routes/subjectRoutes");
 const classRoutes = require("./routes/classRoutes");
+const reportGenerationRoutes = require("./routes/reportGenerationRoutes");
 
 const fs = require('fs');
 require("dotenv").config();
@@ -146,6 +147,9 @@ app.use("/CO%20PO%20Map", coPoMapRoutes);
 
 app.use("/Subject", subjectRoutes);
 
+//............Report Generation routes.............
+
+app.use("/report_generation", reportGenerationRoutes);
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));
