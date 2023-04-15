@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Accordion, Button, Card, Table } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
+import BatchInput from "./teacher/BatchInput";
 
 export default class UpdateMarks extends Component {
 
@@ -152,7 +153,6 @@ export default class UpdateMarks extends Component {
                                                                                                         </thead>
                                                                                                         <tbody>
                                                                                                             {subject.Students.map((student, studentIndex) => {
-                                                                                                                // { <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/> }
                                                                                                                 return (
                                                                                                                     <tr key={student.USN}>
                                                                                                                         <td>{studentIndex + 1}</td>
@@ -193,6 +193,7 @@ export default class UpdateMarks extends Component {
                                                                                                         </tbody>
                                                                                                     </Table>
                                                                                                 }
+                                                                                                <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/>
                                                                                                 </Accordion.Body>
                                                                                             </Accordion.Item>
                                                                                         })

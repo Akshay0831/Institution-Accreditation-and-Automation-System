@@ -8,6 +8,9 @@ export default class BatchInput extends Component {
         super(props);
         this.serverURL = 'http://localhost:4000';
         this.subjectCode = props.subjectCode;
+        this.subjectId = props.subjectId;
+        this.deptId = props.deptId;
+        this.classId = props.classId;
         this.state = { data: null, students: [] };
     }
 
@@ -17,7 +20,7 @@ export default class BatchInput extends Component {
         this.setState({ students: students, });
     }
 
-    async addData() {
+    addData() {
         let data = this.state.data;
         if (!data) return;
         const workbook = XLSX.read(data);
@@ -26,7 +29,7 @@ export default class BatchInput extends Component {
             header: 2,
             defval: "",
         });
-        jsonData.map((entry) => {
+        jsonData.map(async (entry) => {
             let marksGained = {};
             for (let key of Object.keys(entry)) {
                 if (key.includes('/')) {
@@ -39,24 +42,57 @@ export default class BatchInput extends Component {
                     marksGained[key] = entry[key];
             }
 
-            let message = {};
-            message['Marks Gained'] = marksGained;
-            message['fk_USN'] = entry['USN'].trim()
-            message['fk_Subject Code'] = this.subjectCode;
-            // console.log(JSON.stringify(message));
-            fetch(this.serverURL + "/documents/Marks/add", {
+            let studentId;
+            let student = await (await fetch(this.serverURL + "/documents/Student", {
                 method: "POST",
+                body: JSON.stringify({ searchObj: { USN: entry["USN"] } }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            })).json();
+
+            if (!student.length) {
+                let studentRes = await fetch(this.serverURL + "/documents/Student/add", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "Student Name": entry["Student Name"],
+                        USN: entry["USN"],
+                        Department: this.deptId
+                    }),
+                    headers: { "Content-type": "application/json; charset=UTF-8", },
+                });
+
+                if (studentRes.status == 200) {
+                    studentId = await studentRes.text();
+                    console.log("Inserted ",studentId);
+                }
+
+                let classAllocRes = await fetch(this.serverURL + "/documents/Class Allocation/add", {
+                    method: "POST",
+                    body: JSON.stringify({ Class: this.classId, Student: studentId }),
+                    headers: { "Content-type": "application/json; charset=UTF-8", },
+                });
+            }
+            else
+                studentId = student[0]._id;
+
+            let marks = await (await fetch(this.serverURL + "/documents/Marks", {
+                method: "POST",
+                body: JSON.stringify({ searchObj: { Subject: this.subjectId, Student: studentId } }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            })).json();
+
+            let message = {Marks: { Student: studentId, Subject: this.subjectId, "Marks Gained": marksGained }};
+            if (marks.length)
+                message.Marks._id = marks[0]["_id"];
+            fetch(this.serverURL + "/Marks", {
+                method: (marks.length?"PUT":"POST"),
                 body: JSON.stringify(message),
                 headers: { "Content-type": "application/json; charset=UTF-8", },
             })
                 .then(async (res) => {
-                    if (res.status == 200) {
-                        message['_id'] = await res.text()
-                        console.log("Added ", message);
-                    }
+                    if (res.status == 200) console.log("Inserted/Updated ", message);
                     else throw res;
                 })
-                .catch(err => console.error(err.statusText));
+                .catch(err => console.error(err));
         })
     }
 
@@ -69,11 +105,13 @@ export default class BatchInput extends Component {
     render() {
         return (
             <Card>
-                <Card.Body>
-                    <Form className="row">
-                        <Form.Label className="col">Upload XLSX File For Batch Input: </Form.Label>
-                        <Form.Control size="sm" className="col" type="file" name="file" required onChange={this.uploadFile.bind(this)} placeholder="Enter File" />
-                        <button type="button" className="btn btn-primary col-1 mh-1 mw-1" onClick={() => this.addData()}>
+                <Card.Body className="py-1">
+                    <Form className="row g-2">
+                        <Form.Label className="col-md-5 col-form-label">Upload XLSX File For Batch Input: </Form.Label>
+                        <div className="col-md-6">
+                            <Form.Control className="col" type="file" name="file" required onChange={this.uploadFile.bind(this)} placeholder="Enter File" />
+                        </div>
+                        <button type="button" className="btn btn-primary col-md-1" onClick={() => this.addData()}>
                             <i className="fas fa-upload"></i>
                         </button>
                     </Form>
