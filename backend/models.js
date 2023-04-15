@@ -112,6 +112,17 @@ const models = {
         "Subject": "",
         "Teacher": "",
         "Department": ""
+    },
+    "Feedback": {
+        "_id": "",
+        "Subject": "",
+        "values": {
+            "CO1": 0,
+            "CO2": 0,
+            "CO3": 0,
+            "CO4": 0,
+            "CO5": 0
+        }
     }
 };
 

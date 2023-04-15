@@ -41,7 +41,7 @@ class MongoDB {
 
     async addDoc(collectionName, body) {
         // body['_id'] = (new ObjectId).toString();
-        body._id = body._id ? body._id : (new ObjectId).toString();
+        body._id = body._id.length > 0 ? body._id : (new ObjectId).toString();
         let insertedResult = await this.db
             .collection(collectionName)
             .insertOne(body);

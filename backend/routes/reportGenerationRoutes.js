@@ -4,9 +4,8 @@ const router = express.Router();
 
 router.route("/:Subject")
     .get(async (req, res) => {
-        let marks = await mongo.getDocs("Marks");
+        let marks = await mongo.getDocs("Marks", { Subject: req.params.Subject });
         marks = marks.filter(marks => marks.Subject === req.params.Subject)
-        console.log(req.params.Subject);
 
         marks = await Promise.all(marks.map(async m => {
             m.Student = await mongo.getDoc("Student", { _id: m.Student });
@@ -15,7 +14,7 @@ router.route("/:Subject")
             return m;
         }))
         let gotMarks = marks.length > 0;
-        res.status(gotMarks ? 200 : 400).json(gotMarks ? marks : "Couldn't fetch marks");
+        res.status(gotMarks ? 200 : 400).json(gotMarks ? { Marks: marks, IndirectAttainmentValues: await mongo.getDoc("Feedback", { Subject: req.params.Subject }) } : "Couldn't fetch data");
     })
 
 module.exports = router;
