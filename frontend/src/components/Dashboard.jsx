@@ -9,7 +9,7 @@ export default function Dashboard(props) {
             <div className="container">
                 <div className="row">
                     <div className="col-12 col-sm-6">
-                        <div className="card" style={{ color: "width: 18rem" }}>
+                        <div className="card" >
                             <div className="card-body">
                                 <h5 className="card-title">Update Marks</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Editable Student Marks Table</h6>
@@ -20,7 +20,7 @@ export default function Dashboard(props) {
                     </div>
                     {props.type == "admin" &&
                         <div className="col-12 col-sm-6">
-                            <div className="card" style={{ color: "width: 18rem" }}>
+                            <div className="card" >
                                 <div className="card-body">
                                     <h5 className="card-title">Students List</h5>
                                     <h6 className="card-subtitle mb-2 text-muted">Students CRUD</h6>
@@ -31,7 +31,7 @@ export default function Dashboard(props) {
                         </div>
                     }
                     <div className="col-12 col-sm-6">
-                        <div className="card" style={{ color: "width: 18rem" }}>
+                        <div className="card" >
                             <div className="card-body">
                                 <h5 className="card-title">NBA Documents</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Document Files Viewer</h6>
@@ -41,7 +41,7 @@ export default function Dashboard(props) {
                         </div>
                     </div>
                     <div className="col-12 col-sm-6">
-                        <div className="card" style={{ color: "width: 18rem" }}>
+                        <div className="card" >
                             <div className="card-body">
                                 <h5 className="card-title">Analytics</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Data Analysis Tools</h6>
@@ -51,7 +51,7 @@ export default function Dashboard(props) {
                         </div>
                     </div>
                     <div className="col-12 col-sm-6">
-                        <div className="card" style={{ color: "width: 18rem" }}>
+                        <div className="card" >
                             <div className="card-body">
                                 <h5 className="card-title">CO PO Mapping</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Mapping Table</h6>
@@ -62,7 +62,7 @@ export default function Dashboard(props) {
                     </div>
                     {props.type == "admin" &&
                         <div className="col-12 col-sm-6">
-                            <div className="card" style={{ color: "width: 18rem" }}>
+                            <div className="card">
                                 <div className="card-body">
                                     <h5 className="card-title">Collection CRUD</h5>
                                     <h6 className="card-subtitle mb-2 text-muted">Create, Read, Update and Delete</h6>

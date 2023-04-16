@@ -296,6 +296,13 @@ function calculateCOPO (data) {
             case "8": semYear = 'IV/VIII'
             break
         }
+        
+        let admittedYear = jsonData[0]["Student"]["USN"].slice(3, 5)
+        admittedYear = parseInt('20' + admittedYear)
+        let semOfClass = parseInt(jsonData[0]["Subject"]["Semester"])
+        admittedYear = admittedYear + Math.round(semOfClass/2) - 1
+        let nextYear = admittedYear + 1
+        let academicYear = admittedYear.toString() + '-' + nextYear.toString()
 
         function flattenObject(obj) {
             let flattened = {};
@@ -335,7 +342,7 @@ function calculateCOPO (data) {
         const ExcelJS = require('exceljs');
         const workbook = new ExcelJS.Workbook();
 
-        workbook.xlsx.readFile('../test.xlsx')
+        workbook.xlsx.readFile('./test.xlsx')
         .then(async () => {
             const worksheet = workbook.getWorksheet('Sheet1');
             const columnB = worksheet.getColumn('B');
@@ -345,6 +352,7 @@ function calculateCOPO (data) {
             worksheet.getCell('D6').value = semYear;
             worksheet.getCell('D7').value = jsonData[0]["Subject"]["Subject Name"];
             worksheet.getCell('D8').value = jsonData[0]["Subject"]["Subject Code"];
+            worksheet.getCell('D9').value = academicYear;
             studentsForExcel.forEach((row, index) => {
                 const newRow = worksheet.addRow(row);
                 newRow.number = startRow + index;
