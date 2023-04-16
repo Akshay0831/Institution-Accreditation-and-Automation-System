@@ -11,15 +11,21 @@ export default class StudentList extends Component {
         document.title = "Update Marks";
     }
 
-    async deleteClicked(USN) {
+    async deleteClicked(id) {
         let res = await fetch("http://localhost:4000/Student", {
             // Adding method type
             method: "DELETE",
             // Adding body or contents to send
-            body: JSON.stringify({ USN: USN }),
+            body: JSON.stringify({ _id: id }),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
-        })
+        });
+        console.log(res);
+        if (res.status==200){
+            let stud = (this.state.Students).filter((doc) => doc._id !== id);
+            this.setState({Students: stud});
+            this.forceUpdate(this.componentDidMount);
+        }
     }
 
     render() {
@@ -79,7 +85,7 @@ export default class StudentList extends Component {
                                                                                             <button className="btn btn-warning py-1">
                                                                                                 <Link to={`/${sessionStorage.getItem("userType")}/student/update/${student._id}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
                                                                                             </button>
-                                                                                            <button className="btn btn-danger" onClick={() => { this.deleteClicked(student.USN) }}>
+                                                                                            <button className="btn btn-danger" onClick={() => { this.deleteClicked(student._id) }}>
                                                                                                 <i className="fa fa-solid fa-user-minus" aria-hidden="true"></i>
                                                                                             </button>
                                                                                         </td>

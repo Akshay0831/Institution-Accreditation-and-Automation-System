@@ -98,9 +98,9 @@ router.route("/")
 
 
     .delete(async (req, res) => {
-        const isStudentDeleted = await mongo.deleteDoc("Student", { _id: req.body.Student._id });
-        const isMarksDeleted = await mongo.deleteDoc("Marks", { Student: req.body.Student._id });
-        const isAllocationDeleted = await mongo.deleteDoc("Class Allocation", { Student: req.body.Student._id });
+        const isStudentDeleted = await mongo.deleteDoc("Student", { _id: req.body._id });
+        const isMarksDeleted = await mongo.deleteDoc("Marks", { Student: req.body._id });
+        const isAllocationDeleted = await mongo.deleteDoc("Class Allocation", { Student: req.body._id });
 
         const isDeleteSuccess = isStudentDeleted && isAllocationDeleted && isMarksDeleted;
 
