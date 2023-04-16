@@ -100,110 +100,17 @@ function calculateCOPO (data) {
     // }
     // testFun()
 
-    let jsonData = [
-        {
-            "_id": "63791811a2552fdc443b934e",
-            "Marks Gained": {
-                "IA1": {
-                    "CO1": 17,
-                    "CO2": 10
-                },
-                "A1": {
-                    "CO1": 5,
-                    "CO2": 3
-                },
-                "IA2": {
-                    "CO2": 5,
-                    "CO3": 17,
-                    "CO4": 5
-                },
-                "A2": {
-                    "CO2": 2,
-                    "CO3": 6,
-                    "CO4": 2
-                },
-                "IA3": {
-                    "CO4": 12,
-                    "CO5": 16
-                },
-                "A3": {
-                    "CO4": 3,
-                    "CO5": 5
-                },
-                "SEE": 47
-            },
-            "fk_Subject Code": "18cs51",
-            "fk_USN": "1ks19cs001"
-        },
-        {
-            "_id": "63791811a2552fdc443b934f",
-            "Marks Gained": {
-                "IA1": {
-                    "CO1": 14,
-                    "CO2": 11
-                },
-                "A1": {
-                    "CO1": 5,
-                    "CO2": 4
-                },
-                "IA2": {
-                    "CO2": 5,
-                    "CO3": 17,
-                    "CO4": 5
-                },
-                "A2": {
-                    "CO2": 2,
-                    "CO3": 6,
-                    "CO4": 1
-                },
-                "IA3": {
-                    "CO4": 10,
-                    "CO5": 16
-                },
-                "A3": {
-                    "CO4": 3,
-                    "CO5": 6
-                },
-                "SEE": 51
-            },
-            "fk_Subject Code": "18cs51",
-            "fk_USN": "1ks19cs002"
-        },
-        {
-            "_id": "63791811a2552fdc443b934f",
-            "Marks Gained": {
-                "IA1": {
-                    "CO1": 8,
-                    "CO2": 11
-                },
-                "A1": {
-                    "CO1": 2,
-                    "CO2": 4
-                },
-                "IA2": {
-                    "CO2": 1,
-                    "CO3": 17,
-                    "CO4": 5
-                },
-                "A2": {
-                    "CO2": "NA",
-                    "CO3": 6,
-                    "CO4": 1
-                },
-                "IA3": {
-                    "CO4": 10,
-                    "CO5": 16
-                },
-                "A3": {
-                    "CO4": 1,
-                    "CO5": 6
-                },
-                "SEE": 50
-            },
-            "fk_Subject Code": "18cs51",
-            "fk_USN": "1ks19cs003"
+    let jsonData = data["Marks"]
+    
+    jsonData.sort((a, b) => {
+        if (a.Student.USN < b.Student.USN) {
+            return -1;
         }
-    ]
+        if (a.Student.USN > b.Student.USN) {
+            return 1;
+        }
+        return 0;
+    });
 
     for (let i = 0; i < jsonData.length; i++) {
         let obj = jsonData[i];
@@ -211,18 +118,18 @@ function calculateCOPO (data) {
 
         for (const objectName in marksGained) {
             if (objectName === "SEE") {
-                if (marksGained[objectName] != null && marksGained[objectName] != "NA") {
+                if (marksGained[objectName] != null && marksGained[objectName] != "NA" && marksGained[objectName] != "AB") {
                     totalStudents["SEE"] += 1
                 }
-                if (marksGained[objectName] > studentsAboveX[objectName]) {
+                if (marksGained[objectName] >= xPercentageOfMaxMarks[objectName]) {
                     studentsAboveX[objectName] += 1
                 }
             }
             for (const objectName1 in marksGained[objectName]) {
-                if (marksGained[objectName][objectName1] != null && marksGained[objectName][objectName1] != "NA") {
+                if (marksGained[objectName][objectName1] != null && marksGained[objectName][objectName1] != "NA" && marksGained[objectName][objectName1] != "AB") {
                     totalStudents[objectName][objectName1] += 1
                 }
-                if (marksGained[objectName][objectName1] > studentsAboveX[objectName][objectName1]) {
+                if (marksGained[objectName][objectName1] >= xPercentageOfMaxMarks[objectName][objectName1]) {
                     studentsAboveX[objectName][objectName1] += 1
                 }
             }
@@ -338,13 +245,7 @@ function calculateCOPO (data) {
 
     // console.log(directAttainmentTargetLevels)
     //need to get this data from db
-    let indirectAttainment = {
-        "CO1": 91,
-        "CO2": 91,
-        "CO3": 91,
-        "CO4": 91,
-        "CO5": 91
-    }
+    let indirectAttainment = data["IndirectAttainmentValues"]["values"]
 
     let indirectAttainmentTargetLevels = {}
     for (const key in indirectAttainment) {
@@ -510,6 +411,27 @@ function calculateCOPO (data) {
         }
     }
 
+
+    let semYear = ''
+    let checkSem = jsonData[0]["Subject"]["Semester"];
+    switch(checkSem){
+        case "1": semYear = 'I/I'
+        break
+        case "2": semYear = 'I/II'
+        break
+        case "3": semYear = 'II/III'
+        break
+        case "4": semYear = 'II/IV'
+        break
+        case "5": semYear = 'III/V'
+        break
+        case "6": semYear = 'III/VI'
+        break
+        case "7": semYear = 'IV/VII'
+        break
+        case "8": semYear = 'IV/VIII'
+        break
+    }
     // console.log(poAverages)
     // const rowsToAdd = jsonData.map(obj => Object.values(obj));
     function flattenObject(obj) {
@@ -529,16 +451,16 @@ function calculateCOPO (data) {
 
     let studentsForExcel = []
     let i = 0
-    const usnArray = jsonData.map(obj => obj.fk_USN);
+    // const usnArray = jsonData.map(obj => obj.fk_USN);
 
     jsonData.forEach((obj) => {
-        let flattened = flattenObject(obj);
+        let flattened = flattenObject(obj["Marks Gained"]);
         const valuesArray = Object.values(flattened);
         const filteredArr = valuesArray.filter((value) => {
-            return (value == "NA" || value === undefined || Number.isInteger(value));
+            return (value == "NA" || value == "AB" || value === undefined || Number.isInteger(value));
         });
-        filteredArr.unshift("Name")
-        filteredArr.unshift(usnArray[i])
+        filteredArr.unshift(obj["Student"]["Student Name"])
+        filteredArr.unshift(obj["Student"]["USN"])
         i += 1
         filteredArr.unshift(i)
         let index = filteredArr.length - 1; // get the index of the last but one element
@@ -556,9 +478,13 @@ function calculateCOPO (data) {
     workbook.xlsx.readFile('../test.xlsx')
     .then(() => {
         const worksheet = workbook.getWorksheet('Sheet1');
-        worksheet.getCell('D6').value = 'III/V';
-        worksheet.getCell('D7').value = 'Unix Programming';
-        worksheet.getCell('D8').value = '18CS56';
+        const columnB = worksheet.getColumn('B');
+        columnB.width = 15;
+        const columnC = worksheet.getColumn('C');
+        columnC.width = 25;
+        worksheet.getCell('D6').value = semYear;
+        worksheet.getCell('D7').value = jsonData[0]["Subject"]["Subject Name"];
+        worksheet.getCell('D8').value = jsonData[0]["Subject"]["Subject Code"];
         studentsForExcel.forEach((row, index) => {
             const newRow = worksheet.addRow(row);
             newRow.number = startRow + index;
@@ -691,17 +617,17 @@ function calculateCOPO (data) {
         addBorders(calculatedRowNumber1, calculatedRowNumber1+5, 11, 18, worksheet)
 
         //hardcoded for now, can use db values in place of target levels later on
-        let significanceTable = [['CO Attainment Level', 'Significance','','','','','','', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'], 
-        ['Level 3', '60% and above students should have scored >= 60% of Total marks','','','','','','', 'For indirect attainment, Course end survey is considered.'], 
-        ['Level 2', '55% to 59% of students should have scored >= 60% of Total marks','','','','','','', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'], 
-        ['Level 1', '50% to 54% of students should have scored >= 60% of Total marks','','','','','','', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
+        let significanceTable = [['CO Attainment Level', 'Significance','','','','', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'], 
+        ['Level 3', '60% and above students should have scored >= 60% of Total marks','','','','', 'For indirect attainment, Course end survey is considered.'], 
+        ['Level 2', '55% to 59% of students should have scored >= 60% of Total marks','','','','', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'], 
+        ['Level 1', '50% to 54% of students should have scored >= 60% of Total marks','','','','', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
         calculatedRowNumber2 = calculatedRowNumber1 + 9
         addRowsWithSpace(significanceTable, calculatedRowNumber2, worksheet)
         for (let k = 0; k < 4; k++){
-            mergeMaado(2, 8, calculatedRowNumber2+k, worksheet)
-            mergeMaado(9, 15, calculatedRowNumber2+k, worksheet)
+            mergeMaado(2, 6, calculatedRowNumber2+k, worksheet)
+            mergeMaado(7, 13, calculatedRowNumber2+k, worksheet)
         }
-        addBorders(calculatedRowNumber2, calculatedRowNumber2+3, 1, 15, worksheet)
+        addBorders(calculatedRowNumber2, calculatedRowNumber2+3, 1, 13, worksheet)
         // addBorders(calculatedRowNumber, calculatedRowNumber+4, 1, 19, worksheet)
         // significanceTable.forEach((row, index) => {
         //     const newRow = worksheet.addRow(row);
@@ -709,15 +635,15 @@ function calculateCOPO (data) {
         // });
 
         const copoMappingTableForExcel = []
-        const copoMappingTableMainHeading = ['Co-Po Mapping Table']
+        const copoMappingTableMainHeading = ['', '', 'Co-Po Mapping Table']
         copoMappingTableForExcel.push(copoMappingTableMainHeading)
-        const copoMappingTableHeading = ['CO\'s', 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
+        const copoMappingTableHeading = ['', '', 'CO\'s', 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
         copoMappingTableForExcel.push(copoMappingTableHeading)
 
 
         for (let j = 0; j < 5; j++) {
             for (const obj of copoMappingTable) {
-                const subArray = []
+                const subArray = ['', '']
                 coLevel = "CO" + (j+1)
                 subArray.push(coLevel)
                 for (const key in obj) {
@@ -735,15 +661,17 @@ function calculateCOPO (data) {
 
         const avgArray = Object.values(poAverages).map(value => (value === null ? '-' : value));
         avgArray.unshift("AVG")
+        avgArray.unshift("")
+        avgArray.unshift("")
         copoMappingTableForExcel.push(avgArray)
 
         // console.log(copoMappingTableForExcel)
         calculatedRowNumber3 = calculatedRowNumber2 + 6
 
         addRowsWithSpace(copoMappingTableForExcel, calculatedRowNumber3, worksheet)
-        mergeMaado(1, 15, calculatedRowNumber3, worksheet)
-        addBorders(calculatedRowNumber3, calculatedRowNumber3+7, 1, 15, worksheet)
-        let cellNumber = 'A' + calculatedRowNumber3
+        mergeMaado(3, 17, calculatedRowNumber3, worksheet)
+        addBorders(calculatedRowNumber3, calculatedRowNumber3+7, 3, 17, worksheet)
+        let cellNumber = 'C' + calculatedRowNumber3
         worksheet.getCell(cellNumber).alignment = { 
             horizontal: 'center',
             vertical: 'middle'
@@ -757,19 +685,19 @@ function calculateCOPO (data) {
         // });
 
         const poAttainmentTable = []
-        const poAttainmentTableMainHeading = ['PO Attainment Table']
+        const poAttainmentTableMainHeading = ['', '', 'PO Attainment Table']
         poAttainmentTable.push(poAttainmentTableMainHeading)
-        const poAttainmentTableHeading = ['CO\'s', "CO Attainment in %", "CO RESULT", 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
+        const poAttainmentTableHeading = ['', '', 'CO\'s', "CO Attainment in %", "CO RESULT", 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
         poAttainmentTable.push(poAttainmentTableHeading)
 
 
         for (let j = 0; j < 5; j++) {
             for (const obj of copoMappingTable) {
-                const subArray = []
+                const subArray = ['', '']
                 coLevel = "CO" + (j+1)
                 subArray.push(coLevel)
                 subArray.push(finalAttainment[coLevel])
-                if(finalAttainment[coLevel] == 3){
+                if(finalAttainment[coLevel] >= 1.8){
                     subArray.push('Y')
                 }
                 else{
@@ -792,13 +720,15 @@ function calculateCOPO (data) {
         avgArray1.unshift("")
         avgArray1.unshift("")
         avgArray1.unshift("Average")
+        avgArray1.unshift("")
+        avgArray1.unshift("")
         poAttainmentTable.push(avgArray1)
 
         calculatedRowNumber4 = calculatedRowNumber3 + 10
         addRowsWithSpace(poAttainmentTable, calculatedRowNumber4, worksheet)
-        mergeMaado(1, 17, calculatedRowNumber4, worksheet)
-        addBorders(calculatedRowNumber4, calculatedRowNumber4+7, 1, 17, worksheet)
-        cellNumber = 'A' + calculatedRowNumber4
+        mergeMaado(3, 19, calculatedRowNumber4, worksheet)
+        addBorders(calculatedRowNumber4, calculatedRowNumber4+7, 3, 19, worksheet)
+        cellNumber = 'C' + calculatedRowNumber4
         worksheet.getCell(cellNumber).alignment = { 
             horizontal: 'center',
             vertical: 'middle'
@@ -816,20 +746,14 @@ function calculateCOPO (data) {
         //     const newRow = worksheet.addRow(row);
         //     newRow.number = calculatedRowNumber4 + index;
         // });
-
-        // addBorders(12, calculatedRowNumber-1, 1, 19, worksheet)
-        // addBorders(calculatedRowNumber+1, calculatedRowNumber+5, 1, 17, worksheet)
-        // addBorders(calculatedRowNumber1+1, calculatedRowNumber1+7, 1, 8, worksheet)
-        // addBorders(calculatedRowNumber1+1, calculatedRowNumber1+6, 11, 18, worksheet)
-        // addBorders(calculatedRowNumber2+1, calculatedRowNumber2+4, 1, 15, worksheet)
         return workbook.xlsx.writeFile('../public/formatted_output.xlsx');
     })
-    .then(() => {
-        console.log('Data added to worksheet successfully.');
-    })
-    .catch((err) => {
-        console.error('Error adding data to worksheet:', err);
-    });
+    // .then(() => {
+    //     console.log('Data added to worksheet successfully.');
+    // })
+    // .catch((err) => {
+    //     console.error('Error adding data to worksheet:', err);
+    // });
 
     function addRowsWithSpace(rowsToBeAdded, startRow1, worksheet){
         let numRowsToAdd1 = rowsToBeAdded.length;
@@ -865,7 +789,903 @@ function calculateCOPO (data) {
     }
 
 }
-const data = 1
+
+let data = {
+    "Marks": [
+        {
+            "_id": "643a3e542839d2be81ae9851",
+            "Student": {
+                "_id": "643a3e542839d2be81ae984b",
+                "Student Name": "AMARAVATHI M",
+                "USN": "1KS18CS002",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 15,
+                    "CO2": 5
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 3
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 16,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 6,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 7,
+                    "CO5": 6
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 42
+            }
+        },
+        {
+            "_id": "643a3e542839d2be81ae9852",
+            "Student": {
+                "_id": "643a3e542839d2be81ae984c",
+                "Student Name": "ADARSH K",
+                "USN": "1KS18CS001",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 17,
+                    "CO2": 10
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 17,
+                    "CO4": 5
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 5,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 6,
+                    "CO5": 9
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 47
+            }
+        },
+        {
+            "_id": "643a3e542839d2be81ae9853",
+            "Student": {
+                "_id": "643a3e542839d2be81ae984d",
+                "Student Name": "ANIKETH.H",
+                "USN": "1KS18CS003",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 15,
+                    "CO2": 10
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 18,
+                    "CO4": 5
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 5,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 6,
+                    "CO5": 18
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 26
+            }
+        },
+        {
+            "_id": "643a66482839d2be81ae9966",
+            "Student": {
+                "_id": "643a66442839d2be81ae9856",
+                "Student Name": "AVINASH PRASAD",
+                "USN": "1KS18CS008",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 16,
+                    "CO2": 11
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 18,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 6,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 11,
+                    "CO5": 14
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 36
+            }
+        },
+        {
+            "_id": "643a66482839d2be81ae9967",
+            "Student": {
+                "_id": "643a66442839d2be81ae9854",
+                "Student Name": "ARUNA P",
+                "USN": "1KS18CS006",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 17,
+                    "CO2": 12
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 17,
+                    "CO4": 5
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 6,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 7,
+                    "CO5": 15
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 50
+            }
+        },
+        {
+            "_id": "643a66482839d2be81ae9968",
+            "Student": {
+                "_id": "643a66452839d2be81ae98d9",
+                "Student Name": "KALPITHA.A.J",
+                "USN": "1KS19CS408",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 15,
+                    "CO2": 12
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 5,
+                    "CO3": 12,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 5,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 12,
+                    "CO5": 6
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 32
+            }
+        },
+        {
+            "_id": "643a66492839d2be81ae996a",
+            "Student": {
+                "_id": "643a66442839d2be81ae9855",
+                "Student Name": "ASHWINI J",
+                "USN": "1KS18CS007",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 18,
+                    "CO2": 12
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 18,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 6,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 15,
+                    "CO5": 9
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 46
+            }
+        },
+        {
+            "_id": "643a66492839d2be81ae996b",
+            "Student": {
+                "_id": "643a66442839d2be81ae985a",
+                "Student Name": "SAHANA.V",
+                "USN": "1KS19CS413",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 18,
+                    "CO2": 12
+                },
+                "A1": {
+                    "CO1": 5,
+                    "CO2": 2
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 18,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 6,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 6,
+                    "CO5": 18
+                },
+                "A3": {
+                    "CO4": "NA",
+                    "CO5": "NA"
+                },
+                "SEE": 36
+            }
+        },
+        {
+            "_id": "643a66492839d2be81ae9969",
+            "Student": {
+                "_id": "643a66452839d2be81ae98d8",
+                "Student Name": "DHANALAKSHMI.B",
+                "USN": "1KS19CS406",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 12,
+                    "CO2": 6
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 3
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 7,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 5,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": "NA",
+                    "CO5": "NA"
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 27
+            }
+        },
+        {
+            "_id": "643a66492839d2be81ae996c",
+            "Student": {
+                "_id": "643a66442839d2be81ae9857",
+                "Student Name": "RAMYA.R",
+                "USN": "1KS19CS410",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 15,
+                    "CO2": 10
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 5,
+                    "CO3": 15,
+                    "CO4": 4
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 5,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 3,
+                    "CO5": 9
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 34
+            }
+        },
+        {
+            "_id": "643a66492839d2be81ae996d",
+            "Student": {
+                "_id": "643a66442839d2be81ae9858",
+                "Student Name": "B DEVA DEEKSHITH",
+                "USN": "1KS18CS009",
+                "Department": {
+                    "_id": "6378cae1a2552fdc443b92b3",
+                    "Department Name": "CSE",
+                    "HoD": "6378cc4aa2552fdc443b92bc"
+                }
+            },
+            "Subject": {
+                "_id": "6433f19785306e164894a65c",
+                "Scheme Code": "18",
+                "Subject Code": "18CS56",
+                "Subject Name": "Unix Programming",
+                "Test Assignment Ratio": 3,
+                "Max Marks": {
+                    "IA1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "A1": {
+                        "CO1": 18,
+                        "CO2": 12
+                    },
+                    "IA2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "A2": {
+                        "CO2": 6,
+                        "CO3": 12,
+                        "CO4": 6
+                    },
+                    "IA3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "A3": {
+                        "CO4": 12,
+                        "CO5": 18
+                    },
+                    "SEE": 60
+                },
+                "Semester": "5",
+                "Department": "6378cae1a2552fdc443b92b3"
+            },
+            "Marks Gained": {
+                "IA1": {
+                    "CO1": 17,
+                    "CO2": 11
+                },
+                "A1": {
+                    "CO1": 6,
+                    "CO2": 4
+                },
+                "IA2": {
+                    "CO2": 6,
+                    "CO3": 17,
+                    "CO4": 6
+                },
+                "A2": {
+                    "CO2": 2,
+                    "CO3": 5,
+                    "CO4": 2
+                },
+                "IA3": {
+                    "CO4": 11,
+                    "CO5": 10
+                },
+                "A3": {
+                    "CO4": 4,
+                    "CO5": 6
+                },
+                "SEE": 42
+            }
+        }
+    ],
+    "IndirectAttainmentValues": {
+        "_id": "643a5c1de3e49fb48318535b",
+        "Subject": "6433f19785306e164894a65c",
+        "values": {
+            "CO1": 51,
+            "CO2": 67,
+            "CO3": 72,
+            "CO4": 80,
+            "CO5": 92
+        }
+    }
+}
+
 calculateCOPO(data)
 
 
