@@ -14,7 +14,7 @@ router.route("/:Subject")
             return m;
         }))
         let gotMarks = marks.length > 0;
-        res.status(gotMarks ? 200 : 400).json(gotMarks ? { Marks: marks, IndirectAttainmentValues: await mongo.getDoc("Feedback", { Subject: req.params.Subject }) } : "Couldn't fetch data");
+        res.status(gotMarks ? 200 : 400).json(gotMarks ? { Marks: marks, IndirectAttainmentValues: await mongo.getDoc("Feedback", { Subject: req.params.Subject }), COPOMappings: await mongo.getDocs("CO PO Map", { Subject: req.params.Subject }) } : "Couldn't fetch data");
     })
 
 module.exports = router;
