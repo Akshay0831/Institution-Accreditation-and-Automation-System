@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Card } from 'react-bootstrap';
-import Form from 'react-bootstrap/Form';
+import { Card, Form } from 'react-bootstrap';
 import * as XLSX from 'xlsx';
 
 export default class BatchInput extends Component {
