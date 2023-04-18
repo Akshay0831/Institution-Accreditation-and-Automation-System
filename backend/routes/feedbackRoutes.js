@@ -34,6 +34,27 @@ router.route("/")
         res.status(gotFeedbacks ? 200 : 400).json(gotFeedbacks ? feedbacks : null);
     })
 
+    .post(async (req, res) => {
+        const feedbackObj = req.body.Feedback;
+        const feedbackAdded = await mongo.addDoc("Feedback", feedbackObj);
+
+        res.status(feedbackAdded ? 200 : 400).json(feedbackAdded ? "Created new Feedback" : "Couldn't create new Feedback");
+    })
+
+    .put(async (req, res) => {
+
+        const feedbackObj = req.body.Feedback;
+        const feedbackUpdated = await mongo.updateDoc("Feedback", { _id: req.body._id }, feedbackObj);
+
+        res.status(feedbackUpdated ? 200 : 400).json(feedbackUpdated ? "Updated Feedback" : "Couldn't update Feedback");
+    })
+
+    .delete(async (req, res) => {
+        const feedbackDeleted = await mongo.deleteDoc("Feedback", { _id: req.body._id });
+
+        res.status(feedbackDeleted ? 200 : 400).json(feedbackDeleted ? "Feedback deleted" : "Couldn't delete Feedback");
+    });
+
 
 router.route("/:Subject")
     .get(async (req, res) => {
