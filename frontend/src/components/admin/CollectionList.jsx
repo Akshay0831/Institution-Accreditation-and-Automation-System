@@ -182,7 +182,7 @@ export default function CollectionList() {
 
     const location = useLocation();
     const [collectionSelected, setCollectionSelected] = useState(location.state || "Teacher");
-    const [deleteID, setDeleteID] = useState("");
+    const [deleteRow, setDeleteRow] = useState("");
     const [documents, setDocuments] = useState([]);
 
     useEffect(() => {
@@ -190,8 +190,12 @@ export default function CollectionList() {
         const signal = abortController.signal;
 
         const fetchData = async () => {
-            console.log("Called API: " + serverURL + collectionSelected);
-            setDocuments(await MetaData[collectionSelected].bodyParseFunc(await (await fetch(serverURL + collectionSelected, { signal })).json()));
+            try {
+                console.log("Called API: " + serverURL + collectionSelected);
+                setDocuments(await MetaData[collectionSelected].bodyParseFunc(await (await fetch(serverURL + collectionSelected, { signal })).json()));
+            } catch (error) {
+                console.log(error.message);
+            }
         }
 
         fetchData();
@@ -215,20 +219,20 @@ export default function CollectionList() {
             .catch((err) => console.error(err));
     }
 
-    const handleDeleteModalClose = () => setDeleteID("");
+    const handleDeleteModalClose = () => setDeleteRow("");
 
     return (
         <main className="pt-5">
-            <Modal show={deleteID} onHide={handleDeleteModalClose} backdrop="static" keyboard={false}>
+            <Modal show={deleteRow} onHide={handleDeleteModalClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete Document</Modal.Title>
                 </Modal.Header>
-                <Modal.Body> Are you sure you want to DELETE {deleteID} from {collectionSelected.toUpperCase()} </Modal.Body>
+                <Modal.Body> DELETE from {collectionSelected.toUpperCase()} : <br/> {Object.values(deleteRow).join(', ')} </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleDeleteModalClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={() => { deleteDocument(deleteID); handleDeleteModalClose() }}>Delete</Button>
+                    <Button variant="primary" onClick={() => { deleteDocument(deleteRow._id); handleDeleteModalClose() }}>Delete</Button>
                 </Modal.Footer>
             </Modal>
 
@@ -251,7 +255,7 @@ export default function CollectionList() {
                                     cell: (row) => (
                                         <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
                                             <Link to={["", sessionStorage.getItem("userType").toLowerCase(), collectionSelected, "update", row['_id']].join("/")} className="btn btn-warning btn-sm"><i className="fa fa-pencil" /></Link>
-                                            <Button variant="danger" size="sm" onClick={() => setDeleteID(row._id)}><i className="fa fa-trash" /></Button>
+                                            <Button variant="danger" size="sm" onClick={() => setDeleteRow(row)}><i className="fa fa-trash" /></Button>
                                         </ButtonGroup>
                                     )
                                 }])

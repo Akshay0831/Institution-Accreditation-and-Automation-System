@@ -25,9 +25,10 @@ class MongoDB {
     }
 
     async deleteDoc(collectionName, searchObj) {
+        if (!searchObj) return false;
         let deletedResult = await this.db
             .collection(collectionName)
-            .deleteOne(searchObj);
+            .deleteMany(searchObj);
         return deletedResult.acknowledged;
     }
 
