@@ -17,7 +17,7 @@ export default function UpdateClassAllocation() {
     useEffect(() => {
         const fetchData = async () => {
             if (isUpdate) {
-                const classAllocData = (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc._id == id)[0];
+                const classAllocData = (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).find(doc => doc._id == id);
                 setClassID(classAllocData["Class"]);
                 setStudentID(classAllocData["Student"]);
             }

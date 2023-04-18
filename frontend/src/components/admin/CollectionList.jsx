@@ -7,7 +7,7 @@ const MetaData = {
     "CO PO Map": {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject' },
             { isFilterable: true, isSortable: true, prop: 'CO', title: 'CO' },
             { isFilterable: true, isSortable: true, prop: 'PO', title: 'PO' },
@@ -15,7 +15,7 @@ const MetaData = {
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc)) {
+                for (let col in doc) {
                     if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                 }
         }
@@ -23,31 +23,31 @@ const MetaData = {
     Class: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
             { isFilterable: true, isSortable: true, prop: 'Semester', title: 'Semester' },
             { isFilterable: true, isSortable: true, prop: 'Section', title: 'Section' },
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc))
+                for (let col in doc)
                     if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     "Class Allocation": {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Class', title: 'Class' },
             { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
         ],
         bodyParseFunc: async (json) => {
             let depts = await (await fetch("http://localhost:4000/" + "documents/Department")).json();
             for (let doc of json)
-                for (let col of Object.keys(doc)) {
+                for (let col in doc) {
                     if (col == "Class" && doc[col]) {
-                        let dept = depts.filter(department => doc[col]["Department"] == department._id)[0];
-                        doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]} (${dept["Department Name"]})`;
+                        let deptId = doc[col]["Department"];
+                        doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
                     }
                     else if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                 }
@@ -56,27 +56,27 @@ const MetaData = {
     Department: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Department Name', title: 'Name' },
             { isFilterable: true, isSortable: false, prop: 'HoD', title: 'Head of Department' },
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc))
+                for (let col in doc)
                     if (col == "HoD" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
         }
     },
     Marks: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
             { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject' },
             { isFilterable: true, isSortable: false, prop: 'Marks Gained', title: 'Marks Gained' },
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc)) {
+                for (let col in doc) {
                     if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                     else if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                     else if (col == "Marks Gained" && doc[col]) doc[col] = JSON.stringify(doc["Marks Gained"]);
@@ -86,21 +86,21 @@ const MetaData = {
     Student: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'USN', title: 'USN' },
             { isFilterable: true, isSortable: true, prop: 'Student Name', title: 'Name' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc))
+                for (let col in doc)
                     if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     Subject: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Scheme Code', title: 'Scheme Code' },
             { isFilterable: true, isSortable: true, prop: 'Subject Code', title: 'Subject Code' },
             { isFilterable: true, isSortable: true, prop: 'Subject Name', title: 'Name' },
@@ -110,7 +110,7 @@ const MetaData = {
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc)) {
+                for (let col in doc) {
                     if (col == "Max Marks" && doc[col]) doc[col] = JSON.stringify(doc["Max Marks"]);
                     else if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
@@ -119,7 +119,7 @@ const MetaData = {
     Teacher: {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Teacher Name', title: 'Name' },
             { isFilterable: true, isSortable: true, prop: 'Mail', title: 'Mail ID' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
@@ -127,14 +127,14 @@ const MetaData = {
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc))
+                for (let col in doc)
                     if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
         }
     },
     "Teacher Allocation": {
         headers: [
             // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
-            { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
             { isFilterable: true, isSortable: true, prop: 'Teacher', title: 'Teacher' },
             { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject Code' },
             { isFilterable: true, isSortable: false, prop: 'Class', title: 'Class' },
@@ -142,7 +142,7 @@ const MetaData = {
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
-                for (let col of Object.keys(doc)) {
+                for (let col in doc) {
                     if (col == "Teacher" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
                     else if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                     else if (col == "Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
