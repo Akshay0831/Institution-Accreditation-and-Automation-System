@@ -27,9 +27,13 @@ router.route("/")
     })
 
     .delete(async (req, res) => {
-        const classDeleted = await mongo.deleteDoc("Class", { _id: req.body._id });
+        const isClassDeleted = await mongo.deleteDoc("Class", { _id: req.body._id });
+        const isCAllocationDeleted = await mongo.deleteDoc("Class Allocation", { Class: req.body._id });
+        const isTAllocationDeleted = await mongo.deleteDoc("Teacher Allocation", { Class: req.body._id });
 
-        res.status(classDeleted ? 200 : 400).json(classDeleted ? "Class deleted" : "Couldn't delete class");
+        const isDeleteSuccess = isCAllocationDeleted && isTAllocationDeleted && isClassDeleted;
+
+        res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
     });
 
 module.exports = router;

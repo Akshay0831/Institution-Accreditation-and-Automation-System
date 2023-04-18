@@ -32,9 +32,16 @@ router.route("/")
     })
 
     .delete(async (req, res) => {
-        const departmentDeleted = await mongo.deleteDoc("Department", { _id: req.body._id });
+        const isDepartmentDeleted = await mongo.deleteDoc("Department", { _id: req.body._id });
+        const isClassDeleted = await mongo.deleteDoc("Class", { Department: req.body._id });
+        const isStudentDeleted = await mongo.deleteDoc("Student", { Department: req.body._id });
+        const isSubjectDeleted = await mongo.deleteDoc("Subject", { Department: req.body._id });
+        const isTeacherDeleted = await mongo.deleteDoc("Teacher", { Department: req.body._id });
+        const isAllocationDeleted = await mongo.deleteDoc("Teacher Allocation", { Department: req.body._id });
 
-        res.status(departmentDeleted ? 200 : 400).json(departmentDeleted ? "Department deleted" : "Couldn't delete department");
+        const isDeleteSuccess = isDepartmentDeleted && isAllocationDeleted && isTeacherDeleted && isClassDeleted && isStudentDeleted && isSubjectDeleted;
+
+        res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
     });
 
 
