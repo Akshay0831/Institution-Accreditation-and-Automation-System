@@ -18,6 +18,7 @@ const MetaData = {
                 for (let col in doc) {
                     if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                 }
+            return json;
         }
     },
     Class: {
@@ -32,6 +33,7 @@ const MetaData = {
             for (let doc of json)
                 for (let col in doc)
                     if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+            return json;
         }
     },
     "Class Allocation": {
@@ -47,10 +49,11 @@ const MetaData = {
                 for (let col in doc) {
                     if (col == "Class" && doc[col]) {
                         let deptId = doc[col]["Department"];
-                        doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
+                        doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]} (${depts.find(dept => dept._id == deptId)["Department Name"]})`;
                     }
                     else if (col == "Student" && doc[col]) doc[col] = `${doc[col]["Student Name"]} (${doc[col]["USN"]})`;
                 }
+            return json;
         }
     },
     Department: {
@@ -64,6 +67,22 @@ const MetaData = {
             for (let doc of json)
                 for (let col in doc)
                     if (col == "HoD" && doc[col]) doc[col] = `${doc[col]["Teacher Name"]} (${doc[col]["Mail"]})`;
+            return json;
+        }
+    },
+    Feedback: {
+        headers: [
+            // { checkbox: { idProp: '_id' }, prop: 'checkbox' },
+            // { isFilterable: false, isSortable: false, prop: '_id', title: 'ID' },
+            { isFilterable: true, isSortable: true, prop: 'Subject', title: 'Subject' },
+            { isFilterable: true, isSortable: false, prop: 'values', title: 'Feedback' },
+        ],
+        bodyParseFunc: (json) => {
+            for (let doc of json)
+                for (let col in doc)
+                    if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
+                    else if (col == "values" && doc[col]) doc[col] = JSON.stringify(doc[col]);
+            return json;
         }
     },
     Marks: {
@@ -81,6 +100,7 @@ const MetaData = {
                     else if (col == "Subject" && doc[col]) doc[col] = `${doc[col]["Subject Name"]} (${doc[col]["Subject Code"]})`;
                     else if (col == "Marks Gained" && doc[col]) doc[col] = JSON.stringify(doc["Marks Gained"]);
                 }
+            return json;
         }
     },
     Student: {
@@ -95,6 +115,7 @@ const MetaData = {
             for (let doc of json)
                 for (let col in doc)
                     if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+            return json;
         }
     },
     Subject: {
@@ -114,6 +135,7 @@ const MetaData = {
                     if (col == "Max Marks" && doc[col]) doc[col] = JSON.stringify(doc["Max Marks"]);
                     else if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
+            return json;
         }
     },
     Teacher: {
@@ -129,6 +151,7 @@ const MetaData = {
             for (let doc of json)
                 for (let col in doc)
                     if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
+            return json;
         }
     },
     "Teacher Allocation": {
@@ -148,6 +171,7 @@ const MetaData = {
                     else if (col == "Class" && doc[col]) doc[col] = `${doc[col]["Semester"]}${doc[col]["Section"]}`;
                     else if (col == "Department" && doc[col]) doc[col] = doc[col]["Department Name"];
                 }
+            return json;
         }
     },
 };
@@ -162,13 +186,19 @@ export default function CollectionList() {
     const [documents, setDocuments] = useState([]);
 
     useEffect(() => {
+        const abortController = new AbortController();
+        const signal = abortController.signal;
+
         const fetchData = async () => {
             console.log("Called API: " + serverURL + collectionSelected);
-            let json = await (await fetch(serverURL + collectionSelected)).json();
-            await MetaData[collectionSelected].bodyParseFunc(json);
-            setDocuments(json);
+            setDocuments(await MetaData[collectionSelected].bodyParseFunc(await (await fetch(serverURL + collectionSelected, { signal })).json()));
         }
+
         fetchData();
+
+        return () => {
+            abortController.abort();
+        };
     }, [collectionSelected]);
 
     const deleteDocument = (id) => {
@@ -201,7 +231,7 @@ export default function CollectionList() {
             <div className="container">
                 <Card>
                     <Card.Header className="fs-3">Collections CRUD</Card.Header>
-                    <Tabs id="documentsSelector" activeKey={collectionSelected} onSelect={(collectionKey) => { setCollectionSelected(collectionKey) }}>
+                    <Tabs id="documentsSelector" activeKey={collectionSelected} onSelect={(collectionKey) => { setDocuments([]); setCollectionSelected(collectionKey) }}>
                         {Object.keys(MetaData).map(collection => {
                             return <Tab eventKey={collection} key={collection} title={collection} />
                         })}
@@ -222,12 +252,14 @@ export default function CollectionList() {
                                     )
                                 }])
                             }
+
                             paginationOptionsProps={{
                                 initialState: {
-                                    options: [10, 20, 30, 40, 50],
+                                    options: [10, 20, 40, 80, 120],
                                     rowsPerPage: 10
                                 }
                             }}
+
                         // sortProps={{
                         //     sortValueObj: {
                         //         date: function noRefCheck() { }
