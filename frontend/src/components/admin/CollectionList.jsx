@@ -202,7 +202,11 @@ export default function CollectionList() {
     }, [collectionSelected]);
 
     const deleteDocument = (id) => {
-        fetch(serverURL + "documents/" + collectionSelected + "/delete/" + id)
+        fetch(serverURL + collectionSelected, {
+            method: "DELETE",
+            body: JSON.stringify({ _id: id }),
+            headers: { "Content-type": "application/json; charset=UTF-8" },
+        })
             .then((res) => {
                 console.log("Called API: Delete " + id);
                 if (res.status == 200)
