@@ -1,6 +1,6 @@
 // const mongo = require("../db/mongodb");
 
-function calculateCOPO (data) {
+function calculateCOPO(data) {
     try {
         let maxMarks = data["Marks"][0]["Subject"]["Max Marks"]
         //Can change the below json values dynamically by using: X = Y% of COx (eg. 60% of 18)
@@ -31,7 +31,7 @@ function calculateCOPO (data) {
                 "CO4": 0.6 * maxMarks["A3"]["CO4"],
                 "CO5": 0.6 * maxMarks["A3"]["CO5"]
             },
-            "SEE50" : 0.5 * maxMarks["SEE"],
+            "SEE50": 0.5 * maxMarks["SEE"],
             "SEE": 0.6 * maxMarks["SEE"]
         }
 
@@ -251,11 +251,11 @@ function calculateCOPO (data) {
 
         let sumForAvg = 0;
         let countForAvg = 0;
-        for(let key in finalAttainment) {
+        for (let key in finalAttainment) {
             sumForAvg += finalAttainment[key]
             countForAvg += 1
-        } 
-        let coAttainmentAverage = sumForAvg/countForAvg
+        }
+        let coAttainmentAverage = sumForAvg / countForAvg
 
         let copoMappingTable = data["COPOMappings"]
 
@@ -279,29 +279,29 @@ function calculateCOPO (data) {
 
         let semYear = ''
         let checkSem = jsonData[0]["Subject"]["Semester"];
-        switch(checkSem){
+        switch (checkSem) {
             case "1": semYear = 'I/I'
-            break
+                break
             case "2": semYear = 'I/II'
-            break
+                break
             case "3": semYear = 'II/III'
-            break
+                break
             case "4": semYear = 'II/IV'
-            break
+                break
             case "5": semYear = 'III/V'
-            break
+                break
             case "6": semYear = 'III/VI'
-            break
+                break
             case "7": semYear = 'IV/VII'
-            break
+                break
             case "8": semYear = 'IV/VIII'
-            break
+                break
         }
-        
+
         let admittedYear = jsonData[0]["Student"]["USN"].slice(3, 5)
         admittedYear = parseInt('20' + admittedYear)
         let semOfClass = parseInt(jsonData[0]["Subject"]["Semester"])
-        admittedYear = admittedYear + Math.round(semOfClass/2) - 1
+        admittedYear = admittedYear + Math.round(semOfClass / 2) - 1
         let nextYear = admittedYear + 1
         let academicYear = admittedYear.toString() + '-' + nextYear.toString()
 
@@ -309,12 +309,12 @@ function calculateCOPO (data) {
             let flattened = {};
             for (let key in obj) {
                 if (typeof obj[key] === 'object' && obj[key] !== null) {
-                let nestedObj = flattenObject(obj[key]);
-                for (let nestedKey in nestedObj) {
-                    flattened[key + '.' + nestedKey] = nestedObj[nestedKey];
-                }
+                    let nestedObj = flattenObject(obj[key]);
+                    for (let nestedKey in nestedObj) {
+                        flattened[key + '.' + nestedKey] = nestedObj[nestedKey];
+                    }
                 } else {
-                flattened[key] = obj[key];
+                    flattened[key] = obj[key];
                 }
             }
             return flattened;
@@ -335,10 +335,10 @@ function calculateCOPO (data) {
             filteredArr.unshift(i)
             let index = filteredArr.length - 1;
             let forFifty
-            if(filteredArr[index].isInteger){
-                forFifty = parseInt(((filteredArr[index])/60) * 50)
+            if (filteredArr[index].isInteger) {
+                forFifty = parseInt(((filteredArr[index]) / 60) * 50)
             }
-            else{
+            else {
                 forFifty = filteredArr[index]
             }
             filteredArr.splice(index, 0, forFifty);
@@ -350,261 +350,265 @@ function calculateCOPO (data) {
         const workbook = new ExcelJS.Workbook();
 
         workbook.xlsx.readFile('./test.xlsx')
-        .then(async () => {
-            const worksheet = workbook.getWorksheet('Sheet1');
-            const columnB = worksheet.getColumn('B');
-            columnB.width = 15;
-            const columnC = worksheet.getColumn('C');
-            columnC.width = 25;
-            worksheet.getCell('D6').value = semYear;
-            worksheet.getCell('D7').value = jsonData[0]["Subject"]["Subject Name"];
-            worksheet.getCell('D8').value = jsonData[0]["Subject"]["Subject Code"];
-            worksheet.getCell('D9').value = academicYear;
-            studentsForExcel.forEach((row, index) => {
-                const newRow = worksheet.addRow(row);
-                newRow.number = startRow + index;
-            });
-            addBorders(startRow, startRow+i, 1, 19, worksheet)
+            .then(async () => {
+                const worksheet = workbook.getWorksheet('Sheet1');
+                const columnB = worksheet.getColumn('B');
+                columnB.width = 15;
+                const columnC = worksheet.getColumn('C');
+                columnC.width = 25;
+                worksheet.getCell('D6').value = semYear;
+                worksheet.getCell('D7').value = jsonData[0]["Subject"]["Subject Name"];
+                worksheet.getCell('D8').value = jsonData[0]["Subject"]["Subject Code"];
+                worksheet.getCell('D9').value = academicYear;
+                studentsForExcel.forEach((row, index) => {
+                    const newRow = worksheet.addRow(row);
+                    newRow.number = startRow + index;
+                });
+                addBorders(startRow, startRow + i, 1, 19, worksheet)
 
-            calculatedRowNumber = startRow + i + 1
-            calculatedRows = []
-            let flattenedMinMarks = flattenObject(xPercentageOfMaxMarks);
-            const valuesArray = Object.values(flattenedMinMarks);
-            valuesArray.unshift(" ")
-            valuesArray.unshift(" ")
-            valuesArray.unshift("60% of Maximum marks (X)")
-            calculatedRows.push(valuesArray)
+                calculatedRowNumber = startRow + i + 1
+                calculatedRows = []
+                let flattenedMinMarks = flattenObject(xPercentageOfMaxMarks);
+                const valuesArray = Object.values(flattenedMinMarks);
+                valuesArray.unshift(" ")
+                valuesArray.unshift(" ")
+                valuesArray.unshift("60% of Maximum marks (X)")
+                calculatedRows.push(valuesArray)
 
-            let index = valuesArray.length - 2;
-            let flattenedAboveX = flattenObject(studentsAboveX);
-            const valuesArray1 = Object.values(flattenedAboveX);
-            valuesArray1.unshift(" ")
-            valuesArray1.unshift(" ")
-            valuesArray1.unshift("No. of Students Above X")
-            valuesArray1.push(valuesArray1[index])
-            calculatedRows.push(valuesArray1)
+                let index = valuesArray.length - 2;
+                let flattenedAboveX = flattenObject(studentsAboveX);
+                const valuesArray1 = Object.values(flattenedAboveX);
+                valuesArray1.unshift(" ")
+                valuesArray1.unshift(" ")
+                valuesArray1.unshift("No. of Students Above X")
+                valuesArray1.push(valuesArray1[index])
+                calculatedRows.push(valuesArray1)
 
-            let flattenedTotalStudents = flattenObject(totalStudents);
-            const valuesArray2 = Object.values(flattenedTotalStudents);
-            valuesArray2.unshift(" ")
-            valuesArray2.unshift(" ")
-            valuesArray2.unshift("Total Students")
-            valuesArray2.push(valuesArray2[index])
-            calculatedRows.push(valuesArray2)
+                let flattenedTotalStudents = flattenObject(totalStudents);
+                const valuesArray2 = Object.values(flattenedTotalStudents);
+                valuesArray2.unshift(" ")
+                valuesArray2.unshift(" ")
+                valuesArray2.unshift("Total Students")
+                valuesArray2.push(valuesArray2[index])
+                calculatedRows.push(valuesArray2)
 
-            let flattenedCOPercentage = flattenObject(coPercentage);
-            const valuesArray3 = Object.values(flattenedCOPercentage);
-            valuesArray3.unshift(" ")
-            valuesArray3.unshift(" ")
-            valuesArray3.unshift("CO Percentage")
-            valuesArray3.push(valuesArray3[index])
-            calculatedRows.push(valuesArray3)
+                let flattenedCOPercentage = flattenObject(coPercentage);
+                const valuesArray3 = Object.values(flattenedCOPercentage);
+                valuesArray3.unshift(" ")
+                valuesArray3.unshift(" ")
+                valuesArray3.unshift("CO Percentage")
+                valuesArray3.push(valuesArray3[index])
+                calculatedRows.push(valuesArray3)
 
-            let headingsRow = [' ', ' ', ' ', "C01", "CO2","C01", "CO2","C02", "CO3","C04", "CO2","C03", "CO4","C04", "CO5","C04", "CO5", "SEE", "SEE"]
-            calculatedRows.push(headingsRow)
+                let headingsRow = [' ', ' ', ' ', "C01", "CO2", "C01", "CO2", "C02", "CO3", "C04", "CO2", "C03", "CO4", "C04", "CO5", "C04", "CO5", "SEE", "SEE"]
+                calculatedRows.push(headingsRow)
 
-            addRowsWithSpace(calculatedRows, calculatedRowNumber, worksheet)
-            for (let k = 0; k < 5; k++){
-                mergeMaado(1, 3, calculatedRowNumber+k, worksheet)
-            }
-            addBorders(calculatedRowNumber, calculatedRowNumber+4, 1, 19, worksheet)
-
-            attainmentTable = []
-            attainmentTableForExcelHeadings = ["CO", "CIE", "SEE", "Direct Attainment", "Level", "Course Exit Survey", "Level", "Attainment"]
-            attainmentTable.push(attainmentTableForExcelHeadings)
-
-            for(let j = 0; j<5; j++) {
-                let subArray = []
-                let coLevel = "CO" + (j+1)
-                subArray.push(coLevel)
-                subArray.push(averages[coLevel])
-                subArray.push(averages["SEE"])
-                subArray.push(directAttainment[coLevel])
-                subArray.push(directAttainmentTargetLevels[coLevel])
-                subArray.push(indirectAttainment[coLevel])
-                subArray.push(indirectAttainmentTargetLevels[coLevel])
-                subArray.push(finalAttainment[coLevel])
-                attainmentTable.push(subArray)
-            }
-
-            coAttainmentAverageSubArray = ["Average", " ", " ", " ", " ", " ", " ", coAttainmentAverage]
-            attainmentTable.push(coAttainmentAverageSubArray)
-
-            calculatedRowNumber1 = calculatedRowNumber + 7
-            addRowsWithSpace(attainmentTable, calculatedRowNumber1, worksheet)
-            const rowAttainmentTable = worksheet.getRow(calculatedRowNumber1);
-            rowAttainmentTable.height = 40;
-        
-            addBorders(calculatedRowNumber1, calculatedRowNumber1+6, 1, 8, worksheet)
-            coAverageTable = []
-            coAverageTableHeading = [' ']
-            for (const key in coPercentage){
-                if(key != "SEE"){
-                    coAverageTableHeading.push(key)
+                addRowsWithSpace(calculatedRows, calculatedRowNumber, worksheet)
+                for (let k = 0; k < 5; k++) {
+                    mergeMaado(1, 3, calculatedRowNumber + k, worksheet)
                 }
-            }
-            coAverageTableHeading.push('AVG')
-            coAverageTable.push(coAverageTableHeading)
+                addBorders(calculatedRowNumber, calculatedRowNumber + 4, 1, 19, worksheet)
 
-            for(let j=0; j<5; j++){
-                let subArray = []
-                let coLevel = "CO" + (j+1)
-                subArray.push(coLevel)
+                attainmentTable = []
+                attainmentTableForExcelHeadings = ["CO", "CIE", "SEE", "Direct Attainment", "Level", "Course Exit Survey", "Level", "Attainment"]
+                attainmentTable.push(attainmentTableForExcelHeadings)
+
+                for (let j = 0; j < 5; j++) {
+                    let subArray = []
+                    let coLevel = "CO" + (j + 1)
+                    subArray.push(coLevel)
+                    subArray.push(averages[coLevel])
+                    subArray.push(averages["SEE"])
+                    subArray.push(directAttainment[coLevel])
+                    subArray.push(directAttainmentTargetLevels[coLevel])
+                    subArray.push(indirectAttainment[coLevel])
+                    subArray.push(indirectAttainmentTargetLevels[coLevel])
+                    subArray.push(finalAttainment[coLevel])
+                    attainmentTable.push(subArray)
+                }
+
+                coAttainmentAverageSubArray = ["Average", " ", " ", " ", " ", " ", " ", coAttainmentAverage]
+                attainmentTable.push(coAttainmentAverageSubArray)
+
+                calculatedRowNumber1 = calculatedRowNumber + 7
+                addRowsWithSpace(attainmentTable, calculatedRowNumber1, worksheet)
+                const rowAttainmentTable = worksheet.getRow(calculatedRowNumber1);
+                rowAttainmentTable.height = 40;
+
+                addBorders(calculatedRowNumber1, calculatedRowNumber1 + 6, 1, 8, worksheet)
+                coAverageTable = []
+                coAverageTableHeading = [' ']
                 for (const key in coPercentage) {
-                    if (typeof coPercentage[key] === 'object') {
-                        let flag = false
-                        for (const nestedKey in coPercentage[key]) {
-                            if(coLevel === nestedKey){
-                                subArray.push(coPercentage[key][nestedKey])
-                                flag = true
+                    if (key != "SEE") {
+                        coAverageTableHeading.push(key)
+                    }
+                }
+                coAverageTableHeading.push('AVG')
+                coAverageTable.push(coAverageTableHeading)
+
+                for (let j = 0; j < 5; j++) {
+                    let subArray = []
+                    let coLevel = "CO" + (j + 1)
+                    subArray.push(coLevel)
+                    for (const key in coPercentage) {
+                        if (typeof coPercentage[key] === 'object') {
+                            let flag = false
+                            for (const nestedKey in coPercentage[key]) {
+                                if (coLevel === nestedKey) {
+                                    subArray.push(coPercentage[key][nestedKey])
+                                    flag = true
+                                }
                             }
+                            if (!flag) {
+                                subArray.push(' ')
+                            }
+                        } else {
+                            continue
                         }
-                        if(!flag){
-                            subArray.push(' ')
+                    }
+                    subArray.push(averages[coLevel])
+                    coAverageTable.push(subArray)
+                }
+
+                coAverageTable.forEach((row, index) => {
+                    const rowNumber = calculatedRowNumber1 + index;
+                    Object.keys(row).forEach((key, colIndex) => {
+                        const colLetter = String.fromCharCode(65 + (10 + colIndex));
+                        const cell = worksheet.getCell(`${colLetter}${rowNumber}`);
+                        cell.value = row[key];
+                    });
+                });
+                addBorders(calculatedRowNumber1, calculatedRowNumber1 + 5, 11, 18, worksheet)
+
+                //hardcoded for now, can use db values in place of target levels later on
+                let significanceTable = [['CO Attainment Level', 'Significance', '', '', '', '', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'],
+                ['Level 3', '60% and above students should have scored >= 60% of Total marks', '', '', '', '', 'For indirect attainment, Course end survey is considered.'],
+                ['Level 2', '55% to 59% of students should have scored >= 60% of Total marks', '', '', '', '', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'],
+                ['Level 1', '50% to 54% of students should have scored >= 60% of Total marks', '', '', '', '', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
+                calculatedRowNumber2 = calculatedRowNumber1 + 9
+                addRowsWithSpace(significanceTable, calculatedRowNumber2, worksheet)
+                for (let k = 0; k < 4; k++) {
+                    mergeMaado(2, 6, calculatedRowNumber2 + k, worksheet)
+                    mergeMaado(7, 13, calculatedRowNumber2 + k, worksheet)
+                }
+                addBorders(calculatedRowNumber2, calculatedRowNumber2 + 3, 1, 13, worksheet)
+
+                const copoMappingTableForExcel = []
+                const copoMappingTableMainHeading = ['', '', 'Co-Po Mapping Table']
+                copoMappingTableForExcel.push(copoMappingTableMainHeading)
+                const copoMappingTableHeading = ['', '', 'CO\'s', 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
+                copoMappingTableForExcel.push(copoMappingTableHeading)
+
+                for (let j = 0; j < 5; j++) {
+                    const subArray = ['', '']
+                    coLevel = "CO" + (j + 1)
+                    subArray.push(coLevel)
+                    for (const key in copoMappingTable) {
+                        if (copoMappingTable[key][coLevel] != null && copoMappingTable[key][coLevel] != 0) {
+                            subArray.push(copoMappingTable[key][coLevel])
+                        } else {
+                            subArray.push('-')
                         }
-                    } else {
-                        continue
                     }
+                    copoMappingTableForExcel.push(subArray)
                 }
-                subArray.push(averages[coLevel])
-                coAverageTable.push(subArray)
-            }
 
-            coAverageTable.forEach((row, index) => {
-                const rowNumber = calculatedRowNumber1 + index;
-                Object.keys(row).forEach((key, colIndex) => {
-                const colLetter = String.fromCharCode(65 + (10 + colIndex));
-                const cell = worksheet.getCell(`${colLetter}${rowNumber}`);
-                cell.value = row[key];
+                const avgArray = Object.values(poAverages).map(value => (value === null ? '-' : value));
+                avgArray.unshift("AVG")
+                avgArray.unshift("")
+                avgArray.unshift("")
+                copoMappingTableForExcel.push(avgArray)
+
+                calculatedRowNumber3 = calculatedRowNumber2 + 6
+                addRowsWithSpace(copoMappingTableForExcel, calculatedRowNumber3, worksheet)
+                mergeMaado(3, 17, calculatedRowNumber3, worksheet)
+                addBorders(calculatedRowNumber3, calculatedRowNumber3 + 7, 3, 17, worksheet)
+                let cellNumber = 'C' + calculatedRowNumber3
+                worksheet.getCell(cellNumber).font = {
+                    bold: true
+                };
+
+                const poAttainmentTable = []
+                const poAttainmentTableMainHeading = ['', '', 'PO Attainment Table']
+                poAttainmentTable.push(poAttainmentTableMainHeading)
+                const poAttainmentTableHeading = ['', '', 'CO\'s', "CO Attainment", "CO RESULT", 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
+                poAttainmentTable.push(poAttainmentTableHeading)
+
+                for (let j = 0; j < 5; j++) {
+                    const subArray = ['', '']
+                    coLevel = "CO" + (j + 1)
+                    subArray.push(coLevel)
+                    subArray.push(finalAttainment[coLevel])
+                    if (finalAttainment[coLevel] >= 1.8) {
+                        subArray.push('Y')
+                    }
+                    else {
+                        subArray.push("N")
+                    }
+                    for (const key in copoMappingTable) {
+                        if (copoMappingTable[key][coLevel] != null && copoMappingTable[key][coLevel] != 0) {
+                            subArray.push(copoMappingTable[key][coLevel])
+                        } else {
+                            subArray.push('-')
+                        }
+                    }
+                    poAttainmentTable.push(subArray)
+                }
+
+                const avgArray1 = Object.values(poAverages).map(value => (value === null ? '-' : value));
+                avgArray1.unshift("")
+                avgArray1.unshift("")
+                avgArray1.unshift("Average")
+                avgArray1.unshift("")
+                avgArray1.unshift("")
+                poAttainmentTable.push(avgArray1)
+
+                calculatedRowNumber4 = calculatedRowNumber3 + 10
+                addRowsWithSpace(poAttainmentTable, calculatedRowNumber4, worksheet)
+                mergeMaado(3, 19, calculatedRowNumber4, worksheet)
+                addBorders(calculatedRowNumber4, calculatedRowNumber4 + 7, 3, 19, worksheet)
+                cellNumber = 'C' + calculatedRowNumber4
+                worksheet.getCell(cellNumber).alignment = {
+                    horizontal: 'center',
+                    vertical: 'middle'
+                };
+                worksheet.getCell(cellNumber).font = {
+                    bold: true
+                };
+                const rowpoAttainmentTable = worksheet.getRow(calculatedRowNumber4 + 1);
+                rowpoAttainmentTable.height = 40;
+
+                worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+                    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                        if (colNumber != 3 || rowNumber > calculatedRowNumber)
+                            cell.alignment = {
+                                horizontal: 'center',
+                                vertical: 'middle'
+                            };
+                    });
                 });
-            });
-            addBorders(calculatedRowNumber1, calculatedRowNumber1+5, 11, 18, worksheet)
-
-            //hardcoded for now, can use db values in place of target levels later on
-            let significanceTable = [['CO Attainment Level', 'Significance','','','','', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'], 
-            ['Level 3', '60% and above students should have scored >= 60% of Total marks','','','','', 'For indirect attainment, Course end survey is considered.'], 
-            ['Level 2', '55% to 59% of students should have scored >= 60% of Total marks','','','','', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'], 
-            ['Level 1', '50% to 54% of students should have scored >= 60% of Total marks','','','','', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
-            calculatedRowNumber2 = calculatedRowNumber1 + 9
-            addRowsWithSpace(significanceTable, calculatedRowNumber2, worksheet)
-            for (let k = 0; k < 4; k++){
-                mergeMaado(2, 6, calculatedRowNumber2+k, worksheet)
-                mergeMaado(7, 13, calculatedRowNumber2+k, worksheet)
-            }
-            addBorders(calculatedRowNumber2, calculatedRowNumber2+3, 1, 13, worksheet)
-
-            const copoMappingTableForExcel = []
-            const copoMappingTableMainHeading = ['', '', 'Co-Po Mapping Table']
-            copoMappingTableForExcel.push(copoMappingTableMainHeading)
-            const copoMappingTableHeading = ['', '', 'CO\'s', 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
-            copoMappingTableForExcel.push(copoMappingTableHeading)
-
-            for (let j = 0; j < 5; j++) {
-                const subArray = ['', '']
-                coLevel = "CO" + (j+1)
-                subArray.push(coLevel)
-                for (const key in copoMappingTable) {
-                    if(copoMappingTable[key][coLevel] != null && copoMappingTable[key][coLevel] != 0){
-                        subArray.push(copoMappingTable[key][coLevel])
-                    } else {
-                        subArray.push('-')
-                    }
+                for (let k = 1; k < 8; k++) {
+                    const cell = worksheet.getCell(calculatedRowNumber1, k);
+                    cell.alignment = { wrapText: true };
                 }
-                copoMappingTableForExcel.push(subArray)
-            }
-
-            const avgArray = Object.values(poAverages).map(value => (value === null ? '-' : value));
-            avgArray.unshift("AVG")
-            avgArray.unshift("")
-            avgArray.unshift("")
-            copoMappingTableForExcel.push(avgArray)
-
-            calculatedRowNumber3 = calculatedRowNumber2 + 6
-            addRowsWithSpace(copoMappingTableForExcel, calculatedRowNumber3, worksheet)
-            mergeMaado(3, 17, calculatedRowNumber3, worksheet)
-            addBorders(calculatedRowNumber3, calculatedRowNumber3+7, 3, 17, worksheet)
-            let cellNumber = 'C' + calculatedRowNumber3
-            worksheet.getCell(cellNumber).font = { 
-                bold: true
-            };
-
-            const poAttainmentTable = []
-            const poAttainmentTableMainHeading = ['', '', 'PO Attainment Table']
-            poAttainmentTable.push(poAttainmentTableMainHeading)
-            const poAttainmentTableHeading = ['', '', 'CO\'s', "CO Attainment", "CO RESULT", 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']
-            poAttainmentTable.push(poAttainmentTableHeading)
-
-            for (let j = 0; j < 5; j++) {
-                const subArray = ['', '']
-                coLevel = "CO" + (j+1)
-                subArray.push(coLevel)
-                subArray.push(finalAttainment[coLevel])
-                if(finalAttainment[coLevel] >= 1.8){
-                    subArray.push('Y')
+                for (let k = 1; k < 17; k++) {
+                    const cell = worksheet.getCell(calculatedRowNumber4 + 1, k);
+                    cell.alignment = { wrapText: true };
                 }
-                else{
-                    subArray.push("N")
-                }
-                for (const key in copoMappingTable) {
-                    if(copoMappingTable[key][coLevel] != null && copoMappingTable[key][coLevel] != 0){
-                        subArray.push(copoMappingTable[key][coLevel])
-                    } else {
-                        subArray.push('-')
-                    }
-                }
-                poAttainmentTable.push(subArray)
-            }
-
-            const avgArray1 = Object.values(poAverages).map(value => (value === null ? '-' : value));
-            avgArray1.unshift("")
-            avgArray1.unshift("")
-            avgArray1.unshift("Average")
-            avgArray1.unshift("")
-            avgArray1.unshift("")
-            poAttainmentTable.push(avgArray1)
-
-            calculatedRowNumber4 = calculatedRowNumber3 + 10
-            addRowsWithSpace(poAttainmentTable, calculatedRowNumber4, worksheet)
-            mergeMaado(3, 19, calculatedRowNumber4, worksheet)
-            addBorders(calculatedRowNumber4, calculatedRowNumber4+7, 3, 19, worksheet)
-            cellNumber = 'C' + calculatedRowNumber4
-            worksheet.getCell(cellNumber).alignment = { 
-                horizontal: 'center',
-                vertical: 'middle'
-            };
-            worksheet.getCell(cellNumber).font = { 
-                bold: true
-            };
-            const rowpoAttainmentTable = worksheet.getRow(calculatedRowNumber4+1);
-            rowpoAttainmentTable.height = 40;
-
-            worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-                row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-                    if(colNumber != 3 || rowNumber > calculatedRowNumber) 
-                    cell.alignment = {
-                        horizontal: 'center',
-                        vertical: 'middle'
-                    };
-                });
-            });
-            for(let k = 1; k < 8; k++){
-                const cell = worksheet.getCell(calculatedRowNumber1, k);
-                cell.alignment = { wrapText: true };
-            }
-            for(let k = 1; k < 17; k++){
-                const cell = worksheet.getCell(calculatedRowNumber4+1, k);
-                cell.alignment = { wrapText: true };
-            }
-            await workbook.xlsx.writeFile('./public/formatted_output.xlsx');
+                await workbook.xlsx.writeFile('./public/formatted_output.xlsx');
+            })
+        return new Promise((resolve, reject) => {
+            resolve('formatted_output.xlsx');
         })
-        return 'formatted_output.xlsx'
     } catch (err) {
         console.error('Error adding data to worksheet:', err);
-        return ''
+        new Promise((resolve, reject) => {
+            resolve('');
+        })
     };
 }
 
-function addRowsWithSpace(rowsToBeAdded, startRow1, worksheet){
+function addRowsWithSpace(rowsToBeAdded, startRow1, worksheet) {
     let numRowsToAdd1 = rowsToBeAdded.length;
     let numRowsToAdd2 = 5;
     let startRow2 = startRow1 + numRowsToAdd1 + 3;
@@ -612,11 +616,11 @@ function addRowsWithSpace(rowsToBeAdded, startRow1, worksheet){
     worksheet.spliceRows(startRow2, numRowsToAdd2);
 }
 
-function mergeMaado(startCol, endCol, row, worksheet){
+function mergeMaado(startCol, endCol, row, worksheet) {
     worksheet.mergeCells(`${String.fromCharCode(64 + startCol)}${row}:${String.fromCharCode(64 + endCol)}${row}`);
 }
 
-function addBorders (startRow, endRow, startCol, endCol, worksheet) {
+function addBorders(startRow, endRow, startCol, endCol, worksheet) {
     const border = {
         top: { style: 'medium' },
         bottom: { style: 'medium' },
@@ -625,9 +629,11 @@ function addBorders (startRow, endRow, startCol, endCol, worksheet) {
     };
 
     for (let row = startRow; row <= endRow; row++) {
-    for (let col = startCol; col <= endCol; col++) {
-        const cell = worksheet.getCell(row, col);
-        cell.border = border;
-    }
+        for (let col = startCol; col <= endCol; col++) {
+            const cell = worksheet.getCell(row, col);
+            cell.border = border;
+        }
     }
 }
+
+module.exports = calculateCOPO;

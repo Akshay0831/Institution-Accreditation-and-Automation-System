@@ -1,22 +1,44 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
 const models = require("../models");
+const predict = require("../predict_SEE_marks")
 const router = express.Router();
+
 
 router.get("/", async (req, res) => {
     const departments = await mongo.getDocs("Department");
-    const classes = await mongo.getDocs("Class");
     const subjects = await mongo.getDocs("Subject");
+    const students = await mongo.getDocs("Student");
 
-    res.status(200).json({ departments, classes, subjects });
+    res.status(200).json({ departments, subjects, students });
 })
 
-router.get("/:department/:classid", async (req, res) => {
+router.get("/:Subject", async (req, res) => {
+    let subject = await mongo.getDoc("Subject", { _id: req.params.Subject });
+    subject.Department = await mongo.getDoc("Department", { _id: subject.Department });
+    let marks = await mongo.getDocs("Marks", { Subject: req.params.Subject });
+    marks = marks.filter(marks => marks.Subject === req.params.Subject)
 
-    let marksData = await mongo.getMarks();
+    marks = await Promise.all(marks.map(async m => {
+        m.Student = await mongo.getDoc("Student", { _id: m.Student });
+        return m;
+    }));
 
-    let department = marksData.filter(department => department["Department Name"] === req.params.department)[0];
-    let classObj = department.Classes.filter(c => c._id === req.params.classid)[0];
+    let gotMarks = marks.length > 0;
+    res.status(gotMarks > 0 ? 200 : 400).send(gotMarks > 0 ? { Marks: marks, Subject: subject } : "Couldn't fetch marks");
 });
+
+router.get("/predict_SEE_marks/:Student", async (req, res) => {
+    let Student = await mongo.getDoc("Student", { _id: req.params.Student });
+    let Marks = await mongo.getDoc("Marks", { Student: req.params.Student });
+    let avgIAMarks = 0;
+    Object.keys(Marks["Marks Gained"]).forEach(ia => {
+        if (ia !== "SEE") {
+            Object.keys(Marks["Marks Gained"][ia]).forEach(co => avgIAMarks += Marks["Marks Gained"][ia][co]);
+        }
+    })
+    avgIAMarks /= 3;
+    res.json({ Student, Marks, Predicted_SEE: Math.round(await predict(avgIAMarks)) });
+})
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
 const router = express.Router();
+const coCalculation = require("../coCalculation");
 
 router.route("/:Subject")
     .get(async (req, res) => {
@@ -10,9 +11,11 @@ router.route("/:Subject")
 
         marks = await Promise.all(marks.map(async m => {
             m.Student = await mongo.getDoc("Student", { _id: m.Student });
-            m.Student = { ...m.Student, Department: await mongo.getDoc("Department", { _id: m.Student.Department }) }
-            m.Subject = await mongo.getDoc("Subject", { _id: m.Subject });
-            return m;
+            if (m.Student != null) {
+                m.Student = { ...m.Student, Department: await mongo.getDoc("Department", { _id: m.Student.Department }) }
+                m.Subject = await mongo.getDoc("Subject", { _id: m.Subject });
+                return m;
+            }
         }));
 
         let COs = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
@@ -27,13 +30,15 @@ router.route("/:Subject")
             });
         });
 
-        let gotMarks = marks.length > 0;
-        res.status(gotMarks ? 200 : 400)
-            .json(gotMarks ? {
+        let gotMarks = marks.length > 0 && Object.keys(formatedCOPOMappings).length > 0;
+        if (gotMarks) {
+            let file = await coCalculation({
                 Marks: marks,
                 IndirectAttainmentValues: await mongo.getDoc("Feedback", searchQuery),
                 COPOMappings: formatedCOPOMappings
-            } : "Couldn't fetch data");
+            });
+            res.status(file.length > 0 ? 200 : 400).send(file.length > 0 ? file : "couldnt process");
+        }
     })
 
 module.exports = router;
