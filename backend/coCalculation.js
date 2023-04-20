@@ -349,7 +349,7 @@ function calculateCOPO(data) {
         const ExcelJS = require('exceljs');
         const workbook = new ExcelJS.Workbook();
 
-        workbook.xlsx.readFile('./test.xlsx')
+        workbook.xlsx.readFile('./template.xlsx')
             .then(async () => {
                 const worksheet = workbook.getWorksheet('Sheet1');
                 const columnB = worksheet.getColumn('B');

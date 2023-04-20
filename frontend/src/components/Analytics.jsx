@@ -59,8 +59,9 @@ export default function Analytics() {
     let onDownloadReportClicked = async (event) => {
         event.preventDefault();
         if (subject.length > 0) {
-            let fileName = await fetch("http://localhost:4000/report_generation/" + subject);
-            window.open("http://localhost:4000/formatted_output.xlsx", '_blank');
+            let fileName = await (await fetch("http://localhost:4000/report_generation/" + subject)).text();
+            // window.open("http://localhost:4000/" + fileName, '_blank');
+            toasts("Generated " + fileName + ". You may access it in documents", toast.success);
         }
     }
 
