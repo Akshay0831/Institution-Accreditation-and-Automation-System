@@ -18,12 +18,12 @@ ChartJS.register(
     Legend,
 );
 
-export default function PieGraph({ graphData, labels, subjectName }) {
+export default function PieGraph({ graphData, labels, title }) {
     const data = {
         labels,
         datasets: [
             {
-                label: subjectName,
+                label: title,
                 data: graphData,
                 backgroundColor: [
                     'rgb(0, 255, 0)',
@@ -38,7 +38,7 @@ export default function PieGraph({ graphData, labels, subjectName }) {
     };
 
     return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center", backgroundColor: "rgb(240, 240, 240)", borderRadius: "10px" }} className="p-4">
             <div style={{ width: "500px" }}>
                 <Pie data={data} />
             </div>

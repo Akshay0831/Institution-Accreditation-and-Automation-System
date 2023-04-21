@@ -335,7 +335,7 @@ function calculateCOPO(data) {
             filteredArr.unshift(i)
             let index = filteredArr.length - 1;
             let forFifty
-            if (filteredArr[index].isInteger) {
+            if (filteredArr[index] != 'NA' && filteredArr[index] != 'AB') {
                 forFifty = parseInt(((filteredArr[index]) / 60) * 50)
             }
             else {
