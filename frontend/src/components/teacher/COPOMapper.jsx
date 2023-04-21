@@ -11,7 +11,7 @@ export default function COPOMapper() {
     const [subjects, setSubjects] = useState([]);
     const [COPOCollection, setCOPOCollection] = useState([]);
     const [COPOMaps, setCOPOMaps] = useState([[], []]);
-    let COs = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
+    const [COs, setCOs] = useState(['CO1', 'CO2', 'CO3', 'CO4', 'CO5']);
     let POs = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2'];
 
     useEffect(() => {
@@ -26,6 +26,16 @@ export default function COPOMapper() {
         fetchData();
     }, []);
 
+    function getCOsFromMaxMarks(maxMarks) {
+        let cos = []
+        for (let ia in maxMarks)
+            if (typeof maxMarks[ia] == "object")
+                for (let co in maxMarks[ia])
+                    if (!cos.includes(co))
+                        cos.push(co);
+        return cos;
+    }
+
     useEffect(() => {
         let COPOMap = {}
         for (let CO of COs) {
@@ -38,6 +48,13 @@ export default function COPOMapper() {
             if (doc.Subject == subjectSelected)
                 COPOMap[doc.CO][doc.PO] = doc.Value;
         setCOPOMaps(COPOMap);
+    }, [COs]);
+
+    useEffect(() => {
+        if (subjectSelected){
+            let cos = getCOsFromMaxMarks(subjects.find(doc => doc._id == subjectSelected)["Max Marks"]);
+            setCOs(cos);
+        }
     }, [subjectSelected]);
 
     const updateCOPOMapping = () => {
@@ -54,6 +71,7 @@ export default function COPOMapper() {
                         console.log("Updated CO-PO Mapping for " + subjectSelected + " Successfully!");
                 })
                 .catch(err => console.error(err));
+            fetch(serverURL + 'documents/CO PO Map').then(docs => docs.json()).then(docs => setCOPOCollection(docs));
     }
 
     return (
@@ -88,7 +106,7 @@ export default function COPOMapper() {
                                                     <th>{POn}</th>
                                                     {COs.map(COn => {
                                                         return <td key={COn}>
-                                                            <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn + "/" + POn} value={COPOMaps[COn][POn]} onChange={() => setCOPOMaps(COPOMap => ({ ...COPOMap, [COn]: { ...COPOMap[COn], [POn]: event.target.value } }))} />
+                                                            {COPOMaps[COn] && <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn + "/" + POn} value={COPOMaps[COn][POn]} onChange={() => setCOPOMaps(COPOMap => ({ ...COPOMap, [COn]: { ...COPOMap[COn], [POn]: event.target.value } }))} />}
                                                         </td>
                                                     })}
                                                 </tr>
