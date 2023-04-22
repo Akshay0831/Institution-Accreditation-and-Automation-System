@@ -32,14 +32,16 @@ router.get("/predict_SEE_marks/:Student", async (req, res) => {
     let Student = await mongo.getDoc("Student", { _id: req.params.Student });
     let Marks = await mongo.getDoc("Marks", { Student: req.params.Student });
     let avgIAMarks = 0;
-    Object.keys(Marks["Marks Gained"]).forEach(ia => {
-        if (ia !== "SEE") {
-            Object.keys(Marks["Marks Gained"][ia]).forEach(co => avgIAMarks += Marks["Marks Gained"][ia][co]);
-        }
-    })
-    avgIAMarks /= 3;
-    let prediction = await predict(avgIAMarks);
-    res.json({ Student, Marks, Predicted_SEE: Math.round(prediction) });
+    if (Marks) {
+        Object.keys(Marks["Marks Gained"]).forEach(ia => {
+            if (ia !== "SEE") {
+                Object.keys(Marks["Marks Gained"][ia]).forEach(co => avgIAMarks += Marks["Marks Gained"][ia][co]);
+            }
+        })
+        avgIAMarks /= 3;
+        let prediction = await predict(avgIAMarks);
+        res.json({ Student, Marks, Predicted_SEE: Math.round(prediction) });
+    }
 })
 
 module.exports = router;
