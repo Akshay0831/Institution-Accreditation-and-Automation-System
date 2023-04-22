@@ -242,7 +242,7 @@ export default function CollectionList() {
             <div className="container">
                 <Card>
                     <Card.Header className="fs-3">Collections CRUD</Card.Header>
-                    <Tabs id="documentsSelector" activeKey={collectionSelected} onSelect={(collectionKey) => { setDocuments([]); setCollectionSelected(collectionKey) }}>
+                    <Tabs id="documentsSelector" activeKey={collectionSelected} onSelect={(collectionKey) => { setCollectionSelected(collectionKey) }}>
                         {Object.keys(MetaData).map(collection => {
                             return <Tab eventKey={collection} key={collection} title={collection} />
                         })}
@@ -275,12 +275,6 @@ export default function CollectionList() {
                                         rowsPerPage: 10
                                     }
                                 }}
-
-                            // sortProps={{
-                            //     sortValueObj: {
-                            //         date: function noRefCheck() { }
-                            //     }
-                            // }}
                             >
                                 <Row className="mb-4">
                                     <Col className="d-flex flex-col justify-content-end align-items-end" lg={4} xs={12}>
@@ -293,24 +287,8 @@ export default function CollectionList() {
                                         <Pagination alwaysShowPagination />
                                     </Col>
                                 </Row>
-                                {/* <Row>
-                                <Col lg={4} xs={12}>
-                                    <BulkCheckboxControl/>
-                                </Col>
-                            </Row> */}
                                 <Table bordered striped hover>
-                                    <TableHeader
-                                    // controlledProps={{
-                                    //     checkboxState: {
-                                    //         checkbox: {
-                                    //             selected: {},
-                                    //             state: 'none-selected'
-                                    //         }
-                                    //     },
-                                    //     filteredDataLength: 0,
-                                    //     onCheckboxChange: function noRefCheck() { },
-                                    // }}
-                                    />
+                                    <TableHeader />
                                     <TableBody>
                                     </TableBody>
                                 </Table>
