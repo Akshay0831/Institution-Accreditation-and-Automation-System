@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { Card, Table } from "react-bootstrap";
 
 export default function COPOMapper() {
+
+    let toasts = (message, type) => {
+        type(message, {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    }
+
     const serverURL = 'http://localhost:4000/';
     const userType = sessionStorage.getItem("userType");
     const userMail = sessionStorage.getItem("userMail");
@@ -51,7 +66,7 @@ export default function COPOMapper() {
     }, [COs]);
 
     useEffect(() => {
-        if (subjectSelected){
+        if (subjectSelected) {
             let cos = getCOsFromMaxMarks(subjects.find(doc => doc._id == subjectSelected)["Max Marks"]);
             setCOs(cos);
         }
@@ -67,15 +82,22 @@ export default function COPOMapper() {
                 },
             })
                 .then(res => {
-                    if (res.status == 200)
+                    if (res.status == 200){
                         console.log("Updated CO-PO Mapping for " + subjectSelected + " Successfully!");
+                        toasts("Updated CO-PO Mapping Successfully!", toast.success);
+                    }
                 })
-                .catch(err => console.error(err));
-            fetch(serverURL + 'documents/CO PO Map').then(docs => docs.json()).then(docs => setCOPOCollection(docs));
+                .catch(err => {
+                    console.error(err);
+                    toasts("Error: " + err.message, toast.error);
+                });
+        else toasts("Please Select the Subject First", toast.error);
+        fetch(serverURL + 'documents/CO PO Map').then(docs => docs.json()).then(docs => setCOPOCollection(docs));
     }
 
     return (
         <main className="pt-5">
+            <ToastContainer />
             <div className="container">
                 <Card>
                     <Card.Header className="fs-3">CO PO Mapper</Card.Header>
