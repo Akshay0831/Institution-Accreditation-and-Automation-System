@@ -38,7 +38,8 @@ router.get("/predict_SEE_marks/:Student", async (req, res) => {
         }
     })
     avgIAMarks /= 3;
-    res.json({ Student, Marks, Predicted_SEE: Math.round(await predict(avgIAMarks)) });
+    let prediction = await predict(avgIAMarks);
+    res.json({ Student, Marks, Predicted_SEE: Math.round(prediction) });
 })
 
 module.exports = router;

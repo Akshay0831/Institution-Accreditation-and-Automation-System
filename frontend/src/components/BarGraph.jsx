@@ -1,5 +1,6 @@
 import React from "react";
 import annotationPlugin from 'chartjs-plugin-annotation';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 import {
     Chart as ChartJS,
@@ -22,6 +23,7 @@ ChartJS.register(
     Tooltip,
     Legend,
     annotationPlugin,
+    zoomPlugin
 );
 
 
@@ -38,6 +40,26 @@ export default function BarGraph({ graphData, labels, title, thresholdLines }) {
         plugins: {
             legend: {
                 position: 'bottom',
+            },
+            zoom: {
+                zoom: {
+                    wheel: {
+                        enabled: true
+                    },
+                    pinch: {
+                        enabled: true
+                    },
+                    mode: 'x'
+                },
+                pan: {
+                    enabled: true,
+                    mode: 'xy'
+                },
+                limits: {
+                  x: { min: 0, max: 100 },
+                  y: { min: 1, max: 100 },
+                  zoom: { min: 1, max: 10 },
+                }
             },
             title: {
                 display: false,
