@@ -2,6 +2,7 @@ const express = require('express');
 const mongo = require("../db/mongodb");
 const router = express.Router();
 const coCalculation = require("../coCalculation");
+const fs = require("fs")
 
 router.route("/:Subject")
     .post(async (req, res) => {
@@ -46,12 +47,19 @@ router.route("/:Subject")
 
         let gotMarks = marks.length > 0 && Object.keys(formatedCOPOMappings).length > 0;
         if (gotMarks) {
-            let file = await coCalculation({...{
-                Marks: marks,
-                IndirectAttainmentValues: await mongo.getDoc("Feedback", searchQuery),
-                COPOMappings: formatedCOPOMappings
-            },...options});
-            res.status(file.length > 0 ? 200 : 400).send(file.length > 0 ? file : "couldnt process");
+            let fileName = await coCalculation({
+                ...{
+                    Marks: marks,
+                    IndirectAttainmentValues: await mongo.getDoc("Feedback", searchQuery),
+                    COPOMappings: formatedCOPOMappings
+                }, ...options
+            });
+            res.status(fileName.length > 0 ? 200 : 400).send(fileName ? fileName : "couldnt process");
+            setTimeout(() => {
+                fs.unlink("./public/" + fileName, err => {
+                    console.error(err);
+                });
+            }, 15000);
         }
     })
 

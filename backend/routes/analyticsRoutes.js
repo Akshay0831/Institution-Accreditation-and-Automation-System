@@ -25,7 +25,7 @@ router.get("/:Subject", async (req, res) => {
     }));
 
     let gotMarks = marks.length > 0;
-    res.status(gotMarks > 0 ? 200 : 400).send(gotMarks > 0 ? { Marks: marks, Subject: subject } : "Couldn't fetch marks");
+    res.status(gotMarks ? 200 : 400).send(gotMarks ? { Marks: marks, Subject: subject } : "Couldn't fetch marks");
 });
 
 router.get("/predict_SEE_marks/:Student", async (req, res) => {
