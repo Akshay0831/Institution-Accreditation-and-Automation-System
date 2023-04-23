@@ -30,7 +30,6 @@ export default function Analytics() {
     const [studentUSN, setStudentUSN] = useState("");
     const [studentSelected, setStudentSelected] = useState(false);
 
-    const [subjectEnabled, setSubjectEnabled] = useState(false);
     const [barGraphData, setBarGraphData] = useState({});
     const [pieGraphData, setPieGraphData] = useState({});
 
@@ -54,7 +53,6 @@ export default function Analytics() {
 
     let handleDepartmentChange = (event) => {
         setDepartment(event.target.value);
-        setSubjectEnabled(true);
         setSubject("");
         setSubjects(originalSubjects.filter(subject => subject.Department === event.target.value));
     }
@@ -171,7 +169,7 @@ export default function Analytics() {
                             <div className="row">
                                 <div className="col-md-4">
                                     <label className="form-label">Department: </label>
-                                    <select name="department" className="form-select" required onChange={handleDepartmentChange}>
+                                    <select name="department" className="form-select" value={department} required onChange={handleDepartmentChange}>
                                         <option value={""}>Open this select menu</option>
                                         {departments.map(dept => {
                                             return <option key={dept._id} value={dept._id}>{dept["Department Name"]}</option>
@@ -179,8 +177,8 @@ export default function Analytics() {
                                     </select>
                                 </div>
                                 <div className="col-md-4">
-                                    <label className="form-label">Subject: {subjectEnabled ? null : <span style={{ color: "red" }}>(Select department first)</span>}</label>
-                                    <select name="subject" disabled={!subjectEnabled} className="form-select" required onChange={handleSubjectChange}>
+                                    <label className="form-label">Subject: {department ? null : <span style={{ color: "red" }}>(Select department first)</span>}</label>
+                                    <select name="subject" disabled={!department} className="form-select" required onChange={handleSubjectChange}>
                                         <option value={""}>Open this select menu</option>
                                         {subjects.map(subject => {
                                             return <option key={subject._id} value={subject._id}>{String(subject["Subject Name"] + " (" + subject["Subject Code"] + ")").toUpperCase()}</option>
