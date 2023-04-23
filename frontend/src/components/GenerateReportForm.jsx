@@ -41,7 +41,14 @@ export default function GenerateReportForm(props) {
         };
         console.log(options);
         if (subjectId) {
-            let fileName = await (await fetch("http://localhost:4000/report_generation/" + subjectId)).text();
+            let fileName = await (await fetch("http://localhost:4000/report_generation/" + subjectId, {
+                // Adding method type
+                method: "POST",
+                // Adding body or contents to send
+                body: JSON.stringify(options),
+                // Adding headers to the request
+                headers: { "Content-type": "application/json; charset=UTF-8" },
+            })).text();
             setTimeout(() => {
                 window.open("http://localhost:4000/" + fileName, '_blank');
                 setGeneratingReport(false);

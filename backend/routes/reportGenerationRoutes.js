@@ -4,8 +4,12 @@ const router = express.Router();
 const coCalculation = require("../coCalculation");
 
 router.route("/:Subject")
-    .get(async (req, res) => {
+    .post(async (req, res) => {
         let searchQuery = { Subject: req.params.Subject };
+        // Optional parameters as an object
+        let options = req.body; // options = {"targetValues":[50,55,60],}
+        console.log(req.params.Subject, JSON.stringify(options));
+
         let marks = await mongo.getDocs("Marks", searchQuery);
         marks = marks.filter(marks => marks.Subject === req.params.Subject)
 
@@ -17,6 +21,17 @@ router.route("/:Subject")
                 return m;
             }
         }));
+
+        // Simple function to get COs dynamically from Max Marks
+        function getCOsFromMaxMarks(maxMarks) {
+            let cos = []
+            for (let ia in maxMarks)
+                if (typeof maxMarks[ia] == "object")
+                    for (let co in maxMarks[ia])
+                        if (!cos.includes(co))
+                            cos.push(co);
+            return cos;
+        }
 
         let COs = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
         let POs = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2'];
