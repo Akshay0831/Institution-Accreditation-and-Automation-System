@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
@@ -15,6 +16,19 @@ export default function UpdateStudentMarks() {
     const [students, setStudents] = useState([]);
     const [studentID, setStudentID] = useState("");
     const [marksGained, setMarksGained] = useState({ IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 18, CO2: 12 }, IA2: { CO2: 6, CO3: 12, CO4: 6 }, A2: { CO2: 6, CO3: 12, CO4: 6 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 12, CO5: 18 }, SEE: 60 });
+
+    let toasts = (message, type) => {
+        type(message, {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,9 +66,11 @@ export default function UpdateStudentMarks() {
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
         }).then(res => {
-            if (res.status == 200)
+            if (res.status == 200){
                 navigate("/admin/collectionlist",
                     { state: "Marks", });
+                toasts(`${(isUpdate?"Updated":"Added")} Marks`, toast.success);
+            }
             console.log(res.status, res.statusText);
         });
     }

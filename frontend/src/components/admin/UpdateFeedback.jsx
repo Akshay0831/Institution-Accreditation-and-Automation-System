@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 import * as XLSX from 'xlsx';
@@ -14,6 +15,19 @@ export default function UpdateFeedback() {
     const [subjectID, setSubjectID] = useState("");
     const [fileData, setFileData] = useState(null);
     const [feedback, setFeedback] = useState({ CO1: 0, CO2: 0, CO3: 0, CO4: 0, CO5: 0 });
+
+    let toasts = (message, type) => {
+        type(message, {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -134,9 +148,11 @@ export default function UpdateFeedback() {
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
         }).then(res => {
-            if (res.status == 200)
+            if (res.status == 200){
                 navigate("/admin/collectionlist",
                     { state: "Feedback", });
+                    toasts(`${(isUpdate?"Updated":"Added")} Feedback`, toast.success);
+            }
             console.log(res.status, res.statusText);
         });
     }

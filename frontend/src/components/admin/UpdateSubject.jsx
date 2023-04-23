@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button, Modal, ButtonGroup } from "react-bootstrap";
 
@@ -17,6 +18,19 @@ export default function UpdateSubject() {
     const [maxMarks, setMaxMarks] = useState({ IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 });
     const [semester, setSemester] = useState(1);
     const [departmentId, setDepartmentID] = useState("");
+
+    let toasts = (message, type) => {
+        type(message, {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -72,10 +86,12 @@ export default function UpdateSubject() {
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
         }).then(res=>{
-            if(res.status == 200)
+            if(res.status == 200){
                 navigate("/admin/collectionlist",
                     {state: "Subject",
                 });
+                toasts(`${(isUpdate?"Updated":"Added")} Subject`, toast.success);
+            }
             console.log(res.status, res.statusText);
         });
     }

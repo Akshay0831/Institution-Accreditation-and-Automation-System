@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner'
 import { Card } from 'react-bootstrap';
 import GenerateReportForm from './generateReportForm';
@@ -162,9 +162,8 @@ export default function Analytics() {
     }
 
     return (
-        <main>
-            <ToastContainer />
-            <div className="container pt-4 mb-5">
+        <main className='pt-5'>
+            <div className="container">
                 <Card>
                     <Card.Header className="fs-3">Analytics</Card.Header>
                     <Card.Body>

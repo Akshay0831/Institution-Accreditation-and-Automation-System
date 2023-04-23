@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { Card, Table } from "react-bootstrap";
 
 export default function COPOMapper() {
@@ -97,7 +97,6 @@ export default function COPOMapper() {
 
     return (
         <main className="pt-5">
-            <ToastContainer />
             <div className="container">
                 <Card>
                     <Card.Header className="fs-3">CO PO Mapper</Card.Header>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 
@@ -14,6 +15,19 @@ export default function UpdateTeacher() {
     const [role, setRole] = useState("");
     const [teacherName, setTeacherName] = useState("");
     const [departmentId, setDepartmentID] = useState("");
+
+    let toasts = (message, type) => {
+        type(message, {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+        });
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,10 +63,12 @@ export default function UpdateTeacher() {
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
         }).then((res)=>{
-            if (res.status == 200)
+            if (res.status == 200){
                 navigate("/admin/collectionlist",
                     {state: "Teacher",
                 });
+                toasts(`${(isUpdate?"Updated":"Added")} Teacher`, toast.success);
+            }
             console.log(res.status, res.statusText);
         });
     }

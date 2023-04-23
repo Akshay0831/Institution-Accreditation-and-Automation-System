@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Accordion, Button, Card, Table } from "react-bootstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import BatchInput from "./teacher/BatchInput";
 
 export default class UpdateMarks extends Component {
@@ -95,7 +95,6 @@ export default class UpdateMarks extends Component {
     render() {
         return (
             <main className="pt-5" >
-                <ToastContainer />
                 <div className="container">
                     <Card>
                         <Card.Header className="fs-3">Update Marks</Card.Header>
