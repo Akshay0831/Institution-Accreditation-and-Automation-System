@@ -1,6 +1,7 @@
 // const mongo = require("../db/mongodb");
 
 function calculateCOPO(data) {
+    console.log(data);
     try {
         let maxMarks = data["Marks"][0]["Subject"]["Max Marks"]
         //Can change the below json values dynamically by using: X = Y% of COx (eg. 60% of 18)

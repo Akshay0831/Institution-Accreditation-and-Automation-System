@@ -7,8 +7,7 @@ router.route("/:Subject")
     .post(async (req, res) => {
         let searchQuery = { Subject: req.params.Subject };
         // Optional parameters as an object
-        let options = req.body; // options = {"targetValues":[50,55,60],}
-        console.log(req.params.Subject, JSON.stringify(options));
+        let options = req.body;
 
         let marks = await mongo.getDocs("Marks", searchQuery);
         marks = marks.filter(marks => marks.Subject === req.params.Subject)
@@ -47,11 +46,11 @@ router.route("/:Subject")
 
         let gotMarks = marks.length > 0 && Object.keys(formatedCOPOMappings).length > 0;
         if (gotMarks) {
-            let file = await coCalculation({
+            let file = await coCalculation({...{
                 Marks: marks,
                 IndirectAttainmentValues: await mongo.getDoc("Feedback", searchQuery),
                 COPOMappings: formatedCOPOMappings
-            });
+            },...options});
             res.status(file.length > 0 ? 200 : 400).send(file.length > 0 ? file : "couldnt process");
         }
     })
