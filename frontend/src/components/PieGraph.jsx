@@ -38,8 +38,8 @@ export default function PieGraph({ graphData, labels, title }) {
     };
 
     return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center", backgroundColor: "rgb(240, 240, 240)", borderRadius: "10px" }} className="p-4">
-            <div style={{ width: "500px" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center", backgroundColor: "rgb(240, 240, 240)", borderRadius: "10px" }} className="overflow-auto p-4">
+            <div>
                 <Pie data={data} />
             </div>
         </div>
