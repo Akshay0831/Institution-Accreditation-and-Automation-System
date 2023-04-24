@@ -14,7 +14,7 @@ export default function UpdateSubject() {
     const [schemeCode, setSchemeCode] = useState("");
     const [subjectCode, setSubjectCode] = useState("");
     const [subjectName, setSubjectName] = useState("");
-    const [testAssignmentRatio, setTestAssignmentRatio] = useState(3);
+    // const [testAssignmentRatio, setTestAssignmentRatio] = useState(3);
     const [maxMarks, setMaxMarks] = useState({ IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 });
     const [semester, setSemester] = useState(1);
     const [departmentId, setDepartmentID] = useState("");
@@ -41,7 +41,7 @@ export default function UpdateSubject() {
                 setSchemeCode(subjectsData["Scheme Code"]);
                 setSubjectCode(subjectsData["Subject Code"]);
                 setSubjectName(subjectsData["Subject Name"]);
-                setTestAssignmentRatio(subjectsData["Test Assignment Ratio"]);
+                // setTestAssignmentRatio(subjectsData["Test Assignment Ratio"]);
                 setMaxMarks(subjectsData["Max Marks"]);
                 setSemester(subjectsData["Semester"]);
                 setDepartmentID(subjectsData["Department"]);
@@ -71,7 +71,7 @@ export default function UpdateSubject() {
             "Scheme Code": schemeCode,
             "Subject Code": subjectCode,
             "Subject Name": subjectName,
-            "Test Assignment Ratio": testAssignmentRatio,
+            // "Test Assignment Ratio": testAssignmentRatio,
             "Max Marks": maxMarks,
             "Semester": semester,
             "Department": departmentId
@@ -138,10 +138,10 @@ export default function UpdateSubject() {
                                 <Form.Label>Subject Name:</Form.Label>
                                 <Form.Control type="text" name="subjectName" id="subjectName" value={subjectName} placeholder={"Enter Subject Name"} onChange={(event) => { setSubjectName(event.target.value) }} required />
                             </Form.Group>
-                            <Form.Group className="mb-3">
+                            {/* <Form.Group className="mb-3">
                                 <Form.Label>Test Assignment Ratio:</Form.Label>
                                 <Form.Control type="text" name="testAssignmentRatio" id="testAssignmentRatio" value={testAssignmentRatio} placeholder={"Enter Test Assignment Ratio"} onChange={(event) => { setTestAssignmentRatio(event.target.value) }} required />
-                            </Form.Group>
+                            </Form.Group> */}
                             <Form.Group className="m-0 p-0 border rounded bg-light">
                                 <Form.Label className="p-1"> Max Marks:</Form.Label>
                                 {
