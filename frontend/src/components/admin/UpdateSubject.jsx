@@ -8,7 +8,7 @@ export default function UpdateSubject() {
     const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
-    document.title = (isUpdate?"Update":"Add") + " Subject";
+    document.title = (isUpdate ? "Update" : "Add") + " Subject";
 
     const [departments, setDepartments] = useState([]);
     const [schemeCode, setSchemeCode] = useState("");
@@ -56,26 +56,28 @@ export default function UpdateSubject() {
     const handleSEEChange = (col, event) => {
         let marks = {};
         marks[col] = parseInt(event.target.value);
-        setMaxMarks(maxMarks => ({...maxMarks, ...marks}));
+        setMaxMarks(maxMarks => ({ ...maxMarks, ...marks }));
     }
 
     const handleCOChange = (col, CO, event) => {
         let marks = maxMarks;
         marks[col][CO] = parseInt(event.target.value);
-        setMaxMarks(maxMarks => ({...maxMarks, ...marks}));
+        setMaxMarks(maxMarks => ({ ...maxMarks, ...marks }));
     }
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let subject = {"Subject":{
-            "Scheme Code": schemeCode,
-            "Subject Code": subjectCode,
-            "Subject Name": subjectName,
-            // "Test Assignment Ratio": testAssignmentRatio,
-            "Max Marks": maxMarks,
-            "Semester": semester,
-            "Department": departmentId
-        }};
+        let subject = {
+            "Subject": {
+                "Scheme Code": schemeCode,
+                "Subject Code": subjectCode,
+                "Subject Name": subjectName,
+                // "Test Assignment Ratio": testAssignmentRatio,
+                "Max Marks": maxMarks,
+                "Semester": semester,
+                "Department": departmentId
+            }
+        };
         subject._id = id;
 
         fetch(`http://localhost:4000/Subject`, {
@@ -85,12 +87,13 @@ export default function UpdateSubject() {
             body: JSON.stringify(subject),
             // Adding headers to the request
             headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res=>{
-            if(res.status == 200){
+        }).then(res => {
+            if (res.status == 200) {
                 navigate("/admin/collectionlist",
-                    {state: "Subject",
-                });
-                toasts(`${(isUpdate?"Updated":"Added")} Subject`, toast.success);
+                    {
+                        state: "Subject",
+                    });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Subject`, toast.success);
             }
             console.log(res.status, res.statusText);
         });
@@ -101,25 +104,31 @@ export default function UpdateSubject() {
 
     const handleClose = () => setAddModal("");
 
+    const deleteObjInMaxMarks = (test) => {
+        let marksObj = { ...maxMarks };
+        delete marksObj[test];
+        setMaxMarks(marksObj);
+    }
+
     return (
         <main className="pt-5">
             <div className="container">
                 <Modal show={addModal} onHide={handleClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Add Field</Modal.Title>
+                        <Modal.Title>Add Field</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Enter the field Name{addModal}
-                    <input className="form-control" onChange={(event)=>setAddModalBuffer(event.target.value)}/>
+                        <input className="form-control" onChange={(event) => setAddModalBuffer(event.target.value)} />
                     </Modal.Body>
                     <Modal.Footer>
-                    <ButtonGroup>
-                    <Button variant="secondary" onClick={handleClose}>
-                        <i className="fa fa-close"/>
-                    </Button>
-                    <Button variant="primary" onClick={()=>{if (addModal[1]) maxMarks[addModal[1]][addModalBuffer]=0; else maxMarks[addModalBuffer]={};handleClose()}}>
-                        <i className="fa fa-plus"/>
-                    </Button>
-                    </ButtonGroup>
+                        <ButtonGroup>
+                            <Button variant="secondary" onClick={handleClose}>
+                                <i className="fa fa-close" />
+                            </Button>
+                            <Button variant="primary" onClick={() => { if (addModal[1]) maxMarks[addModal[1]][addModalBuffer] = 0; else if (addModalBuffer!="SEE") maxMarks[addModalBuffer] = {}; else if (!("SEE" in maxMarks)) maxMarks["SEE"]=60; handleClose() }}>
+                                <i className="fa fa-plus" />
+                            </Button>
+                        </ButtonGroup>
                     </Modal.Footer>
                 </Modal>
                 <Card>
@@ -145,26 +154,32 @@ export default function UpdateSubject() {
                             <Form.Group className="m-0 p-0 border rounded bg-light">
                                 <Form.Label className="p-1"> Max Marks:</Form.Label>
                                 {
-                                maxMarks
-                                    ? Object.keys(maxMarks).map(test => {
-                                        if (typeof maxMarks[test]==='object'){
-                                            return <Card key={test} className="ps-2">{test}
+                                    maxMarks
+                                        ? Object.keys(maxMarks).map(test => {
+                                            if (typeof maxMarks[test] === 'object') {
+                                                return <Card key={test} className="ps-2">{test}
                                                     <Card.Body className="row">
-                                                        {Object.keys(maxMarks[test]).map(CO=>{
-                                                            return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={maxMarks[test][CO]} min="0" onChange={handleCOChange.bind(this, test, CO)}/></Form.Group>
+                                                        {Object.keys(maxMarks[test]).map(CO => {
+                                                            return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={maxMarks[test][CO]} min="0" onChange={handleCOChange.bind(this, test, CO)} /></Form.Group>
                                                         })}
                                                     </Card.Body>
                                                     <ButtonGroup className="col-2 mb-2">
-                                                        <Button variant="outline-success" onClick={()=>setAddModal([true, test])} size="sm"><i className="fa fa-plus" /></Button>
-                                                        <Button variant="outline-danger" onClick={(test)=>{delete maxMarks[test]}} size="sm"><i className="fa fa-trash" /></Button>
+                                                        <Button variant="outline-success" onClick={() => setAddModal([true, test])} size="sm"><i className="fa fa-plus" /></Button>
+                                                        <Button variant="outline-danger" onClick={() => deleteObjInMaxMarks(test)} size="sm"><i className="fa fa-trash" /></Button>
                                                     </ButtonGroup>
                                                 </Card>
-                                        }
-                                        else return <Card key={test} className="p-3"> {test} <Form.Control type="number" placeholder={test} value={maxMarks[test]} min="0" onChange={handleSEEChange.bind(this, test)}/></Card>
-                                    })
-                                    : <>Max Marks not defined</>
+                                            }
+                                            else return <Card key={test} className="ps-2">
+                                                {test}
+                                                <Card.Body>
+                                                    <Form.Control type="number" placeholder={test} value={maxMarks[test]} min="0" onChange={handleSEEChange.bind(this, test)} />
+                                                </Card.Body>
+                                                    <Button className="col-1 mb-2" variant="outline-danger" onClick={() => deleteObjInMaxMarks(test)} size="sm"><i className="fa fa-trash" /></Button>
+                                            </Card>
+                                        })
+                                        : <>Max Marks not defined</>
                                 }
-                                <Button variant="outline-success" className="col-2 ms-2 mb-2" size="sm" onClick={()=>setAddModal(true)}><i className="fa fa-plus" /></Button>
+                                <Button variant="outline-success" className="col-2 ms-2 mb-2" size="sm" onClick={() => setAddModal(true)}><i className="fa fa-plus" /></Button>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Semester:</Form.Label>
