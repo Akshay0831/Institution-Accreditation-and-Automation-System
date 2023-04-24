@@ -41,12 +41,12 @@ export default class UpdateMarks extends Component {
         return Number(maxMarksObj[ia][co]);
     }
 
-    deepCopyObject(originalObject, defaultValue=null) {
+    deepCopyObject(originalObject, defaultValue = null) {
         const copiedObject = {};
         for (let key in originalObject) {
             if (typeof originalObject[key] === 'object')
                 copiedObject[key] = this.deepCopyObject(originalObject[key], defaultValue);
-            else if (defaultValue!=null)
+            else if (defaultValue != null)
                 copiedObject[key] = defaultValue;
             else
                 copiedObject[key] = originalObject[key];
@@ -71,7 +71,7 @@ export default class UpdateMarks extends Component {
 
     updateDocument(marksObj) {
         if (this.validated)
-            fetch((marksObj._id? ("http://localhost:4000/documents/Marks/update/" + marksObj._id):"http://localhost:4000/documents/Marks/add"), {
+            fetch((marksObj._id ? ("http://localhost:4000/documents/Marks/update/" + marksObj._id) : "http://localhost:4000/documents/Marks/add"), {
                 // Adding method type
                 method: "POST",
                 // Adding body or contents to send
@@ -88,7 +88,8 @@ export default class UpdateMarks extends Component {
 
     totalIA(IAObj) {
         let sum = 0;
-        Object.keys(IAObj).forEach(co => { sum += Number(IAObj[co]) });
+        if (IAObj)
+            Object.keys(IAObj).forEach(co => { sum += Number(IAObj[co]) });
         return sum;
     }
 
@@ -164,7 +165,7 @@ export default class UpdateMarks extends Component {
                                                                                                                                         <td key={ia + co} style={{ minWidth: "100px" }}>
                                                                                                                                             <input type="number"
                                                                                                                                                 className="form-control" style={{ fontSize: "15px" }} min="0" max={subject["Max Marks"][ia][co]}
-                                                                                                                                                placeholder={(student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia][co] : "0") + "/" + subject["Max Marks"][ia][co]}
+                                                                                                                                                placeholder={(student["Marks Gained"]["Marks Gained"] && Object.keys(student["Marks Gained"]["Marks Gained"]).length ? (student["Marks Gained"]["Marks Gained"][ia][co]) : "0") + "/" + subject["Max Marks"][ia][co]}
                                                                                                                                                 onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, co)} />
                                                                                                                                         </td>
                                                                                                                                     )
@@ -192,7 +193,7 @@ export default class UpdateMarks extends Component {
                                                                                                         </tbody>
                                                                                                     </Table>
                                                                                                 }
-                                                                                                <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]}/>
+                                                                                                    <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]} />
                                                                                                 </Accordion.Body>
                                                                                             </Accordion.Item>
                                                                                         })
