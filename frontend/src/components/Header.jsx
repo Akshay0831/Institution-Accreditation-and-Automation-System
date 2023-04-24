@@ -7,7 +7,7 @@ const Header = (props) => {
         <Suspense fallback={<h1>Loading...</h1>}>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
                 <div className="container-fluid">
-                    <a style={{ marginLeft: "15px" }} className="navbar-brand" href="#">
+                    <a className="navbar-brand ms-3" href="#">
                         {sessionStorage.getItem("userType")}
                     </a>
                     <button
@@ -24,8 +24,18 @@ const Header = (props) => {
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <a className="nav-link active" aria-current="page" href="#">
+                                <Link to={"/"+sessionStorage.getItem("userType").toLowerCase()} className="nav-link active">
                                     Home
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <a href="https://ksit.ac.in/about.html" className="nav-link">
+                                    About Us
+                                </a>
+                            </li>
+                            <li className="nav-item">
+                                <a href="https://ksit.ac.in/contact.html" className="nav-link">
+                                    Contact Us
                                 </a>
                             </li>
                             {

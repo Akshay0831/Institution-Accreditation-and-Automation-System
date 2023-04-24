@@ -7,7 +7,7 @@ const Teacher = () => {
     return (
         <Suspense>
             <div className="container-fluid">
-                <Header links={[['About Us', '#'], ['Contact Us', '#'], ['Admin Dashboard', '/admin']]} />
+                <Header links={[['Marks', '/admin/updatemarks'], ['Documents', '/admin/documents'], ['Analytics', '/admin/analytics'], ['Mapping Table', '/admin/mapping']]} />
                 <Sidebar type="home" />
                 <ToastContainer/>
             </div>
