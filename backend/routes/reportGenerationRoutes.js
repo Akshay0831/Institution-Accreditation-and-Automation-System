@@ -54,7 +54,7 @@ router.route("/:Subject")
                     COPOMappings: formatedCOPOMappings
                 }, ...options
             });
-            res.status(fileName.length > 0 ? 200 : 400).send(fileName ? fileName : "couldnt process");
+            res.status(fileName > 0 ? 200 : 400).send(fileName ? fileName : "couldnt process");
             setTimeout(() => {
                 fs.unlink("./public/" + fileName, err => {
                     console.error(err);
