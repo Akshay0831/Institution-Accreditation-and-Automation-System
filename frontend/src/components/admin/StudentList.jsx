@@ -8,7 +8,7 @@ export default class StudentList extends Component {
         let res = await fetch("http://localhost:4000/Student/update");
         let data = await res.json();
         this.setState({ Students: data });
-        document.title = "Update Marks";
+        document.title = "Students by Class";
     }
 
     async deleteClicked(id) {
