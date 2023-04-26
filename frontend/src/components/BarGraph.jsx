@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Form, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import PropTypes from "prop-types";
 import { Chart, CategoryScale, LinearScale, Title, Tooltip, Legend, BarController, BarElement } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
@@ -17,15 +18,10 @@ Chart.register(
     zoomPlugin
 );
 
-const BarGraph = ({ graphData, labels, title = "", annonationsData = null }) => {
+const BarGraph = ({ graphData, labels, title = "", annotationsData = null }) => {
+    const [sortOrder, setSortOrder] = useState("none");
+
     const options = {
-        responsive: true,
-        scales: {
-            y: {
-                suggestedMin: 0,
-                suggestedMax: 40
-            }
-        },
         plugins: {
             legend: {
                 position: 'bottom'
@@ -38,16 +34,15 @@ const BarGraph = ({ graphData, labels, title = "", annonationsData = null }) => 
                     pinch: {
                         enabled: true
                     },
-                    mode: 'x'
+                    mode: 'x',
                 },
                 pan: {
                     enabled: true,
                     mode: 'xy'
                 },
                 limits: {
-                    x: { min: 0, max: 100 },
-                    y: { min: 0, max: 100 },
-                    zoom: { min: 1, max: 10 }
+                    x: { min: 0 },
+                    y: { min: 0, max: 100 }
                 }
             },
             title: {
@@ -55,17 +50,25 @@ const BarGraph = ({ graphData, labels, title = "", annonationsData = null }) => 
                 text: title
             },
             annotation: {
-                annotations: annonationsData
+                annotations: annotationsData
             }
         }
     };
-
+    
+    const sortData = (order) => [...graphData].sort((a, b) => (order === "ascending" ? a - b : b - a));
+    
     const data = {
-        labels,
+        labels: sortOrder === "none" ? labels : [...labels].sort((a, b) => {
+            const indexA = graphData[labels.indexOf(a)];
+            const indexB = graphData[labels.indexOf(b)];
+            if (sortOrder === "ascending")
+            return indexA - indexB;
+            else return indexB - indexA;
+          }),
         datasets: [
             {
                 label: title,
-                data: graphData,
+                data: sortOrder === "none" ? graphData : sortData(sortOrder),
                 borderColor: 'rgb(0, 0, 0)',
                 borderWidth: 1,
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -74,8 +77,17 @@ const BarGraph = ({ graphData, labels, title = "", annonationsData = null }) => 
         ]
     };
 
+    const handleSort = (order) => {
+        setSortOrder(order);
+    };
+
     return (
-        <div className="bg-light w-100 overflow-auto border rounded">
+        <div className="bg-light w-100 overflow-auto border p-3 rounded">
+            <ToggleButtonGroup type="radio" size="sm" name="sortOrderOptions" value={sortOrder} aria-label="Sort Buttons">
+                <ToggleButton type="button" variant={sortOrder === 'ascending'?"secondary":"outline-secondary"} onClick={() => handleSort("ascending")}>Sort Ascending</ToggleButton>
+                <ToggleButton type="button" variant={sortOrder === 'descending'?"secondary":"outline-secondary"} onClick={() => handleSort("descending")}>Sort Descending</ToggleButton>
+                <ToggleButton type="button" variant={sortOrder === 'none'?"secondary":"outline-secondary"} onClick={() => handleSort("none")}>No Sort</ToggleButton>
+            </ToggleButtonGroup>
             <Bar data={data} options={options} plugins={[annotationPlugin]} />
         </div>
     )
@@ -85,7 +97,7 @@ BarGraph.propTypes = {
     graphData: PropTypes.arrayOf(PropTypes.number).isRequired,
     labels: PropTypes.arrayOf(PropTypes.string).isRequired,
     title: PropTypes.string,
-    annonationsData: PropTypes.object
+    annotationsData: PropTypes.object
 };
 
 export default BarGraph;
