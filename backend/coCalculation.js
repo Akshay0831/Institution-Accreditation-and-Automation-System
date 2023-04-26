@@ -210,14 +210,17 @@ function calculateCOPO(data) {
 
         //hardcoded targetLevels, it can be fetched from db
         let directAttainmentTargetLevels = {}
+        targetLevels = data["targetValues"]
+        let max = Math.max(...targetLevels)
+        targetLevels1 = targetLevels.splice(targetLevels.indexOf(max), 1)
         for (const key in directAttainment) {
-            if (directAttainment[key] >= 60) {
+            if (directAttainment[key] >= Math.max(...targetLevels)) {
                 directAttainmentTargetLevels[key] = 3
             }
-            else if (directAttainment[key] >= 55) {
+            else if (directAttainment[key] >= Math.max(...targetLevels1)) {
                 directAttainmentTargetLevels[key] = 2
             }
-            else if (directAttainment[key] >= 50) {
+            else if (directAttainment[key] >= Math.min(...targetLevels)) {
                 directAttainmentTargetLevels[key] = 1
             }
             else {
@@ -228,13 +231,13 @@ function calculateCOPO(data) {
         let indirectAttainment = data["IndirectAttainmentValues"]["values"]
         let indirectAttainmentTargetLevels = {}
         for (const key in indirectAttainment) {
-            if (indirectAttainment[key] >= 60) {
+            if (indirectAttainment[key] >= Math.max(...targetLevels)) {
                 indirectAttainmentTargetLevels[key] = 3
             }
-            else if (indirectAttainment[key] >= 55) {
+            else if (indirectAttainment[key] >= Math.max(...targetLevels1)) {
                 indirectAttainmentTargetLevels[key] = 2
             }
-            else if (indirectAttainment[key] >= 50) {
+            else if (indirectAttainment[key] >= Math.min(...targetLevels)) {
                 indirectAttainmentTargetLevels[key] = 1
             }
             else {
@@ -483,9 +486,9 @@ function calculateCOPO(data) {
 
                 //hardcoded for now, can use db values in place of target levels later on
                 let significanceTable = [['CO Attainment Level', 'Significance', '', '', '', '', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.'],
-                ['Level 3', '60% and above students should have scored >= 60% of Total marks', '', '', '', '', 'For indirect attainment, Course end survey is considered.'],
-                ['Level 2', '55% to 59% of students should have scored >= 60% of Total marks', '', '', '', '', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'],
-                ['Level 1', '50% to 54% of students should have scored >= 60% of Total marks', '', '', '', '', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
+                ['Level 3', Math.max(...targetLevels).toString() + '% and above students should have scored >= 60% of Total marks', '', '', '', '', 'For indirect attainment, Course end survey is considered.'],
+                ['Level 2', Math.max(...targetLevels1).toString() + '% to ' + (Math.max(...targetLevels)-1).toString() + '% of students should have scored >= 60% of Total marks', '', '', '', '', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'],
+                ['Level 1', Math.min(...targetLevels).toString() + '% to ' + (Math.max(...targetLevels1)-1).toString() + '% of students should have scored >= 60% of Total marks', '', '', '', '', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
                 calculatedRowNumber2 = calculatedRowNumber1 + 9
                 addRowsWithSpace(significanceTable, calculatedRowNumber2, worksheet)
                 for (let k = 0; k < 4; k++) {

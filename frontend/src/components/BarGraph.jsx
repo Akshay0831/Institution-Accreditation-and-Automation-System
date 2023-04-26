@@ -1,20 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { Form, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import PropTypes from "prop-types";
+import { Chart, CategoryScale, LinearScale, Title, Tooltip, Legend, BarController, BarElement } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import zoomPlugin from 'chartjs-plugin-zoom';
 
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    Title,
-    Tooltip,
-    Legend,
-    BarController,
-    BarElement
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-
-ChartJS.register(
+Chart.register(
     CategoryScale,
     LinearScale,
     BarController,
@@ -26,20 +18,13 @@ ChartJS.register(
     zoomPlugin
 );
 
+const BarGraph = ({ graphData, labels, title = "", annotationsData = null }) => {
+    const [sortOrder, setSortOrder] = useState("none");
 
-
-export default function BarGraph({ graphData, labels, title, thresholdLines }) {
     const options = {
-        responsive: true,
-        scales: {
-            y: {
-                suggestedMin: 0,
-                suggestedMax: 40
-            }
-        },
         plugins: {
             legend: {
-                position: 'bottom',
+                position: 'bottom'
             },
             zoom: {
                 zoom: {
@@ -49,61 +34,41 @@ export default function BarGraph({ graphData, labels, title, thresholdLines }) {
                     pinch: {
                         enabled: true
                     },
-                    mode: 'x'
+                    mode: 'x',
                 },
                 pan: {
                     enabled: true,
                     mode: 'xy'
                 },
                 limits: {
-                  x: { min: 0, max: 100 },
-                  y: { min: 1, max: 100 },
-                  zoom: { min: 1, max: 10 },
+                    x: { min: 0 },
+                    y: { min: 0, max: 100 }
                 }
             },
             title: {
-                display: false,
+                display: true,
+                text: title
             },
             annotation: {
-                annotations: thresholdLines ? {
-                    line1: {
-                        type: 'line',
-                        yMin: 60,
-                        yMax: 60,
-                        borderColor: 'rgb(0, 255, 0)',
-                        borderWidth: 2,
-                    },
-                    line2: {
-                        type: 'line',
-                        yMin: 55,
-                        yMax: 55,
-                        borderColor: 'rgb(150, 255, 0)',
-                        borderWidth: 2,
-                    },
-                    line3: {
-                        type: 'line',
-                        yMin: 50,
-                        yMax: 50,
-                        borderColor: 'rgb(200, 255, 0)',
-                        borderWidth: 2,
-                    },
-                    line4: {
-                        type: 'line',
-                        yMin: 34,
-                        yMax: 34,
-                        borderColor: 'rgb(255, 0, 0)',
-                        borderWidth: 2,
-                    }
-                } : null
+                annotations: annotationsData
             }
-        },
+        }
     };
+    
+    const sortData = (order) => [...graphData].sort((a, b) => (order === "ascending" ? a - b : b - a));
+    
     const data = {
-        labels,
+        labels: sortOrder === "none" ? labels : [...labels].sort((a, b) => {
+            const indexA = graphData[labels.indexOf(a)];
+            const indexB = graphData[labels.indexOf(b)];
+            if (sortOrder === "ascending")
+            return indexA - indexB;
+            else return indexB - indexA;
+          }),
         datasets: [
             {
                 label: title,
-                data: graphData,
+                data: sortOrder === "none" ? graphData : sortData(sortOrder),
                 borderColor: 'rgb(0, 0, 0)',
                 borderWidth: 1,
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
@@ -111,16 +76,28 @@ export default function BarGraph({ graphData, labels, title, thresholdLines }) {
             }
         ]
     };
+
+    const handleSort = (order) => {
+        setSortOrder(order);
+    };
+
     return (
-        <div style={{ background: "white" }}>
+        <div className="bg-light w-100 overflow-auto border p-3 rounded">
+            <ToggleButtonGroup type="radio" size="sm" name="sortOrderOptions" value={sortOrder} aria-label="Sort Buttons">
+                <ToggleButton type="button" variant={sortOrder === 'ascending'?"secondary":"outline-secondary"} onClick={() => handleSort("ascending")}>Sort Ascending</ToggleButton>
+                <ToggleButton type="button" variant={sortOrder === 'descending'?"secondary":"outline-secondary"} onClick={() => handleSort("descending")}>Sort Descending</ToggleButton>
+                <ToggleButton type="button" variant={sortOrder === 'none'?"secondary":"outline-secondary"} onClick={() => handleSort("none")}>No Sort</ToggleButton>
+            </ToggleButtonGroup>
             <Bar data={data} options={options} plugins={[annotationPlugin]} />
         </div>
     )
-}
+};
 
-BarGraph.defaultProps = {
-    graphData: [],
-    labels: [],
-    title: "",
-    thresholdLines: false
-}
+BarGraph.propTypes = {
+    graphData: PropTypes.arrayOf(PropTypes.number).isRequired,
+    labels: PropTypes.arrayOf(PropTypes.string).isRequired,
+    title: PropTypes.string,
+    annotationsData: PropTypes.object
+};
+
+export default BarGraph;
