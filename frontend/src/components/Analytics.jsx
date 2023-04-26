@@ -193,11 +193,44 @@ export default function Analytics() {
                         {/* Analytics from here */}
                         {submitClicked ? <>
                             <GenerateReportForm subjectId={subject} />
-                            <div className='m-2 rounded' style={{ background: "white" }}>
-                                <BarGraph graphData={barGraphData.graphData} labels={barGraphData.labels} title={barGraphData.title + " perfomance"} thresholdLines={true} />
+                            <div className='m-2 rounded'>
+                                <BarGraph
+                                    graphData={barGraphData.graphData}
+                                    labels={barGraphData.labels}
+                                    title={barGraphData.title + " perfomance"}
+                                    annonationsData={{
+                                        line1: {
+                                            type: 'line',
+                                            yMin: 60,
+                                            yMax: 60,
+                                            borderColor: 'rgb(0, 255, 0)',
+                                            borderWidth: 2
+                                        },
+                                        line2: {
+                                            type: 'line',
+                                            yMin: 55,
+                                            yMax: 55,
+                                            borderColor: 'rgb(150, 255, 0)',
+                                            borderWidth: 2
+                                        },
+                                        line3: {
+                                            type: 'line',
+                                            yMin: 50,
+                                            yMax: 50,
+                                            borderColor: 'rgb(200, 255, 0)',
+                                            borderWidth: 2
+                                        },
+                                        line4: {
+                                            type: 'line',
+                                            yMin: 34,
+                                            yMax: 34,
+                                            borderColor: 'rgb(255, 0, 0)',
+                                            borderWidth: 2
+                                        }
+                                    }} />
                             </div>
                             <div className='m-2 p-5 rounded' style={{ background: "white" }}>
-                                <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} title={pieGraphData.title} />
+                                <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} />
                             </div>
                             <form onSubmit={handleStudentSubmit}>
                                 <table>

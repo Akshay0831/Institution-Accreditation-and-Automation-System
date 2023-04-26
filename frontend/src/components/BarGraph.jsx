@@ -1,20 +1,11 @@
 import React from "react";
+import PropTypes from "prop-types";
+import { Chart, CategoryScale, LinearScale, Title, Tooltip, Legend, BarController, BarElement } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import zoomPlugin from 'chartjs-plugin-zoom';
 
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    Title,
-    Tooltip,
-    Legend,
-    BarController,
-    BarElement
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-
-ChartJS.register(
+Chart.register(
     CategoryScale,
     LinearScale,
     BarController,
@@ -26,9 +17,7 @@ ChartJS.register(
     zoomPlugin
 );
 
-
-
-export default function BarGraph({ graphData, labels, title, thresholdLines }) {
+const BarGraph = ({ graphData, labels, title = "", annonationsData = null }) => {
     const options = {
         responsive: true,
         scales: {
@@ -39,7 +28,7 @@ export default function BarGraph({ graphData, labels, title, thresholdLines }) {
         },
         plugins: {
             legend: {
-                position: 'bottom',
+                position: 'bottom'
             },
             zoom: {
                 zoom: {
@@ -56,48 +45,21 @@ export default function BarGraph({ graphData, labels, title, thresholdLines }) {
                     mode: 'xy'
                 },
                 limits: {
-                  x: { min: 0, max: 100 },
-                  y: { min: 1, max: 100 },
-                  zoom: { min: 1, max: 10 },
+                    x: { min: 0, max: 100 },
+                    y: { min: 0, max: 100 },
+                    zoom: { min: 1, max: 10 }
                 }
             },
             title: {
-                display: false,
+                display: true,
+                text: title
             },
             annotation: {
-                annotations: thresholdLines ? {
-                    line1: {
-                        type: 'line',
-                        yMin: 60,
-                        yMax: 60,
-                        borderColor: 'rgb(0, 255, 0)',
-                        borderWidth: 2,
-                    },
-                    line2: {
-                        type: 'line',
-                        yMin: 55,
-                        yMax: 55,
-                        borderColor: 'rgb(150, 255, 0)',
-                        borderWidth: 2,
-                    },
-                    line3: {
-                        type: 'line',
-                        yMin: 50,
-                        yMax: 50,
-                        borderColor: 'rgb(200, 255, 0)',
-                        borderWidth: 2,
-                    },
-                    line4: {
-                        type: 'line',
-                        yMin: 34,
-                        yMax: 34,
-                        borderColor: 'rgb(255, 0, 0)',
-                        borderWidth: 2,
-                    }
-                } : null
+                annotations: annonationsData
             }
-        },
+        }
     };
+
     const data = {
         labels,
         datasets: [
@@ -111,16 +73,19 @@ export default function BarGraph({ graphData, labels, title, thresholdLines }) {
             }
         ]
     };
+
     return (
-        <div style={{ background: "white" }}>
+        <div className="bg-light w-100 overflow-auto border rounded">
             <Bar data={data} options={options} plugins={[annotationPlugin]} />
         </div>
     )
-}
+};
 
-BarGraph.defaultProps = {
-    graphData: [],
-    labels: [],
-    title: "",
-    thresholdLines: false
-}
+BarGraph.propTypes = {
+    graphData: PropTypes.arrayOf(PropTypes.number).isRequired,
+    labels: PropTypes.arrayOf(PropTypes.string).isRequired,
+    title: PropTypes.string,
+    annonationsData: PropTypes.object
+};
+
+export default BarGraph;
