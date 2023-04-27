@@ -23,6 +23,7 @@ export default function GenerateReportForm(props) {
     const subjectId = props.subjectId;
     const [generatingReport, setGeneratingReport] = useState(false);
     const [numbers, setNumbers] = useState([50, 55, 60]);
+    const [subjectCode, setSubjectCode] = useState("");
 
     const handleInputChange = (event) => {
         const { value } = event.target;
@@ -39,21 +40,25 @@ export default function GenerateReportForm(props) {
         let options = {
             targetValues: numbers.length ? numbers : undefined,
         };
-        console.log(options);
         if (subjectId) {
-            let fileName = await (await fetch("http://localhost:4000/report_generation/" + subjectId, {
+            let subject = await ((await fetch("http://localhost:4000/Subject/" + subjectId)).json());
+            setSubjectCode(subject["Subject Code"]);
+            let response = await fetch("http://localhost:4000/report_generation/" + subjectId, {
                 // Adding method type
                 method: "POST",
                 // Adding body or contents to send
                 body: JSON.stringify(options),
                 // Adding headers to the request
                 headers: { "Content-type": "application/json; charset=UTF-8" },
-            })).text();
-            setTimeout(() => {
-                window.open("http://localhost:4000/" + fileName, '_blank');
-                setGeneratingReport(false);
-                toasts("Downloaded " + fileName + " successfully", toast.success);
-            }, 10000)
+            });
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', subject["Subject Code"] + ".xlsx");
+            document.body.appendChild(link);
+            link.click();
+            setGeneratingReport(false);
         }
     }
 
@@ -63,10 +68,10 @@ export default function GenerateReportForm(props) {
             <Card.Body>
                 {generatingReport
                     ? (<>
-                        <div className='d-flex justify-content-center'>Generating Report for {subjectId}...</div>
+                        <div className='d-flex justify-content-center'>Generating Report for {subjectCode}...</div>
                         <div className='d-flex justify-content-center'><InfinitySpin color="#000" width='200' visible={true} /></div>
                     </>)
-                    : <Form onSubmit={onGenerateReportClicked}>
+                    : <Form>
                         <Form.Group controlId="numberList">
                             <Form.Label>Enter List of Target Levels:</Form.Label>
                             <Form.Control
@@ -79,7 +84,7 @@ export default function GenerateReportForm(props) {
                                 Enter numbers between 1 and 100.
                             </Form.Text>
                         </Form.Group>
-                        <Button type="submit" disabled={!subjectId && numbers.length === 0}>Generate Report</Button>
+                        <Button onClick={onGenerateReportClicked} disabled={!subjectId && numbers.length === 0}>Generate Report</Button>
                     </Form>
                 }
             </Card.Body>

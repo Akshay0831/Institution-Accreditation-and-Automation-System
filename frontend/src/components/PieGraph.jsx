@@ -27,6 +27,10 @@ export default function PieGraph({ graphData, labels, title="" }) {
         plugins: {
             legend: {
                 position: 'right'
+            },
+            title:{
+                display:true,
+                text:title
             }
         },
         responsive: true,

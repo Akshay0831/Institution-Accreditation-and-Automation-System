@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner'
 import { Card } from 'react-bootstrap';
-import GenerateReportForm from './generateReportForm';
+import GenerateReportForm from './GenerateReportForm';
 import BarGraph from './BarGraph';
 import PieGraph from './PieGraph';
 
@@ -88,7 +88,6 @@ export default function Analytics() {
         if (typeof studentId === "string" && studentId.length > 0) {
             let data = await fetch("http://localhost:4000/Analytics/predict_SEE_marks/" + studentId);
             data = await data.json();
-            console.log(data);
             let labels = [];
             let graphData = [];
             let SEE = data.Marks["Marks Gained"].SEE;
@@ -131,6 +130,7 @@ export default function Analytics() {
 
     let handleSubmit = async (event) => {
         event.preventDefault();
+        setIsLoading(true);
         if (subject.length > 0) {
             let data = await fetch("http://localhost:4000/Analytics/" + subject);
             data = await data.json();
@@ -152,6 +152,7 @@ export default function Analytics() {
                 barGraphData.filter(m => m >= 34 && m < 50).length,
                 barGraphData.filter(m => m < 34).length,
             ];
+            setIsLoading(false);
             setPieGraphData({ title, labels: pieGraphLabels, graphData: pieGraphData });
             setSubmitClicked(true);
         } else {
@@ -165,114 +166,84 @@ export default function Analytics() {
                 <Card>
                     <Card.Header className="fs-3">Analytics</Card.Header>
                     <Card.Body>
-                        <form onSubmit={handleSubmit}>
-                            <div className="row">
-                                <div className="col-md-4">
-                                    <label className="form-label">Department: </label>
-                                    <select name="department" className="form-select" value={department} required onChange={handleDepartmentChange}>
-                                        <option value={""}>Open this select menu</option>
-                                        {departments.map(dept => {
-                                            return <option key={dept._id} value={dept._id}>{dept["Department Name"]}</option>
-                                        })}
-                                    </select>
-                                </div>
-                                <div className="col-md-4">
-                                    <label className="form-label">Subject: {department ? null : <span style={{ color: "red" }}>(Select department first)</span>}</label>
-                                    <select name="subject" disabled={!department} className="form-select" required onChange={handleSubjectChange}>
-                                        <option value={""}>Open this select menu</option>
-                                        {subjects.map(subject => {
-                                            return <option key={subject._id} value={subject._id}>{String(subject["Subject Name"] + " (" + subject["Subject Code"] + ")").toUpperCase()}</option>
-                                        })}
-                                    </select>
-                                </div>
-                                <div className="col-md-1" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                    <button type='submit' className="btn btn-warning" disabled={subject.length == 0}>Submit</button>
-                                </div>
-                            </div>
-                        </form>
-                        {/* Analytics from here */}
-                        {submitClicked ? <>
-                            <GenerateReportForm subjectId={subject} />
-                            <div className='m-2 rounded'>
-                                <BarGraph
-                                    graphData={barGraphData.graphData}
-                                    labels={barGraphData.labels}
-                                    title={barGraphData.title + " perfomance"}
-                                    annonationsData={{
-                                        line1: {
-                                            type: 'line',
-                                            yMin: 60,
-                                            yMax: 60,
-                                            borderColor: 'rgb(0, 255, 0)',
-                                            borderWidth: 2
-                                        },
-                                        line2: {
-                                            type: 'line',
-                                            yMin: 55,
-                                            yMax: 55,
-                                            borderColor: 'rgb(150, 255, 0)',
-                                            borderWidth: 2
-                                        },
-                                        line3: {
-                                            type: 'line',
-                                            yMin: 50,
-                                            yMax: 50,
-                                            borderColor: 'rgb(200, 255, 0)',
-                                            borderWidth: 2
-                                        },
-                                        line4: {
-                                            type: 'line',
-                                            yMin: 34,
-                                            yMax: 34,
-                                            borderColor: 'rgb(255, 0, 0)',
-                                            borderWidth: 2
-                                        }
-                                    }} />
-                            </div>
-                            <div className='m-2'>
-                                <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} />
-                            </div>
-                            <form onSubmit={handleStudentSubmit}>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            <td className='p-2'>
-                                                <label className="form-label">Select individual student: </label>
-                                            </td>
-                                            <td className='p-2'>
-                                                <input type="text" className='form-control' list='students' value={studentUSN} onChange={e => setStudentUSN(e.target.value)} />
-                                                <datalist id='students'>
-                                                    {students.map(stu => (<option key={stu._id} value={stu.USN} />))}
-                                                </datalist>
-                                            </td>
-                                            <td className='p-2'>
-                                                <button type="submit" className='btn btn-success'>Submit</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </form>
-                            {studentSelected ?
-                                <div className='row p-2'>
-                                    <div className="col-lg-8">
-                                        <BarGraph graphData={studentAnalyticsData.graphData} labels={studentAnalyticsData.labels} title={studentAnalyticsData.title} />
-                                    </div>
-                                    <div className="col-lg-4">
-                                        <div className="card">
-                                            <div className="card-body">
-                                                <h5 className="card-title">{studentAnalyticsData.Student["Student Name"]}</h5>
-                                                <h6 className="card-subtitle mb-2 text-muted">{studentAnalyticsData.Student.USN}</h6>
-                                                <p className="card-text">
-                                                    <p style={{
-                                                        color: studentAnalyticsData.predictedSEE > studentAnalyticsData.Marks["Marks Gained"].SEE ? "red" : "green"
-                                                    }}>Examination Marks: {studentAnalyticsData.Marks["Marks Gained"].SEE}</p>
-                                                    <p>Predicted Examination Marks: {studentAnalyticsData.predictedSEE}</p>
-                                                </p>
-                                            </div>
+                        {!isLoading ? (
+                            <>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="row">
+                                        <div className="col-md-4">
+                                            <label className="form-label">Department: </label>
+                                            <select name="department" className="form-select" value={department} required onChange={handleDepartmentChange}>
+                                                <option value={""}>Open this select menu</option>
+                                                {departments.map(dept => {
+                                                    return <option key={dept._id} value={dept._id}>{dept["Department Name"]}</option>
+                                                })}
+                                            </select>
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label">Subject: {department ? null : <span style={{ color: "red" }}>(Select department first)</span>}</label>
+                                            <select name="subject" disabled={!department} className="form-select" required onChange={handleSubjectChange}>
+                                                <option value={""}>Open this select menu</option>
+                                                {subjects.map(subject => {
+                                                    return <option key={subject._id} value={subject._id}>{String(subject["Subject Name"] + " (" + subject["Subject Code"] + ")").toUpperCase()}</option>
+                                                })}
+                                            </select>
+                                        </div>
+                                        <div className="col-md-1" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                            <button type='submit' className="btn btn-warning" disabled={subject.length == 0}>Submit</button>
                                         </div>
                                     </div>
-                                </div> : null}
-                        </> : null}
+                                </form>
+                                {/* Analytics from here */}
+                                {submitClicked ? <>
+                                    <GenerateReportForm subjectId={subject} />
+                                    <div className='m-3'>
+                                        <BarGraph graphData={barGraphData.graphData} labels={barGraphData.labels} title={barGraphData.title + " perfomance"} thresholdLines={true} />
+                                    </div>
+                                    <div className='m-3'>
+                                        <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} title={pieGraphData.title} />
+                                    </div>
+                                    <form onSubmit={handleStudentSubmit}>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td className='p-2'>
+                                                        <label className="form-label">Select individual student: </label>
+                                                    </td>
+                                                    <td className='p-2'>
+                                                        <input type="text" className='form-control' list='students' value={studentUSN} onChange={e => setStudentUSN(e.target.value)} />
+                                                        <datalist id='students'>
+                                                            {students.map(stu => (<option key={stu._id} value={stu.USN} />))}
+                                                        </datalist>
+                                                    </td>
+                                                    <td className='p-2'>
+                                                        <button type="submit" className='btn btn-success'>Submit</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+                                    {studentSelected ?
+                                        <div className='row p-2'>
+                                            <div className="col-lg-8">
+                                                <BarGraph graphData={studentAnalyticsData.graphData} labels={studentAnalyticsData.labels} title={studentAnalyticsData.title} />
+                                            </div>
+                                            <div className="col-lg-4">
+                                                <div className="card">
+                                                    <div className="card-body">
+                                                        <h5 className="card-title">{studentAnalyticsData.Student["Student Name"]}</h5>
+                                                        <h6 className="card-subtitle mb-2 text-muted">{studentAnalyticsData.Student.USN}</h6>
+                                                        <p className="card-text">
+                                                            <p style={{
+                                                                color: studentAnalyticsData.predictedSEE > studentAnalyticsData.Marks["Marks Gained"].SEE ? "red" : "green"
+                                                            }}>Examination Marks: {studentAnalyticsData.Marks["Marks Gained"].SEE}</p>
+                                                            <p>Predicted Examination Marks: {studentAnalyticsData.predictedSEE}</p>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> : null}
+                                </> : null}
+                            </>) : (<div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><InfinitySpin color="#000" width='200' visible={true} /></div>)}
                     </Card.Body>
                 </Card>
             </div>

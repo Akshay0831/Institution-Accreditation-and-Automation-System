@@ -1,10 +1,9 @@
 // const mongo = require("../db/mongodb");
 
 function calculateCOPO(data) {
-    console.log(data);
     try {
         let maxMarks = data["Marks"][0]["Subject"]["Max Marks"];
-        let fileName = getFileName(data["Marks"][0]["Subject"]["Subject Code"]);
+        let excelFileBuffer;
         //Can change the below json values dynamically by using: X = Y% of COx (eg. 60% of 18)
         let xPercentageOfMaxMarks = {
             "IA1": {
@@ -600,15 +599,17 @@ function calculateCOPO(data) {
                     const cell = worksheet.getCell(calculatedRowNumber4 + 1, k);
                     cell.alignment = { wrapText: true };
                 }
-                await workbook.xlsx.writeFile('./public/' + fileName + ".xlsx");
+                excelFileBuffer = await workbook.xlsx.writeBuffer();
             })
         return new Promise((resolve, reject) => {
-            resolve(fileName + ".xlsx");
+            setTimeout(() => {
+                resolve(excelFileBuffer);
+            }, 1000)
         })
     } catch (err) {
         console.error('Error adding data to worksheet:', err);
         new Promise((resolve, reject) => {
-            resolve('');
+            resolve(null);
         })
     };
 }
@@ -639,18 +640,6 @@ function addBorders(startRow, endRow, startCol, endCol, worksheet) {
             cell.border = border;
         }
     }
-}
-
-function getFileName(subjectCode) {
-    let date = new Date();
-    let timestamp = date.getFullYear() + "-" +
-        ("0" + (date.getMonth() + 1)).slice(-2) + "-" +
-        ("0" + date.getDate()).slice(-2) + "-" +
-        ("0" + date.getHours()).slice(-2) +
-        ("0" + date.getMinutes()).slice(-2) +
-        ("0" + date.getSeconds()).slice(-2);
-    let fileName = subjectCode + "-" + timestamp;
-    return fileName;
 }
 
 module.exports = calculateCOPO;
