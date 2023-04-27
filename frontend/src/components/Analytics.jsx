@@ -5,6 +5,7 @@ import { Card } from 'react-bootstrap';
 import GenerateReportForm from './GenerateReportForm';
 import BarGraph from './BarGraph';
 import PieGraph from './PieGraph';
+import AnalyticsOfStudent from './AnalyticsOfStudent';
 
 export default function Analytics() {
 
@@ -26,15 +27,11 @@ export default function Analytics() {
     const [subjects, setSubjects] = useState([]);
     const [subject, setSubject] = useState("");
     const [originalSubjects, setOriginalSubjects] = useState([]);
-    const [students, setStudents] = useState([]);
-    const [studentUSN, setStudentUSN] = useState("");
-    const [studentSelected, setStudentSelected] = useState(false);
 
     const [barGraphData, setBarGraphData] = useState({});
     const [pieGraphData, setPieGraphData] = useState({});
 
     const [submitClicked, setSubmitClicked] = useState(false);
-    const [studentAnalyticsData, setStudentAnalyticsData] = useState({});
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -46,7 +43,6 @@ export default function Analytics() {
 
             setDepartments(data.departments);
             setOriginalSubjects(data.subjects);
-            setStudents(data.students);
         }
         fetchData();
     }, []);
@@ -79,53 +75,6 @@ export default function Analytics() {
         const avgAssignments = Math.round(assignments / 3);
         const totalMarks = avgIAmarks + avgAssignments + SEE;
         return totalMarks;
-    }
-
-    let handleStudentSubmit = async (event) => {
-        event.preventDefault();
-        let studentId = students.filter(s => { return s.USN === studentUSN.toUpperCase() })[0]?._id;
-        // alert(studentId);
-        if (typeof studentId === "string" && studentId.length > 0) {
-            let data = await fetch("http://localhost:4000/Analytics/predict_SEE_marks/" + studentId);
-            data = await data.json();
-            let labels = [];
-            let graphData = [];
-            let SEE = data.Marks["Marks Gained"].SEE;
-            let predictedSEE = data.Predicted_SEE;
-            let studentName = data.Student["Student Name"];
-            delete data.Marks["Marks Gained"].SEE;
-            let IASum = 0;
-            let ASum = 0;
-            Object.keys(data.Marks["Marks Gained"]).forEach(ia => {
-                Object.keys(data.Marks["Marks Gained"][ia]).forEach(co => {
-                    let value = data.Marks["Marks Gained"][ia][co];
-                    if (ia.startsWith("IA")) {
-                        IASum += isNaN(Number(value)) ? 0 : Number(value);
-                    } else if (ia.startsWith("A")) {
-                        ASum += isNaN(Number(value)) ? 0 : Number(value);
-                    }
-                });
-                if (ia.startsWith("A")) {
-                    graphData.push(IASum + ASum);
-                    IASum = 0;
-                    ASum = 0;
-                } else {
-                    labels.push(ia);
-                }
-            });
-            data.Marks["Marks Gained"].SEE = SEE;
-            setStudentAnalyticsData({
-                title: studentName + "'s internal performance",
-                labels,
-                graphData,
-                Student: data.Student,
-                Marks: data.Marks,
-                predictedSEE
-            });
-            setStudentSelected(true);
-        } else {
-            toasts("Couldn't fetch the student", toast.error);
-        }
     }
 
     let handleSubmit = async (event) => {
@@ -188,7 +137,7 @@ export default function Analytics() {
                                                 })}
                                             </select>
                                         </div>
-                                        <div className="col-md-1" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                        <div className="d-flex justify-content-center col-md-1">
                                             <button type='submit' className="btn btn-warning" disabled={subject.length == 0}>Submit</button>
                                         </div>
                                     </div>
@@ -202,48 +151,9 @@ export default function Analytics() {
                                     <div className='m-3'>
                                         <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} title={pieGraphData.title} />
                                     </div>
-                                    <form onSubmit={handleStudentSubmit}>
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <td className='p-2'>
-                                                        <label className="form-label">Select individual student: </label>
-                                                    </td>
-                                                    <td className='p-2'>
-                                                        <input type="text" className='form-control' list='students' value={studentUSN} onChange={e => setStudentUSN(e.target.value)} />
-                                                        <datalist id='students'>
-                                                            {students.map(stu => (<option key={stu._id} value={stu.USN} />))}
-                                                        </datalist>
-                                                    </td>
-                                                    <td className='p-2'>
-                                                        <button type="submit" className='btn btn-success'>Submit</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </form>
-                                    {studentSelected ?
-                                        <div className='row p-2'>
-                                            <div className="col-lg-8">
-                                                <BarGraph graphData={studentAnalyticsData.graphData} labels={studentAnalyticsData.labels} title={studentAnalyticsData.title} />
-                                            </div>
-                                            <div className="col-lg-4">
-                                                <div className="card">
-                                                    <div className="card-body">
-                                                        <h5 className="card-title">{studentAnalyticsData.Student["Student Name"]}</h5>
-                                                        <h6 className="card-subtitle mb-2 text-muted">{studentAnalyticsData.Student.USN}</h6>
-                                                        <p className="card-text">
-                                                            <p style={{
-                                                                color: studentAnalyticsData.predictedSEE > studentAnalyticsData.Marks["Marks Gained"].SEE ? "red" : "green"
-                                                            }}>Examination Marks: {studentAnalyticsData.Marks["Marks Gained"].SEE}</p>
-                                                            <p>Predicted Examination Marks: {studentAnalyticsData.predictedSEE}</p>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div> : null}
+                                    <AnalyticsOfStudent department={department}/>
                                 </> : null}
-                            </>) : (<div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}><InfinitySpin color="#000" width='200' visible={true} /></div>)}
+                            </>) : (<div className='d-flex justify-content-center'><InfinitySpin color="#000" width='200' visible={true} /></div>)}
                     </Card.Body>
                 </Card>
             </div>
