@@ -229,7 +229,7 @@ export default function Analytics() {
                                         }
                                     }} />
                             </div>
-                            <div className='m-2 p-5 rounded' style={{ background: "white" }}>
+                            <div className='m-2'>
                                 <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} />
                             </div>
                             <form onSubmit={handleStudentSubmit}>

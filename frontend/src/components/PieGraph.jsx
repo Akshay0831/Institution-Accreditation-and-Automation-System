@@ -1,24 +1,10 @@
 import React from "react";
-
-import {
-    Chart as ChartJS,
-    Title,
-    Tooltip,
-    Legend,
-    PieController,
-    ArcElement
-} from 'chart.js';
+import { Chart as ChartJS, Title, Tooltip, Legend, PieController, ArcElement } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 
-ChartJS.register(
-    PieController,
-    ArcElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+ChartJS.register(PieController, ArcElement, Title, Tooltip, Legend);
 
-export default function PieGraph({ graphData, labels, title }) {
+export default function PieGraph({ graphData, labels, title="" }) {
     const data = {
         labels,
         datasets: [
@@ -37,11 +23,19 @@ export default function PieGraph({ graphData, labels, title }) {
         ]
     };
 
+    const options = {
+        plugins: {
+            legend: {
+                position: 'right'
+            }
+        },
+        responsive: true,
+        maintainAspectRatio: false
+    };
+
     return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", alignContent: "center", backgroundColor: "rgb(240, 240, 240)", borderRadius: "10px" }} className="overflow-auto p-4">
-            <div>
-                <Pie data={data} />
-            </div>
+        <div className="d-flex col-lg-6 justify-content-center overflow-auto border bg-light rounded">
+            <Pie className="p-0 m-0 w-100" data={data} options={options} />
         </div>
     )
 }
