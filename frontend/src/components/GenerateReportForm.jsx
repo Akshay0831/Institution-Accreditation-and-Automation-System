@@ -1,25 +1,8 @@
 import React, { useState } from 'react';
-import { toast } from "react-toastify";
-import { InfinitySpin } from 'react-loader-spinner'
+import { InfinitySpin } from 'react-loader-spinner';
 import { Button, Card, Form } from 'react-bootstrap';
 
 export default function GenerateReportForm(props) {
-
-    let toasts = (message, type) => {
-        type(message, {
-            position: "top-center",
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-        });
-    }
-
-    // document.title = "Generate Report";
-    // const department = props.departmentId;
     const defaultTargetValues = [50, 55, 60];
     const defaultMarksThreshold = 60;
     const subjectId = props.subjectId;
@@ -41,7 +24,6 @@ export default function GenerateReportForm(props) {
     const onGenerateReportClicked = async (event) => {
         event.preventDefault();
         setGeneratingReport(true);
-        //modify below API to a POST API that sends the numbers data
         let options = {
             targetValues: numbers.length ? numbers : defaultTargetValues,
             marksThreshold: marksThreshold ? parseInt(marksThreshold) : defaultMarksThreshold,

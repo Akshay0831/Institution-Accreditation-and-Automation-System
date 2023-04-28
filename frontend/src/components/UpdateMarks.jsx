@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Accordion, Button, Card, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { InfinitySpin } from 'react-loader-spinner';
 import BatchInput from "./teacher/BatchInput";
 
 export default class UpdateMarks extends Component {
@@ -210,7 +211,7 @@ export default class UpdateMarks extends Component {
                                             </Accordion.Item>)
                                         })}
                                     </Accordion>
-                                    : "Empty"
+                                    : <div className='d-flex justify-content-center'><InfinitySpin color="#000" width='200' visible={true} /></div>
                             }
                         </Card.Body>
                     </Card>
