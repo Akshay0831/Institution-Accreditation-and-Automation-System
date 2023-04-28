@@ -11,6 +11,10 @@ class MongoDB {
         this.db = this.client.db(this.database);
     }
 
+    async startSession() {
+        return await this.client.startSession();
+    }
+
     async getDocs(collectionName, searchObj = {}) {
         const collection = this.db.collection(collectionName);
         let cursorFind = collection.find(searchObj);

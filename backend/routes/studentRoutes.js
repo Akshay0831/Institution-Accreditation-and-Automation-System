@@ -18,37 +18,52 @@ router.route("/")
 
 
     .post(async (req, res) => {
-        const studentId = (new ObjectId()).toString();
-        //Creating a Student document
-        const studentObj = { ...models.Student }
-        studentObj._id = studentId;
-        studentObj["Student Name"] = req.body.Student["Student Name"];
-        studentObj.USN = req.body.Student.USN;
-        studentObj.Department = req.body.Student.Department;
-        const studentAdded = await mongo.addDoc("Student", studentObj);
-
-        //Creating a Class Allocation document
-        const classAllocationObj = { ...models["Class Allocation"] };
-        classAllocationObj.Class = req.body.Class._id;
-        classAllocationObj.Student = studentId;
-        const classAllocationAdded = await mongo.addDoc("Class Allocation", classAllocationObj);
-
-        let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department });
-
-        let marksAdded;
-
-        for (let subject of subjects) {
-            //Creating a Subject document for all subjects
-            const marksObj = { ...models.Marks };
-            marksObj.Subject = subject._id;
-            marksObj.Student = studentId;
-            marksAdded = await mongo.addDoc("Marks", { ...marksObj });
-        };
-
-        const isCreated = studentAdded && classAllocationAdded && marksAdded;
-
-        res.status(isCreated ? 200 : 400).json(isCreated ? "Created new Student" : "Couldn't create new student");
-    })
+        const session = await mongo.startSession();
+    
+        try {
+          await session.withTransaction(async () => {
+            const studentId = (new ObjectId()).toString();
+            //Creating a Student document
+            const studentObj = { ...models.Student }
+            studentObj._id = studentId;
+            studentObj["Student Name"] = req.body.Student["Student Name"];
+            studentObj.USN = req.body.Student.USN;
+            studentObj.Department = req.body.Student.Department;
+            const studentAdded = await mongo.addDoc("Student", studentObj, session);
+    
+            //Creating a Class Allocation document
+            const classAllocationObj = { ...models["Class Allocation"] };
+            classAllocationObj.Class = req.body.Class._id;
+            classAllocationObj.Student = studentId;
+            const classAllocationAdded = await mongo.addDoc("Class Allocation", classAllocationObj, session);
+    
+            let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department }, session);
+    
+            let marksAdded = true;
+    
+            for (let subject of subjects) {
+                //Creating a Subject document for all subjects
+                const marksObj = { ...models.Marks };
+                marksObj.Subject = subject._id;
+                marksObj.Student = studentId;
+                if (!await mongo.addDoc("Marks", { ...marksObj }, session)) {
+                    marksAdded = false;
+                    break;
+                }
+            };
+    
+            if (!studentAdded || !classAllocationAdded || !marksAdded) {
+                throw new Error("Transaction rolled back due to failed insert.");
+            }
+          });
+    
+          res.status(200).json("Created new Student");
+        } catch (error) {
+          res.status(400).json(error.message);
+        } finally {
+          session.endSession();
+        }
+      })
 
 
     .put(async (req, res) => {
