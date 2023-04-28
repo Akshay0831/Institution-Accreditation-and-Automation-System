@@ -57,6 +57,7 @@ const BarGraph = ({ graphData, labels, title = "", annotationsData = null }) => 
     
     const sortData = (order) => [...graphData].sort((a, b) => (order === "ascending" ? a - b : b - a));
     
+    const randomByte = () => Math.floor(Math.random() * 256);
     const data = {
         labels: sortOrder === "none" ? labels : [...labels].sort((a, b) => {
             const indexA = graphData[labels.indexOf(a)];
@@ -71,7 +72,7 @@ const BarGraph = ({ graphData, labels, title = "", annotationsData = null }) => 
                 data: sortOrder === "none" ? graphData : sortData(sortOrder),
                 borderColor: 'rgb(0, 0, 0)',
                 borderWidth: 1,
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                backgroundColor: `rgba(${randomByte()}, ${randomByte()}, ${randomByte()}, 0.5)`,
                 hoverBackgroundColor: 'rgba(0, 255, 0, 1)'
             }
         ]
