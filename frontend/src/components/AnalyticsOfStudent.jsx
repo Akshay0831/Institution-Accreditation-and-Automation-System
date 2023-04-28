@@ -110,12 +110,23 @@ export default function AnalyticsOfStudent(props) {
                                     <Card.Body>
                                         <Card.Title>{studentAnalyticsData.Student["Student Name"]}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">{studentAnalyticsData.Student.USN}</Card.Subtitle>
-                                        <Card.Text>
-                                            <div className='m-0' style={{
-                                                color: (studentAnalyticsData.predictedSEE > studentAnalyticsData.Marks["Marks Gained"].SEE) ? "red" : "green"
-                                            }}>Semester Examination Marks: <span className='fs-3'>{studentAnalyticsData.Marks["Marks Gained"].SEE}</span></div>
-                                            <div className='m-0'>Prediction Examination Marks: <span className='fs-3'>{studentAnalyticsData.predictedSEE}</span></div>
-                                        </Card.Text>
+                                        <hr/>
+                                        <div className="d-flex flex-row align-items-center">
+                                            <div className="flex-grow-1">
+                                                <p>Semester Examination Marks:</p>
+                                            </div>
+                                            <div className="flex-grow-1" style={{ color: (studentAnalyticsData.predictedSEE > studentAnalyticsData.Marks["Marks Gained"].SEE) ? "red" : "green" }}>
+                                                <p className='fs-3'>{studentAnalyticsData.Marks["Marks Gained"].SEE}</p>
+                                            </div>
+                                        </div>
+                                        <div className="d-flex flex-row align-items-center">
+                                            <div className="flex-grow-1">
+                                                <p>Prediction Examination Marks:</p>
+                                            </div>
+                                            <div className="flex-grow-1">
+                                                <p className='fs-3'>{studentAnalyticsData.predictedSEE}</p>
+                                            </div>
+                                        </div>
                                     </Card.Body>
                                 </Card>
                             </div>

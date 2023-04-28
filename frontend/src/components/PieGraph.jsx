@@ -38,7 +38,7 @@ export default function PieGraph({ graphData, labels, title="" }) {
     };
 
     return (
-        <div className="d-flex col-lg-6 justify-content-center overflow-auto border bg-light rounded">
+        <div className="d-flex justify-content-center overflow-auto border bg-light rounded">
             <Pie className="p-0 m-0 w-100" data={data} options={options} />
         </div>
     )
