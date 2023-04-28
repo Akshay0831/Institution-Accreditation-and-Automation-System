@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner'
-import { Card } from 'react-bootstrap';
+import { Button, Card, Container, Row, Col, Form } from 'react-bootstrap';
 import GenerateReportForm from './GenerateReportForm';
 import BarGraph from './BarGraph';
 import PieGraph from './PieGraph';
@@ -111,52 +111,54 @@ export default function Analytics() {
 
     return (
         <main className='pt-5'>
-            <div className="container">
+            <Container>
                 <Card>
                     <Card.Header className="fs-3">Analytics</Card.Header>
                     <Card.Body>
                         {!isLoading ? (
                             <>
-                                <form onSubmit={handleSubmit}>
-                                    <div className="row">
-                                        <div className="col-md-4">
-                                            <label className="form-label">Department: </label>
-                                            <select name="department" className="form-select" value={department} required onChange={handleDepartmentChange}>
+                                <Form className='px-3' onSubmit={handleSubmit}>
+                                    <Row className="align-items-center">
+                                        <Col md={4}>
+                                            <Form.Label>Department: </Form.Label>
+                                            <Form.Select name="department" value={department} required onChange={handleDepartmentChange}>
                                                 <option value={""}>Open this select menu</option>
                                                 {departments.map(dept => {
                                                     return <option key={dept._id} value={dept._id}>{dept["Department Name"]}</option>
                                                 })}
-                                            </select>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <label className="form-label">Subject: {department ? null : <span style={{ color: "red" }}>(Select department first)</span>}</label>
-                                            <select name="subject" disabled={!department} className="form-select" required onChange={handleSubjectChange}>
+                                            </Form.Select>
+                                        </Col>
+                                        <Col md={4}>
+                                            <Form.Label>Subject: {department ? null : <span className='text-danger'>(Select department first)</span>}</Form.Label>
+                                            <Form.Select name="subject" disabled={!department} value={subject} required onChange={handleSubjectChange}>
                                                 <option value={""}>Open this select menu</option>
                                                 {subjects.map(subject => {
                                                     return <option key={subject._id} value={subject._id}>{String(subject["Subject Name"] + " (" + subject["Subject Code"] + ")").toUpperCase()}</option>
                                                 })}
-                                            </select>
-                                        </div>
-                                        <div className="d-flex justify-content-center col-md-1">
-                                            <button type='submit' className="btn btn-warning" disabled={subject.length == 0}>Submit</button>
-                                        </div>
-                                    </div>
-                                </form>
+                                            </Form.Select>
+                                        </Col>
+                                        <Col md={2} className="d-flex justify-content-center">
+                                            <Button variant='success' type='submit' disabled={subject.length == 0}>Submit</Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
                                 {/* Analytics from here */}
                                 {submitClicked ? <>
-                                    <GenerateReportForm subjectId={subject} />
+                                    <div className='ms-2'>
+                                        <GenerateReportForm subjectId={subject} />
+                                    </div>
                                     <div className='m-3'>
                                         <BarGraph graphData={barGraphData.graphData} labels={barGraphData.labels} title={barGraphData.title + " perfomance"} thresholdLines={true} />
                                     </div>
                                     <div className='m-3'>
                                         <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} title={pieGraphData.title} />
                                     </div>
-                                    <AnalyticsOfStudent department={department}/>
+                                    <AnalyticsOfStudent department={department} />
                                 </> : null}
                             </>) : (<div className='d-flex justify-content-center'><InfinitySpin color="#000" width='200' visible={true} /></div>)}
                     </Card.Body>
                 </Card>
-            </div>
+            </Container>
         </main>
     );
 }

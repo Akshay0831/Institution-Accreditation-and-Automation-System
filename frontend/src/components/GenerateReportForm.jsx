@@ -20,16 +20,21 @@ export default function GenerateReportForm(props) {
 
     // document.title = "Generate Report";
     // const department = props.departmentId;
+    const defaultTargetValues = [50, 55, 60];
+    const defaultMarksThreshold = 60;
     const subjectId = props.subjectId;
+
+    const [marksThreshold, setMarksThreshold] = useState(defaultMarksThreshold)
     const [generatingReport, setGeneratingReport] = useState(false);
-    const [numbers, setNumbers] = useState([50, 55, 60]);
+    const [numbers, setNumbers] = useState(defaultTargetValues);
     const [subjectCode, setSubjectCode] = useState("");
 
     const handleInputChange = (event) => {
         const { value } = event.target;
         const newNumbers = value.split(',')
             .map((number) => Number(number.trim()))
-            .filter((number) => number >= 1 && number <= 100);
+            .filter((number) => number >= 1 && number <= 100)
+            .sort((a, b) => a - b);
         setNumbers(newNumbers);
     };
 
@@ -38,7 +43,8 @@ export default function GenerateReportForm(props) {
         setGeneratingReport(true);
         //modify below API to a POST API that sends the numbers data
         let options = {
-            targetValues: numbers.length ? numbers : undefined,
+            targetValues: numbers.length ? numbers : defaultTargetValues,
+            marksThreshold: marksThreshold ? parseInt(marksThreshold) : defaultMarksThreshold,
         };
         if (subjectId) {
             let subject = await ((await fetch("http://localhost:4000/Subject/" + subjectId)).json());
@@ -71,20 +77,17 @@ export default function GenerateReportForm(props) {
                         <div className='d-flex justify-content-center'>Generating Report for {subjectCode}...</div>
                         <div className='d-flex justify-content-center'><InfinitySpin color="#000" width='200' visible={true} /></div>
                     </>)
-                    : <Form>
-                        <Form.Group controlId="numberList">
-                            <Form.Label>Enter List of Target Levels:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter numbers separated by commas"
-                                onChange={handleInputChange}
-                                defaultValue={numbers.join(', ')}
-                            />
-                            <Form.Text className="text-muted">
-                                Enter numbers between 1 and 100.
-                            </Form.Text>
+                    : <Form onSubmit={onGenerateReportClicked}>
+                        <Form.Group>
+                            <Form.Label>Marks Threshold (Optional):</Form.Label>
+                            <Form.Control type="number" min={1} max={99} placeholder="Enter minimum marks for CO attainment" onChange={(e) => setMarksThreshold(e.target.value)} value={marksThreshold} />
                         </Form.Group>
-                        <Button onClick={onGenerateReportClicked} disabled={!subjectId && numbers.length === 0}>Generate Report</Button>
+                        <Form.Group controlId="numberList">
+                            <Form.Label>List of Target Levels (Optional):</Form.Label>
+                            <Form.Control type="text" placeholder="Enter numbers separated by commas" onChange={handleInputChange} defaultValue={numbers.join(', ')} />
+                            <Form.Text className="text-muted">Enter numbers between 1 and 100.</Form.Text>
+                        </Form.Group>
+                        <Button type='submit' disabled={!subjectId && numbers.length === 0}>Generate Report</Button>
                     </Form>
                 }
             </Card.Body>
