@@ -59,7 +59,7 @@ export default function UpdateStudent() {
             const student = {
                 "Student": {
                     "Student Name": name,
-                    USN: usn,
+                    USN: usn.toUpperCase(),
                     "Department": departmentID
                 },
                 "Class": { _id: classID }

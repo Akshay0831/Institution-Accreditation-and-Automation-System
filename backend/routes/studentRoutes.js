@@ -37,17 +37,17 @@ router.route("/")
 
         let marksAdded;
 
-        subjects.forEach(async (subject) => {
+        for (let subject of subjects) {
             //Creating a Subject document for all subjects
             const marksObj = { ...models.Marks };
             marksObj.Subject = subject._id;
             marksObj.Student = studentId;
             marksAdded = await mongo.addDoc("Marks", { ...marksObj });
-        });
+        };
 
         const isCreated = studentAdded && classAllocationAdded && marksAdded;
 
-        res.status(isCreated ? 201 : 400).json(isCreated ? "Created new Student" : "Couldn't create new student");
+        res.status(isCreated ? 200 : 400).json(isCreated ? "Created new Student" : "Couldn't create new student");
     })
 
 
