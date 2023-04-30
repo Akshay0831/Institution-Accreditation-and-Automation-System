@@ -37,7 +37,7 @@ export default class BatchInput extends Component {
                         marksGained[splitKey[0]] = {};
                     marksGained[splitKey[0]][splitKey[1]] = entry[key];
                 }
-                if (key.startsWith('SEE'))
+                if (['SEE','CIE'].includes(key.trim()))
                     marksGained[key] = entry[key];
             }
 

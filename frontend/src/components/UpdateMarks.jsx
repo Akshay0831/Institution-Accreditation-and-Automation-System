@@ -62,7 +62,7 @@ export default class UpdateMarks extends Component {
             let subjectObject = marks[deptIndex].Classes[classIndex].Subjects[subjectIndex];
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"] = { "Subject": subjectObject._id, "Student": subjectObject.Students[studentIndex]._id, "Marks Gained": this.deepCopyObject(subjectObject["Max Marks"], 0) };
         }
-        if (ia !== "SEE") {
+        if (!["SEE","CIE"].includes(ia)) {
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
         } else {
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia] = Number(event.target.value);
@@ -132,7 +132,7 @@ export default class UpdateMarks extends Component {
                                                                                                                     return (
                                                                                                                         <th
                                                                                                                             colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
-                                                                                                                            rowSpan={i === "SEE" ? 2 : 1}
+                                                                                                                            rowSpan={["SEE","CIE"].includes(i) ? 2 : 1}
                                                                                                                             scope="col"
                                                                                                                             className="text-center"
                                                                                                                             key={i}>
@@ -143,7 +143,7 @@ export default class UpdateMarks extends Component {
                                                                                                                 <th scope="col" className="text-center" rowSpan="2">...</th>
                                                                                                             </tr>
                                                                                                             <tr>
-                                                                                                                {Object.keys(subject["Max Marks"]).filter(obj => obj !== "SEE").map((ia, i) => {
+                                                                                                                {Object.keys(subject["Max Marks"]).filter(obj => !["SEE","CIE"].includes(obj)).map((ia, i) => {
                                                                                                                     return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
                                                                                                                         return (
                                                                                                                             <th scope="col" className="text-center" key={ia + co}>{co}</th>
@@ -161,7 +161,7 @@ export default class UpdateMarks extends Component {
                                                                                                                         <td>{student["Student Name"]}</td>
                                                                                                                         {Object.keys(subject["Max Marks"]).map((ia) => {
                                                                                                                             return [(Object.keys(subject["Max Marks"][ia]).map((co) => {
-                                                                                                                                if (ia !== "SEE") {
+                                                                                                                                if (!["SEE","CIE"].includes(ia)) {
                                                                                                                                     return (
                                                                                                                                         <td key={ia + co} style={{ minWidth: "100px" }}>
                                                                                                                                             <input type="number"
@@ -172,14 +172,14 @@ export default class UpdateMarks extends Component {
                                                                                                                                     )
                                                                                                                                 }
                                                                                                                             })
-                                                                                                                            ), ia !== "SEE"
+                                                                                                                            ), (!["SEE","CIE"].includes(ia))
                                                                                                                                 ? <td key={"total_" + ia}>{this.totalIA((student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : 0)) + "/" + this.totalIA(subject["Max Marks"][ia])}</td>
                                                                                                                                 : (
-                                                                                                                                    <td key={"SEE"} style={{ minWidth: "100px" }}>
+                                                                                                                                    <td key={ia} style={{ minWidth: "100px" }}>
                                                                                                                                         <input type="number"
                                                                                                                                             className="form-control" style={{ fontSize: "15px" }} min="0" max={subject["Max Marks"][ia]}
                                                                                                                                             placeholder={(student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : "0") + "/" + subject["Max Marks"][ia]}
-                                                                                                                                            onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, "SEE", null)} />
+                                                                                                                                            onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, null)} />
                                                                                                                                     </td>
                                                                                                                                 )]
                                                                                                                         })}
@@ -235,6 +235,10 @@ export default class UpdateMarks extends Component {
                                 <tr>
                                     <td>CO</td>
                                     <td>Course Outcome</td>
+                                </tr>
+                                <tr>
+                                    <td>CIE</td>
+                                    <td>Continuous Internal Evaluation</td>
                                 </tr>
                                 <tr>
                                     <td>SEE</td>
