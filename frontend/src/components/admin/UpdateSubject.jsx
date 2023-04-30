@@ -104,11 +104,26 @@ export default function UpdateSubject() {
 
     const handleClose = () => setAddModal("");
 
+    const addToMaxMarksObject = () => {
+        if (/^((IA|A|CO)[0-9]+|CIE|SEE)$/.test(addModalBuffer)) {
+            if (addModal[1] && addModalBuffer.startsWith("CO")) maxMarks[addModal[1]][addModalBuffer] = 0;
+            else if (["SEE", "CIE"].includes(addModalBuffer)) {
+                if(addModalBuffer in maxMarks) toasts(addModalBuffer+" already present in Max Marks", toast.error);
+                else maxMarks[addModalBuffer] = 60;
+            }
+            else if (!Object.keys(maxMarks).includes(addModalBuffer)) maxMarks[addModalBuffer] = {};
+        }
+        else 
+            toasts("Invalid Format: "+addModalBuffer, toast.error);
+        handleClose();
+    };
+
     const deleteObjInMaxMarks = (test) => {
         let marksObj = { ...maxMarks };
         delete marksObj[test];
         setMaxMarks(marksObj);
     }
+    console.log(maxMarks);
 
     return (
         <main className="pt-5">
@@ -117,15 +132,15 @@ export default function UpdateSubject() {
                     <Modal.Header closeButton>
                         <Modal.Title>Add Field</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Enter the field Name{addModal}
-                        <input className="form-control" onChange={(event) => setAddModalBuffer(event.target.value)} />
+                    <Modal.Body>Enter the field Name {addModal}
+                        <input className="form-control" onChange={(event) => setAddModalBuffer(event.target.value.toUpperCase())} />
                     </Modal.Body>
                     <Modal.Footer>
                         <ButtonGroup>
                             <Button variant="secondary" onClick={handleClose}>
                                 <i className="fa fa-close" />
                             </Button>
-                            <Button variant="primary" onClick={() => { if (addModal[1]) maxMarks[addModal[1]][addModalBuffer] = 0; else if (addModalBuffer!="SEE") maxMarks[addModalBuffer] = {}; else if (!("SEE" in maxMarks)) maxMarks["SEE"]=60; handleClose() }}>
+                            <Button variant="primary" onClick={addToMaxMarksObject}>
                                 <i className="fa fa-plus" />
                             </Button>
                         </ButtonGroup>
@@ -174,7 +189,7 @@ export default function UpdateSubject() {
                                                 <Card.Body>
                                                     <Form.Control type="number" placeholder={test} value={maxMarks[test]} min="0" onChange={handleSEEChange.bind(this, test)} />
                                                 </Card.Body>
-                                                    <Button className="col-1 mb-2" variant="outline-danger" onClick={() => deleteObjInMaxMarks(test)} size="sm"><i className="fa fa-trash" /></Button>
+                                                <Button className="col-1 mb-2" variant="outline-danger" onClick={() => deleteObjInMaxMarks(test)} size="sm"><i className="fa fa-trash" /></Button>
                                             </Card>
                                         })
                                         : <>Max Marks not defined</>
@@ -199,6 +214,6 @@ export default function UpdateSubject() {
                     </Card.Body>
                 </Card>
             </div>
-        </main>
+        </main >
     )
 }
