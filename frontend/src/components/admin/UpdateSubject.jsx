@@ -34,10 +34,8 @@ export default function UpdateSubject() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // console.log((await (await fetch("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
             if (isUpdate) {
                 const subjectsData = (await (await fetch("http://localhost:4000/documents/Subject")).json()).filter(doc => doc._id == id)[0];
-                console.log(subjectsData);
                 setSchemeCode(subjectsData["Scheme Code"]);
                 setSubjectCode(subjectsData["Subject Code"]);
                 setSubjectName(subjectsData["Subject Name"]);
@@ -123,7 +121,6 @@ export default function UpdateSubject() {
         delete marksObj[test];
         setMaxMarks(marksObj);
     }
-    console.log(maxMarks);
 
     return (
         <main className="pt-5">
