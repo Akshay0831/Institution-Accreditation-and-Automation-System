@@ -1,9 +1,10 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase-config";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import serverRequest from "../helper/serverRequest";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
@@ -12,7 +13,12 @@ function SignIn() {
     const refPassword = useRef(null);
     const navigate = useNavigate();
 
-    document.title = "Login";
+    useEffect(() => {
+        document.title = "Login";
+        if (sessionStorage.getItem("token"))
+            navigate(sessionStorage.getItem("userType") === "Admin" ? "/admin" : "/home")
+    }, []);
+
     const toasts = (message, type) => {
         type(message, {
             position: "top-center",
@@ -45,6 +51,7 @@ function SignIn() {
                     refPassword.current.value
                 );
                 if (user) {
+                    let token = await user.user.getIdToken();
                     let docRef = doc(firestore, "users", user.user.uid);
                     let docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
@@ -55,21 +62,11 @@ function SignIn() {
                         sessionStorage.setItem("uid", user.user.uid);
                         sessionStorage.setItem("userType", docSnap.data().userType);
                         sessionStorage.setItem("userMail", refEmail.current.value);
-                        let res = await fetch("http://localhost:4000/login", {
-                            // Adding method type
-                            method: "POST",
-
-                            // Adding body or contents to send
-                            body: JSON.stringify({
-                                email: refEmail.current.value,
-                                userId: user.user.uid,
-                                userType: docSnap.data().userType,
-                            }),
-
-                            // Adding headers to the request
-                            headers: {
-                                "Content-type": "application/json; charset=UTF-8",
-                            },
+                        sessionStorage.setItem("token", token);
+                        let res = await serverRequest("http://localhost:4000/login", "POST", {
+                            email: refEmail.current.value,
+                            userId: user.user.uid,
+                            userType: docSnap.data().userType,
                         });
                         let json = await res.json();
                         navigate(docSnap.data().userType === "Admin" ? "/admin" : "/home");
@@ -152,7 +149,6 @@ function SignIn() {
                                     <i className="fab fa-google fa-lg"></i>
                                 </a>
                             </div>
-
                             <ToastContainer />
                         </form>
                     </div>

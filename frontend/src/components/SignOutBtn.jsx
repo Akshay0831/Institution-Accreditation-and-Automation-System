@@ -5,8 +5,10 @@ export default ({ btnClass = "btn btn-danger", btnValue = "Sign Out" }) => {
     let handleClick = () => {
         import("../helper/signOut").then((module) => {
             module.SignOut();
+            setTimeout(() => {
+                navigate("/login");
+            }, 10)
         });
-        navigate("/login");
     };
 
     return (

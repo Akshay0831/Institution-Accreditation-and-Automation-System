@@ -6,6 +6,7 @@ import GenerateReportForm from './GenerateReportForm';
 import BarGraph from './BarGraph';
 import PieGraph from './PieGraph';
 import AnalyticsOfStudent from './AnalyticsOfStudent';
+import serverRequest from '../helper/serverRequest';
 
 export default function Analytics() {
 
@@ -38,7 +39,7 @@ export default function Analytics() {
     useEffect(() => {
         document.title = "Analytics";
         let fetchData = async () => {
-            let data = await fetch("http://localhost:4000/Analytics");
+            let data = await serverRequest("http://localhost:4000/Analytics");
             data = await data.json();
 
             setDepartments(data.departments);
@@ -81,7 +82,7 @@ export default function Analytics() {
         event.preventDefault();
         setIsLoading(true);
         if (subject.length > 0) {
-            let data = await fetch("http://localhost:4000/Analytics/" + subject);
+            let data = await serverRequest("http://localhost:4000/Analytics/" + subject);
             data = await data.json();
             let Subject = data.Subject;
             let Marks = data.Marks;

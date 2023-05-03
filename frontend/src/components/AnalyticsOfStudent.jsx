@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner'
 import { Card, Form } from 'react-bootstrap';
 import BarGraph from './BarGraph';
+import serverRequest from '../helper/serverRequest';
 
 export default function AnalyticsOfStudent(props) {
 
@@ -30,7 +31,7 @@ export default function AnalyticsOfStudent(props) {
 
     useEffect(() => {
         let fetchData = async () => {
-            let studentsJSON = await (await fetch("http://localhost:4000/documents/Student")).json();
+            let studentsJSON = await (await serverRequest("http://localhost:4000/documents/Student")).json();
             if (department)
                 studentsJSON = studentsJSON.filter(doc => doc.Department == department);
             setStudents(studentsJSON);
@@ -43,7 +44,7 @@ export default function AnalyticsOfStudent(props) {
         // alert(studentID);
         if (studentID.length) {
             setIsLoading(true);
-            let data = await (await fetch("http://localhost:4000/Analytics/predict_SEE_marks/" + studentID)).json();
+            let data = await (await serverRequest("http://localhost:4000/Analytics/predict_SEE_marks/" + studentID)).json();
             let IALabels = [];
             let IAGraphData = [];
             let SEE = data.Marks["Marks Gained"].SEE;
@@ -110,7 +111,7 @@ export default function AnalyticsOfStudent(props) {
                                     <Card.Body>
                                         <Card.Title>{studentAnalyticsData.Student["Student Name"]}</Card.Title>
                                         <Card.Subtitle className="mb-2 text-muted">{studentAnalyticsData.Student.USN}</Card.Subtitle>
-                                        <hr/>
+                                        <hr />
                                         <div className="d-flex flex-row align-items-center">
                                             <div className="flex-grow-1">
                                                 <p>Semester Examination Marks:</p>

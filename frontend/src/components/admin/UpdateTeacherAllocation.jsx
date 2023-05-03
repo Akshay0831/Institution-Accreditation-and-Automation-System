@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateTeacherAllocation() {
 
@@ -35,17 +36,17 @@ export default function UpdateTeacherAllocation() {
     useEffect(() => {
         const fetchData = async () => {
             if (isUpdate) {
-                const teacherAllocData = (await (await fetch("http://localhost:4000/documents/Teacher Allocation")).json()).filter(doc => doc._id == id)[0];
+                const teacherAllocData = (await (await serverRequest("http://localhost:4000/documents/Teacher Allocation")).json()).filter(doc => doc._id == id)[0];
                 setClassID(teacherAllocData["Class"]);
                 setSubjectID(teacherAllocData["Subject"]);
                 setTeacherID(teacherAllocData["Teacher"]);
                 setDeparmentID(teacherAllocData["Department"]);
             }
 
-            setClasses(await (await fetch("http://localhost:4000/Class")).json());
-            setSubjects(await (await fetch("http://localhost:4000/documents/Subject")).json());
-            setTeachers(await (await fetch("http://localhost:4000/documents/Teacher")).json());
-            setDepartments(await (await fetch("http://localhost:4000/documents/Department")).json());
+            setClasses(await (await serverRequest("http://localhost:4000/Class")).json());
+            setSubjects(await (await serverRequest("http://localhost:4000/documents/Subject")).json());
+            setTeachers(await (await serverRequest("http://localhost:4000/documents/Teacher")).json());
+            setDepartments(await (await serverRequest("http://localhost:4000/documents/Department")).json());
         }
         fetchData();
     }, []);
@@ -61,21 +62,15 @@ export default function UpdateTeacherAllocation() {
             }
         };
         if (isUpdate) teacherAllocData._id = id;
-        fetch(`http://localhost:4000/Teacher Allocation`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(teacherAllocData),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res => {
-            if (res.status == 200){
-                navigate("/admin/collectionlist",
-                    { state: "Teacher Allocation", });
-                    toasts(`${(isUpdate?"Updated":"Added")} Teacher Allocation`, toast.success);
-            }
-            console.log(res.status, res.statusText);
-        });
+        serverRequest(`http://localhost:4000/Teacher Allocation`, isUpdate ? "PUT" : "POST", teacherAllocData)
+            .then(res => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        { state: "Teacher Allocation", });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Teacher Allocation`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     return (

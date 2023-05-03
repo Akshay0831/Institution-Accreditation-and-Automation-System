@@ -3,6 +3,7 @@ import { Accordion, Button, Card, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner';
 import BatchInput from "./teacher/BatchInput";
+import serverRequest from "../helper/serverRequest";
 
 export default class UpdateMarks extends Component {
 
@@ -20,7 +21,7 @@ export default class UpdateMarks extends Component {
     };
 
     async componentDidMount() {
-        let res = await fetch("http://localhost:4000/Marks/update");
+        let res = await serverRequest("http://localhost:4000/Marks/update");
         let marks = await res.json();
         this.setState({ marks });
         this.validated = true;
@@ -62,7 +63,7 @@ export default class UpdateMarks extends Component {
             let subjectObject = marks[deptIndex].Classes[classIndex].Subjects[subjectIndex];
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"] = { "Subject": subjectObject._id, "Student": subjectObject.Students[studentIndex]._id, "Marks Gained": this.deepCopyObject(subjectObject["Max Marks"], 0) };
         }
-        if (!["SEE","CIE"].includes(ia)) {
+        if (!["SEE", "CIE"].includes(ia)) {
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
         } else {
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia] = Number(event.target.value);
@@ -72,18 +73,12 @@ export default class UpdateMarks extends Component {
 
     updateDocument(marksObj) {
         if (this.validated)
-            fetch((marksObj._id ? ("http://localhost:4000/documents/Marks/update/" + marksObj._id) : "http://localhost:4000/documents/Marks/add"), {
-                // Adding method type
-                method: "POST",
-                // Adding body or contents to send
-                body: JSON.stringify(marksObj),
-                // Adding headers to the request
-                headers: { "Content-type": "application/json; charset=UTF-8" },
-            }).then((res) => {
-                if (res.status == 200) {
-                    this.toasts("Updated Successfully!", toast.success);
-                }
-            });
+            serverRequest((marksObj._id ? ("http://localhost:4000/documents/Marks/update/" + marksObj._id) : "http://localhost:4000/documents/Marks/add"), "POST", marksObj)
+                .then((res) => {
+                    if (res.status == 200) {
+                        this.toasts("Updated Successfully!", toast.success);
+                    }
+                });
         else this.toasts("Cannot Update!", toast.error);
     }
 
@@ -132,7 +127,7 @@ export default class UpdateMarks extends Component {
                                                                                                                     return (
                                                                                                                         <th
                                                                                                                             colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
-                                                                                                                            rowSpan={["SEE","CIE"].includes(i) ? 2 : 1}
+                                                                                                                            rowSpan={["SEE", "CIE"].includes(i) ? 2 : 1}
                                                                                                                             scope="col"
                                                                                                                             className="text-center"
                                                                                                                             key={i}>
@@ -143,7 +138,7 @@ export default class UpdateMarks extends Component {
                                                                                                                 <th scope="col" className="text-center" rowSpan="2">...</th>
                                                                                                             </tr>
                                                                                                             <tr>
-                                                                                                                {Object.keys(subject["Max Marks"]).filter(obj => !["SEE","CIE"].includes(obj)).map((ia, i) => {
+                                                                                                                {Object.keys(subject["Max Marks"]).filter(obj => !["SEE", "CIE"].includes(obj)).map((ia, i) => {
                                                                                                                     return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
                                                                                                                         return (
                                                                                                                             <th scope="col" className="text-center" key={ia + co}>{co}</th>
@@ -161,7 +156,7 @@ export default class UpdateMarks extends Component {
                                                                                                                         <td>{student["Student Name"]}</td>
                                                                                                                         {Object.keys(subject["Max Marks"]).map((ia) => {
                                                                                                                             return [(Object.keys(subject["Max Marks"][ia]).map((co) => {
-                                                                                                                                if (!["SEE","CIE"].includes(ia)) {
+                                                                                                                                if (!["SEE", "CIE"].includes(ia)) {
                                                                                                                                     return (
                                                                                                                                         <td key={ia + co} style={{ minWidth: "100px" }}>
                                                                                                                                             <input type="number"
@@ -172,7 +167,7 @@ export default class UpdateMarks extends Component {
                                                                                                                                     )
                                                                                                                                 }
                                                                                                                             })
-                                                                                                                            ), (!["SEE","CIE"].includes(ia))
+                                                                                                                            ), (!["SEE", "CIE"].includes(ia))
                                                                                                                                 ? <td key={"total_" + ia}>{this.totalIA((student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : 0)) + "/" + this.totalIA(subject["Max Marks"][ia])}</td>
                                                                                                                                 : (
                                                                                                                                     <td key={ia} style={{ minWidth: "100px" }}>

@@ -2,26 +2,19 @@ import React, { Component, lazy } from "react";
 const AccordionItem = lazy(() => import("../AccordionItem"));
 import { InfinitySpin } from 'react-loader-spinner';
 import { Link } from "react-router-dom";
+import serverRequest from "../../helper/serverRequest";
 
 export default class StudentList extends Component {
 
     async componentDidMount() {
-        let res = await fetch("http://localhost:4000/Student/update");
+        let res = await serverRequest("http://localhost:4000/Student/update");
         let data = await res.json();
         this.setState({ Students: data });
         document.title = "Students by Class";
     }
 
     async deleteClicked(id) {
-        let res = await fetch("http://localhost:4000/Student", {
-            // Adding method type
-            method: "DELETE",
-            // Adding body or contents to send
-            body: JSON.stringify({ _id: id }),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        });
-        console.log(res);
+        let res = await serverRequest("http://localhost:4000/Student", "DELETE", { _id: id }, { "Content-type": "application/json; charset=UTF-8" });
         if (res.status == 200) {
             let stud = (this.state.Students).filter((doc) => doc._id !== id);
             this.setState({ Students: stud });

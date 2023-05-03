@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateStudent() {
 
@@ -33,20 +34,19 @@ export default function UpdateStudent() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const departmentsData = await (await fetch("http://localhost:4000/documents/Department")).json();
+            const departmentsData = await (await serverRequest("http://localhost:4000/documents/Department")).json();
             setDepartments(departmentsData);
 
-            const classesData = await (await fetch("http://localhost:4000/documents/Class")).json();
+            const classesData = await (await serverRequest("http://localhost:4000/documents/Class")).json();
             setOriginalClasses(classesData);
 
             if (isUpdate) {
-                const studentData = (await (await fetch("http://localhost:4000/documents/Student")).json()).filter(doc => doc._id == id)[0];
-                console.log(studentData);
+                const studentData = (await (await serverRequest("http://localhost:4000/documents/Student")).json()).filter(doc => doc._id == id)[0];
                 setName(studentData["Student Name"]);
                 setUsn(studentData["USN"]);
                 setDepartmentID(studentData["Department"]);
                 setClasses(classesData.filter(obj => obj["Department"] == studentData["Department"]))
-                const classAllocData = (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc.Student == studentData._id)[0];
+                const classAllocData = (await (await serverRequest("http://localhost:4000/documents/Class Allocation")).json()).filter(doc => doc.Student == studentData._id)[0];
                 setClassID(classAllocData["Class"]);
             }
         }
@@ -65,17 +65,10 @@ export default function UpdateStudent() {
                 "Class": { _id: classID }
             };
             if (isUpdate) student.Student._id = id;
-            fetch(`http://localhost:4000/Student`, {
-                // Adding method type
-                method: (isUpdate ? "PUT" : "POST"),
-                // Adding body or contents to send
-                body: JSON.stringify(student),
-                // Adding headers to the request
-                headers: { "Content-type": "application/json; charset=UTF-8" },
-            }).then(res => {
-                if (res.status == 200){
+            serverRequest(`http://localhost:4000/Student`, isUpdate ? "PUT" : "POST", student, { "Content-type": "application/json; charset=UTF-8" }).then(res => {
+                if (res.status == 200) {
                     navigate("/admin/collectionlist", { state: "Student", });
-                    toasts(`${(isUpdate?"Updated":"Added")} Student`, toast.success);
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Student`, toast.success);
                 }
                 console.log(res.status, res.statusText);
             });
@@ -98,11 +91,11 @@ export default function UpdateStudent() {
                         <Form onSubmit={onSubmitClicked}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Student Name:</Form.Label>
-                                <Form.Control type="text" name="name" id="name" value={name} placeholder={"Student Name"} required onChange={(event) => { setName(event.target.value) }} />
+                                <Form.Control type="text" name="name" id="name" value={name} placeholder={"Student Name"} required onChange={(event) => { setName(String(event.target.value).toUpperCase()) }} />
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Student USN:</Form.Label>
-                                <Form.Control type="text" name="usn" className="form-control" id="usn" value={usn} placeholder={"USN"} required onChange={(event) => { setUsn(event.target.value) }} />
+                                <Form.Control type="text" name="usn" className="form-control" id="usn" value={usn} placeholder={"USN"} required onChange={(event) => { setUsn(String(event.target.value).toUpperCase()) }} />
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Department: </Form.Label>

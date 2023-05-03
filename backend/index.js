@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const mongo = require("./db/mongodb");
+const admin = require("firebase-admin");
+const credentials = require("./firebase-project-credentials.json")
+
 
 //.............routes...........
 const studentRoutes = require("./routes/studentRoutes");
@@ -29,6 +32,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+admin.initializeApp({
+    credential: admin.credential.cert(credentials)
+});
+
+let authenticateMiddleware = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization.split("Bearer ")[1];
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        req.uid = decodedToken.uid;
+        next();
+    } catch (error) {
+        res.status(401).json({ error: "Unauthorized" });
+    }
+};
+
 app.listen(port, () => {
     console.log(`app listening on port ${port}`);
 });
@@ -39,7 +57,7 @@ app.get("/", (req, res) => {
 
 //---------Login routes--------------
 
-app.use("/login", loginRoutes);
+app.use("/login", authenticateMiddleware, loginRoutes);
 
 app.get("/documents/:collection", async (req, res) => {
     res.json(await mongo.getDocs(req.params["collection"]));
@@ -113,52 +131,52 @@ app.get("/getDirectoryTree", async (req, res) => {
 });
 //.........Analytics routes.............
 
-app.use("/Analytics", analyticsRoutes);
+app.use("/Analytics", authenticateMiddleware, analyticsRoutes);
 
 //---------Student routes--------------
 
-app.use("/Student", studentRoutes);
+app.use("/Student", authenticateMiddleware, studentRoutes);
 
 //.........Teacher routes.............
 
-app.use("/Teacher", teacherRoutes);
+app.use("/Teacher", authenticateMiddleware, teacherRoutes);
 
 //.........Marks routes...............
 
-app.use("/Marks", marksRoutes);
+app.use("/Marks", authenticateMiddleware, marksRoutes);
 
 
 //.......Teacher Allocation routes........
 
-app.use("/Teacher%20Allocation", teacherAllocationRoutes);
+app.use("/Teacher%20Allocation", authenticateMiddleware, teacherAllocationRoutes);
 
 //..........Department routes...........
 
-app.use("/Department", departmentRoutes);
+app.use("/Department", authenticateMiddleware, departmentRoutes);
 
 //............Class routes.............
 
-app.use("/Class", classRoutes);
+app.use("/Class", authenticateMiddleware, classRoutes);
 
 //........Class Allocation routes.........
 
-app.use("/Class%20Allocation", classAllocationRoutes);
+app.use("/Class%20Allocation", authenticateMiddleware, classAllocationRoutes);
 
 //............CO PO Map routes.............
 
-app.use("/CO%20PO%20Map", coPoMapRoutes);
+app.use("/CO%20PO%20Map", authenticateMiddleware, coPoMapRoutes);
 
 //............Subject routes.............
 
-app.use("/Subject", subjectRoutes);
+app.use("/Subject", authenticateMiddleware, subjectRoutes);
 
 //............Report Generation routes.............
 
-app.use("/report_generation", reportGenerationRoutes);
+app.use("/reportGeneration", authenticateMiddleware, reportGenerationRoutes);
 
 //............Feedback routes.............
 
-app.use("/feedback", feedbackRoutes);
+app.use("/feedback", authenticateMiddleware, feedbackRoutes);
 
 app.get("/subjectsTaught/:teacherEmail", async (req, res) => {
     let teacherDoc = (await mongo.getDoc("Teacher", { Mail: req.params["teacherEmail"] }));

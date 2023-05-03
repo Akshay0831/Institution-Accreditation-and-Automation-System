@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Card, Form } from 'react-bootstrap';
+import serverRequest from "../../helper/serverRequest";
 import * as XLSX from 'xlsx';
 
 export default class BatchInput extends Component {
@@ -15,7 +16,7 @@ export default class BatchInput extends Component {
 
     async componentDidMount() {
         console.log("Called APIs: " + this.serverURL + '/documents/Students');
-        let students = await (await fetch(this.serverURL + '/documents/Student')).json();
+        let students = await (await serverRequest(this.serverURL + '/documents/Student')).json();
         this.setState({ students: students, });
     }
 
@@ -37,56 +38,36 @@ export default class BatchInput extends Component {
                         marksGained[splitKey[0]] = {};
                     marksGained[splitKey[0]][splitKey[1]] = entry[key];
                 }
-                if (['SEE','CIE'].includes(key.trim()))
+                if (['SEE', 'CIE'].includes(key.trim()))
                     marksGained[key] = entry[key];
             }
 
             let studentId;
-            let student = await (await fetch(this.serverURL + "/documents/Student", {
-                method: "POST",
-                body: JSON.stringify({ searchObj: { USN: entry["USN"] } }),
-                headers: { "Content-type": "application/json; charset=UTF-8", },
-            })).json();
+            let student = await (await serverRequest(this.serverURL + "/documents/Student", "POST", { searchObj: { USN: entry["USN"] } })).json();
 
             if (!student.length) {
-                let studentRes = await fetch(this.serverURL + "/documents/Student/add", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        "Student Name": entry["Student Name"],
-                        USN: entry["USN"],
-                        Department: this.deptId
-                    }),
-                    headers: { "Content-type": "application/json; charset=UTF-8", },
+                let studentRes = await serverRequest(this.serverURL + "/documents/Student/add", "POST", {
+                    "Student Name": entry["Student Name"],
+                    USN: entry["USN"],
+                    Department: this.deptId
                 });
 
                 if (studentRes.status == 200) {
                     studentId = await studentRes.text();
-                    console.log("Inserted ",studentId);
+                    console.log("Inserted ", studentId);
                 }
 
-                let classAllocRes = await fetch(this.serverURL + "/documents/Class Allocation/add", {
-                    method: "POST",
-                    body: JSON.stringify({ Class: this.classId, Student: studentId }),
-                    headers: { "Content-type": "application/json; charset=UTF-8", },
-                });
+                let classAllocRes = await serverRequest(this.serverURL + "/documents/Class Allocation/add", "POST", { Class: this.classId, Student: studentId });
             }
             else
                 studentId = student[0]._id;
 
-            let marks = await (await fetch(this.serverURL + "/documents/Marks", {
-                method: "POST",
-                body: JSON.stringify({ searchObj: { Subject: this.subjectId, Student: studentId } }),
-                headers: { "Content-type": "application/json; charset=UTF-8", },
-            })).json();
+            let marks = await (await serverRequest(this.serverURL + "/documents/Marks", "POST", { searchObj: { Subject: this.subjectId, Student: studentId } })).json();
 
-            let message = {Marks: { Student: studentId, Subject: this.subjectId, "Marks Gained": marksGained }};
+            let message = { Marks: { Student: studentId, Subject: this.subjectId, "Marks Gained": marksGained } };
             if (marks.length)
                 message.Marks._id = marks[0]["_id"];
-            fetch(this.serverURL + "/Marks", {
-                method: (marks.length?"PUT":"POST"),
-                body: JSON.stringify(message),
-                headers: { "Content-type": "application/json; charset=UTF-8", },
-            })
+            serverRequest(this.serverURL + "/Marks", marks.length ? "PUT" : "POST", message)
                 .then(async (res) => {
                     if (res.status == 200) console.log("Inserted/Updated ", message);
                     else throw res;

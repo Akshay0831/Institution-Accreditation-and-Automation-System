@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateCOPOMap() {
 
@@ -31,9 +32,9 @@ export default function UpdateCOPOMap() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // console.log((await (await fetch("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
+            // console.log((await (await serverRequest("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
             if (isUpdate) {
-                const COPOMapData = (await (await fetch("http://localhost:4000/documents/CO PO Map")).json()).filter(doc => doc._id == id)[0];
+                const COPOMapData = (await (await serverRequest("http://localhost:4000/documents/CO PO Map")).json()).filter(doc => doc._id == id)[0];
                 console.log(COPOMapData);
                 setSubjectID(COPOMapData["Subject"]);
                 setCO(COPOMapData["CO"]);
@@ -41,7 +42,7 @@ export default function UpdateCOPOMap() {
                 setValue(COPOMapData["Value"]);
             }
 
-            const subjectsData = await (await fetch("http://localhost:4000/documents/Subject")).json();
+            const subjectsData = await (await serverRequest("http://localhost:4000/documents/Subject")).json();
             setSubjects(subjectsData);
         }
         fetchData();
@@ -57,23 +58,17 @@ export default function UpdateCOPOMap() {
                 "Value": val,
             }
         }
-        fetch(`http://localhost:4000/CO PO Map`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(copoMap),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res => {
-            if (res.status == 200){
-                navigate("/admin/collectionlist",
-                    {
-                        state: "CO PO Map",
-                    });
-                toasts(`${(isUpdate?"Updated":"Added")} CO PO Map`, toast.success);
-            }
-            console.log(res.status, res.statusText);
-        });
+        serverRequest(`http://localhost:4000/CO PO Map`, isUpdate ? "PUT" : "POST", copoMap, { "Content-type": "application/json; charset=UTF-8" })
+            .then(res => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        {
+                            state: "CO PO Map",
+                        });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} CO PO Map`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     const handleSubjectChange = (event) => setSubjectID(event.target.value);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Card, Table } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function COPOMapper() {
 
@@ -32,11 +33,11 @@ export default function COPOMapper() {
     useEffect(() => {
         const fetchData = async () => {
             console.log("Called API to fetch subjects and COPO Collection");
-            setCOPOCollection(await (await fetch(serverURL + 'documents/CO PO Map')).json());
+            setCOPOCollection(await (await serverRequest(serverURL + 'documents/CO PO Map')).json());
             if (userType == "Teacher")
-                setSubjects(await (await fetch(serverURL + 'subjectsTaught/' + userMail)).json());
+                setSubjects(await (await serverRequest(serverURL + 'subjectsTaught/' + userMail)).json());
             else if (userType == "Admin")
-                setSubjects(await (await fetch(serverURL + 'documents/Subject')).json());
+                setSubjects(await (await serverRequest(serverURL + 'documents/Subject')).json());
         }
         fetchData();
     }, []);
@@ -74,15 +75,9 @@ export default function COPOMapper() {
 
     const updateCOPOMapping = () => {
         if (subjectSelected)
-            fetch(serverURL + 'teacher/COPOMapper/update/' + subjectSelected, {
-                method: "POST",
-                body: JSON.stringify(COPOMaps),
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8",
-                },
-            })
+            serverRequest(serverURL + 'teacher/COPOMapper/update/' + subjectSelected, "POST", COPOMaps)
                 .then(res => {
-                    if (res.status == 200){
+                    if (res.status == 200) {
                         console.log("Updated CO-PO Mapping for " + subjectSelected + " Successfully!");
                         toasts("Updated CO-PO Mapping Successfully!", toast.success);
                     }
@@ -92,7 +87,7 @@ export default function COPOMapper() {
                     toasts("Error: " + err.message, toast.error);
                 });
         else toasts("Please Select the Subject First", toast.error);
-        fetch(serverURL + 'documents/CO PO Map').then(docs => docs.json()).then(docs => setCOPOCollection(docs));
+        serverRequest(serverURL + 'documents/CO PO Map').then(docs => docs.json()).then(docs => setCOPOCollection(docs));
     }
 
     return (

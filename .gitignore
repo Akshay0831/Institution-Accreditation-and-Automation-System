@@ -169,3 +169,5 @@ packages/react-devtools-timeline/dist
 
 config.js
 .env
+
+firebase-project-credentials.json

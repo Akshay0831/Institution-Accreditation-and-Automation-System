@@ -10,7 +10,7 @@ router.route("/")
 
 
     .post(async (req, res) => {
-        res.json({ message: "logged-in" });
+        res.json({ message: req.uid });
     });
 
 module.exports = router;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { InfinitySpin } from 'react-loader-spinner';
 import { Button, Card, Form } from 'react-bootstrap';
+import serverRequest from '../helper/serverRequest';
 
 export default function GenerateReportForm(props) {
     const defaultTargetValues = [50, 55, 60];
@@ -29,16 +30,9 @@ export default function GenerateReportForm(props) {
             marksThreshold: marksThreshold ? parseInt(marksThreshold) : defaultMarksThreshold,
         };
         if (subjectId) {
-            let subject = await ((await fetch("http://localhost:4000/Subject/" + subjectId)).json());
+            let subject = await ((await serverRequest("http://localhost:4000/Subject/" + subjectId)).json());
             setSubjectCode(subject["Subject Code"]);
-            let response = await fetch("http://localhost:4000/report_generation/" + subjectId, {
-                // Adding method type
-                method: "POST",
-                // Adding body or contents to send
-                body: JSON.stringify(options),
-                // Adding headers to the request
-                headers: { "Content-type": "application/json; charset=UTF-8" },
-            });
+            let response = await serverRequest("http://localhost:4000/reportGeneration/" + subjectId, "POST", options);
             const blob = await response.blob();
             const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement('a');

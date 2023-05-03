@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button, Modal, ButtonGroup } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateSubject() {
 
@@ -35,7 +36,7 @@ export default function UpdateSubject() {
     useEffect(() => {
         const fetchData = async () => {
             if (isUpdate) {
-                const subjectsData = (await (await fetch("http://localhost:4000/documents/Subject")).json()).filter(doc => doc._id == id)[0];
+                const subjectsData = (await (await serverRequest("http://localhost:4000/documents/Subject")).json()).filter(doc => doc._id == id)[0];
                 setSchemeCode(subjectsData["Scheme Code"]);
                 setSubjectCode(subjectsData["Subject Code"]);
                 setSubjectName(subjectsData["Subject Name"]);
@@ -45,7 +46,7 @@ export default function UpdateSubject() {
                 setDepartmentID(subjectsData["Department"]);
             }
 
-            const departmentsData = await (await fetch("http://localhost:4000/documents/Department")).json();
+            const departmentsData = await (await serverRequest("http://localhost:4000/documents/Department")).json();
             setDepartments(departmentsData);
         }
         fetchData();
@@ -78,23 +79,17 @@ export default function UpdateSubject() {
         };
         subject._id = id;
 
-        fetch(`http://localhost:4000/Subject`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(subject),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res => {
-            if (res.status == 200) {
-                navigate("/admin/collectionlist",
-                    {
-                        state: "Subject",
-                    });
-                toasts(`${(isUpdate ? "Updated" : "Added")} Subject`, toast.success);
-            }
-            console.log(res.status, res.statusText);
-        });
+        serverRequest(`http://localhost:4000/Subject`, isUpdate ? "PUT" : "POST", subject)
+            .then(res => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        {
+                            state: "Subject",
+                        });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Subject`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     const [addModal, setAddModal] = useState("");
@@ -106,13 +101,13 @@ export default function UpdateSubject() {
         if (/^((IA|A|CO)[0-9]+|CIE|SEE)$/.test(addModalBuffer)) {
             if (addModal[1] && addModalBuffer.startsWith("CO")) maxMarks[addModal[1]][addModalBuffer] = 0;
             else if (["SEE", "CIE"].includes(addModalBuffer)) {
-                if(addModalBuffer in maxMarks) toasts(addModalBuffer+" already present in Max Marks", toast.error);
+                if (addModalBuffer in maxMarks) toasts(addModalBuffer + " already present in Max Marks", toast.error);
                 else maxMarks[addModalBuffer] = 60;
             }
             else if (!Object.keys(maxMarks).includes(addModalBuffer)) maxMarks[addModalBuffer] = {};
         }
-        else 
-            toasts("Invalid Format: "+addModalBuffer, toast.error);
+        else
+            toasts("Invalid Format: " + addModalBuffer, toast.error);
         handleClose();
     };
 

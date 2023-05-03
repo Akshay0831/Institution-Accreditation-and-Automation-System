@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import serverRequest from "../../helper/serverRequest";
 import { InfinitySpin } from 'react-loader-spinner'
 import { Button, ButtonGroup, Card, Col, Modal, Row, Table, Tab, Tabs } from 'react-bootstrap';
 import { DatatableWrapper, Filter, Pagination, PaginationOptions, TableBody, TableHeader } from 'react-bs-datatable';
@@ -45,7 +46,7 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'Student', title: 'Student' },
         ],
         bodyParseFunc: async (json) => {
-            let depts = await (await fetch("http://localhost:4000/" + "documents/Department")).json();
+            let depts = await (await serverRequest("http://localhost:4000/" + "documents/Department")).json();
             for (let doc of json)
                 for (let col in doc) {
                     if (col == "Class" && doc[col]) {
@@ -195,7 +196,7 @@ export default function CollectionList() {
             try {
                 setShowSpinner(true);
                 console.log("Called API: " + serverURL + collectionSelected);
-                setDocuments(await MetaData[collectionSelected].bodyParseFunc(await (await fetch(serverURL + collectionSelected, { signal })).json()));
+                setDocuments(await MetaData[collectionSelected].bodyParseFunc(await (await serverRequest(serverURL + collectionSelected, "GET", {}, { signal })).json()));
                 setShowSpinner(false);
             } catch (error) {
                 console.log(error.message);
@@ -210,11 +211,7 @@ export default function CollectionList() {
     }, [collectionSelected]);
 
     const deleteDocument = (id) => {
-        fetch(serverURL + collectionSelected, {
-            method: "DELETE",
-            body: JSON.stringify({ _id: id }),
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        })
+        serverRequest(serverURL + collectionSelected, "DELETE", { _id: id }, { "Content-type": "application/json; charset=UTF-8" })
             .then((res) => {
                 console.log("Called API: Delete " + id);
                 if (res.status == 200)

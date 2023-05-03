@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateTeacher() {
 
     const navigate = useNavigate();
     const { id } = useParams();
     const isUpdate = Boolean(id);
-    document.title = (isUpdate?"Update":"Add") + " Teacher";
+    document.title = (isUpdate ? "Update" : "Add") + " Teacher";
 
     const [departments, setDepartments] = useState([]);
     const [mail, setMail] = useState("");
@@ -32,7 +33,7 @@ export default function UpdateTeacher() {
     useEffect(() => {
         const fetchData = async () => {
             if (isUpdate) {
-                const teachersData = (await (await fetch("http://localhost:4000/documents/Teacher")).json()).filter(doc => doc._id == id)[0];
+                const teachersData = (await (await serverRequest("http://localhost:4000/documents/Teacher")).json()).filter(doc => doc._id == id)[0];
                 console.log(teachersData);
                 setMail(teachersData["Mail"]);
                 setRole(teachersData["Role"]);
@@ -40,7 +41,7 @@ export default function UpdateTeacher() {
                 setDepartmentID(teachersData["Department"]);
             }
 
-            const departmentsData = await (await fetch("http://localhost:4000/documents/Department")).json();
+            const departmentsData = await (await serverRequest("http://localhost:4000/documents/Department")).json();
             setDepartments(departmentsData);
         }
         fetchData();
@@ -48,29 +49,26 @@ export default function UpdateTeacher() {
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
-        let teacher = {"Teacher":{
-            "Mail": mail,
-            "Role": role,
-            "Teacher Name": teacherName,
-            "Department": departmentId
-        }}
-        if (isUpdate) teacher._id=id;
-        fetch(`http://localhost:4000/Teacher`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(teacher),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then((res)=>{
-            if (res.status == 200){
-                navigate("/admin/collectionlist",
-                    {state: "Teacher",
-                });
-                toasts(`${(isUpdate?"Updated":"Added")} Teacher`, toast.success);
+        let teacher = {
+            "Teacher": {
+                "Mail": mail,
+                "Role": role,
+                "Teacher Name": teacherName,
+                "Department": departmentId
             }
-            console.log(res.status, res.statusText);
-        });
+        }
+        if (isUpdate) teacher._id = id;
+        serverRequest(`http://localhost:4000/Teacher`, (isUpdate ? "PUT" : "POST"), teacher)
+            .then((res) => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        {
+                            state: "Teacher",
+                        });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Teacher`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     return (

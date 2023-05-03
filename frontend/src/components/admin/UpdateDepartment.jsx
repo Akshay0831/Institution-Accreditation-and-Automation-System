@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateDepartment() {
 
@@ -29,15 +30,15 @@ export default function UpdateDepartment() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // console.log((await (await fetch("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
+            // console.log((await (await serverRequest("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == "64256326539b7e514a91fe64" )[0]);
             if (isUpdate) {
-                const departmentData = (await (await fetch("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == id)[0];
+                const departmentData = (await (await serverRequest("http://localhost:4000/documents/Department")).json()).filter(doc => doc._id == id)[0];
                 console.log(departmentData);
                 setName(departmentData["Department Name"]);
                 setHOD(departmentData["HoD"]);
             }
 
-            const teachersData = await (await fetch("http://localhost:4000/documents/Teacher")).json();
+            const teachersData = await (await serverRequest("http://localhost:4000/documents/Teacher")).json();
             setTeachers(teachersData);
         }
         fetchData();
@@ -52,23 +53,17 @@ export default function UpdateDepartment() {
             }
         }
         if (isUpdate) department._id = id;
-        fetch(`http://localhost:4000/Department`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(department),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res => {
-            if (res.status == 200){
-                navigate("/admin/collectionlist",
-                    {
-                        state: "Department",
-                    });
-                toasts(`${(isUpdate?"Updated":"Added")} Department`, toast.success);
-            }
-            console.log(res.status, res.statusText);
-        });
+        serverRequest(`http://localhost:4000/Department`, isUpdate ? "PUT" : "POST", department, { "Content-type": "application/json; charset=UTF-8" })
+            .then(res => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        {
+                            state: "Department",
+                        });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Department`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     const handleHODChange = (event) => setHOD(event.target.value);

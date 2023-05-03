@@ -10,7 +10,11 @@ router.get("/", async (req, res) => {
     const subjects = await mongo.getDocs("Subject");
     const students = await mongo.getDocs("Student");
 
-    res.status(200).json({ departments, subjects, students });
+    const gotResults = (departments && departments.length > 0) &&
+        (subjects && subjects.length > 0) &&
+        (students && students.length > 0);
+
+    res.status(gotResults ? 200 : 400).json(gotResults ? { departments, subjects, students } : "Couldn't fetch data");
 })
 
 router.get("/:Subject", async (req, res) => {

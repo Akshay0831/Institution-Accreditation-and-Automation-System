@@ -1,6 +1,7 @@
 import React from "react";
 import { Component } from "react";
 import { Accordion, Button, Card } from 'react-bootstrap';
+import serverRequest from "../../helper/serverRequest";
 
 export default class DocumentsAccess extends Component {
     constructor(props) {
@@ -11,7 +12,7 @@ export default class DocumentsAccess extends Component {
     }
 
     async componentDidMount() {
-        let listOfDocs = (await (await fetch("http://localhost:4000/getDirectoryTree")).json())['public'];
+        let listOfDocs = (await (await serverRequest("http://localhost:4000/getDirectoryTree")).json())['public'];
         this.setState({ listOfDocs: listOfDocs });
     }
 

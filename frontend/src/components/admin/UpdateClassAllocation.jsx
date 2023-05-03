@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateClassAllocation() {
 
@@ -31,13 +32,13 @@ export default function UpdateClassAllocation() {
     useEffect(() => {
         const fetchData = async () => {
             if (isUpdate) {
-                const classAllocData = (await (await fetch("http://localhost:4000/documents/Class Allocation")).json()).find(doc => doc._id == id);
+                const classAllocData = (await (await serverRequest("http://localhost:4000/documents/Class Allocation")).json()).find(doc => doc._id == id);
                 setClassID(classAllocData["Class"]);
                 setStudentID(classAllocData["Student"]);
             }
 
-            setClasses(await (await fetch("http://localhost:4000/Class")).json());
-            setStudents(await (await fetch("http://localhost:4000/documents/Student")).json());
+            setClasses(await (await serverRequest("http://localhost:4000/Class")).json());
+            setStudents(await (await serverRequest("http://localhost:4000/documents/Student")).json());
         }
         fetchData();
     }, []);
@@ -51,23 +52,17 @@ export default function UpdateClassAllocation() {
             }
         };
         if (isUpdate) classAllocData._id = id;
-        fetch(`http://localhost:4000/Class Allocation`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(classAllocData),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res => {
-            if (res.status == 200){
-                navigate("/admin/collectionlist",
-                    {
-                        state: "Class Allocation",
-                    });
-                toasts(`${(isUpdate?"Updated":"Added")} Class Allocation`, toast.success);
-            }
-            console.log(res.status, res.statusText);
-        });
+        serverRequest(`http://localhost:4000/Class Allocation`, isUpdate ? "PUT" : "POST", classAllocData, { "Content-type": "application/json; charset=UTF-8" })
+            .then(res => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        {
+                            state: "Class Allocation",
+                        });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Class Allocation`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     return (

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, Form, Button } from "react-bootstrap";
 import * as XLSX from 'xlsx';
+import serverRequest from "../../helper/serverRequest";
 
 export default function UpdateFeedback() {
 
@@ -31,11 +32,11 @@ export default function UpdateFeedback() {
 
     useEffect(() => {
         const fetchData = async () => {
-            let subjectsData = await (await fetch("http://localhost:4000/documents/Subject")).json()
+            let subjectsData = await (await serverRequest("http://localhost:4000/documents/Subject")).json()
             setSubjects(subjectsData);
 
             if (isUpdate) {
-                const marksData = (await (await fetch("http://localhost:4000/documents/Feedback")).json()).filter(doc => doc._id == id)[0];
+                const marksData = (await (await serverRequest("http://localhost:4000/documents/Feedback")).json()).filter(doc => doc._id == id)[0];
                 setFeedback(marksData["values"]);
                 setSubjectID(marksData["Subject"]);
             }
@@ -140,21 +141,15 @@ export default function UpdateFeedback() {
         }
         if (isUpdate) feedbackDoc._id = id;
 
-        fetch(`http://localhost:4000/Feedback`, {
-            // Adding method type
-            method: (isUpdate ? "PUT" : "POST"),
-            // Adding body or contents to send
-            body: JSON.stringify(feedbackDoc),
-            // Adding headers to the request
-            headers: { "Content-type": "application/json; charset=UTF-8" },
-        }).then(res => {
-            if (res.status == 200){
-                navigate("/admin/collectionlist",
-                    { state: "Feedback", });
-                    toasts(`${(isUpdate?"Updated":"Added")} Feedback`, toast.success);
-            }
-            console.log(res.status, res.statusText);
-        });
+        serverRequest(`http://localhost:4000/Feedback`, isUpdate ? "PUT" : "POST", feedbackDoc, { "Content-type": "application/json; charset=UTF-8" })
+            .then(res => {
+                if (res.status == 200) {
+                    navigate("/admin/collectionlist",
+                        { state: "Feedback", });
+                    toasts(`${(isUpdate ? "Updated" : "Added")} Feedback`, toast.success);
+                }
+                console.log(res.status, res.statusText);
+            });
     }
 
     return (
