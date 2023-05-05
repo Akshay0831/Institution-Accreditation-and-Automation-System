@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase-config";
 import React, { useRef, useEffect } from "react";
@@ -40,6 +40,25 @@ function SignIn() {
     const validatePassword = (password) => {
         const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
         return regex.test(password);
+    };
+
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+
+        const email = refEmail.current.value;
+
+        if (!validateEmail(email)) {
+            toasts("Invalid Email-Id!", toast.error);
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            toasts("Password reset email sent successfully!", toast.success);
+        } catch (error) {
+            console.error(error);
+            toasts(error.message, toast.error);
+        }
     };
 
     const handleGoogleSignIn = async () => {
@@ -149,10 +168,8 @@ function SignIn() {
                                 </div>
                             </div>
 
-                            <p className="small mb-5 pb-lg-2">
-                                <a className="text-white-50" href="#!">
-                                    Forgot password?
-                                </a>
+                            <p className="small mb-5 pb-lg-2 text-white-50" onClick={handleForgotPassword}>
+                                Forgot password?
                             </p>
 
                             <button className="btn btn-outline-light btn-lg px-5" type="submit">
