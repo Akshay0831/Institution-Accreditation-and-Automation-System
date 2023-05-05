@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase-config";
 import React, { useRef, useEffect } from "react";
@@ -8,16 +8,16 @@ import serverRequest from "../helper/serverRequest";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignIn() {
-
     const refEmail = useRef(null);
     const refPassword = useRef(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Login";
-        if (sessionStorage.getItem("token"))
-            navigate(sessionStorage.getItem("userType") === "Admin" ? "/admin" : "/home")
-    }, []);
+        if (sessionStorage.getItem("token")) {
+            navigate(sessionStorage.getItem("userType") === "Admin" ? "/admin" : "/home");
+        }
+    }, [navigate]);
 
     const toasts = (message, type) => {
         type(message, {
@@ -32,61 +32,94 @@ function SignIn() {
         });
     };
 
-    const validateEmail = (email) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
+    const validateEmail = (email) => {
+        const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+        return regex.test(email);
+    };
 
-    const validatePassword = (password) =>
-        /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/.test(password);
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+        return regex.test(password);
+    };
 
-    const handleSubmit = (e) => {
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            const userCredential = await signInWithPopup(auth, provider);
+            const { uid } = userCredential.user;
+            const token = await userCredential.user.getIdToken();
+            const docRef = doc(firestore, "users", uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const { userType } = docSnap.data();
+                sessionStorage.setItem("uid", uid);
+                sessionStorage.setItem("userType", userType);
+                sessionStorage.setItem("userMail", userCredential.user.email);
+                sessionStorage.setItem("token", token);
+
+                const endpoint = "http://localhost:4000/login";
+                const body = { email: userCredential.user.email, userId: uid, userType };
+                const res = await serverRequest(endpoint, "POST", body);
+                const json = await res.json();
+
+                navigate(userType === "Admin" ? "/admin" : "/home");
+                toasts(`Successfully! Logged in as ${userCredential.user.email}`, toast.success);
+            }
+        } catch (error) {
+            console.error(error);
+            toasts(error.message, toast.error);
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let loginCredentials = async () => {
-            if (
-                validatePassword(refPassword.current.value) &&
-                validateEmail(refEmail.current.value)
-            ) {
-                let user = await signInWithEmailAndPassword(
-                    auth,
-                    refEmail.current.value,
-                    refPassword.current.value
-                );
-                if (user) {
-                    let token = await user.user.getIdToken();
-                    let docRef = doc(firestore, "users", user.user.uid);
-                    let docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        toasts(
-                            "Successfully! Logged in as " + refEmail.current.value,
-                            toast.success
-                        );
-                        sessionStorage.setItem("uid", user.user.uid);
-                        sessionStorage.setItem("userType", docSnap.data().userType);
-                        sessionStorage.setItem("userMail", refEmail.current.value);
-                        sessionStorage.setItem("token", token);
-                        let res = await serverRequest("http://localhost:4000/login", "POST", {
-                            email: refEmail.current.value,
-                            userId: user.user.uid,
-                            userType: docSnap.data().userType,
-                        });
-                        let json = await res.json();
-                        navigate(docSnap.data().userType === "Admin" ? "/admin" : "/home");
-                    }
-                }
-            } else if (!validatePassword(refPassword.current.value))
-                toasts("Invalid Password!", toast.error);
-            else if (!validateEmail(refEmail.current.value))
-                toasts("Invalid Email-Id!", toast.error);
-        };
-        loginCredentials();
+        const email = refEmail.current.value;
+        const password = refPassword.current.value;
+
+        if (!validateEmail(email)) {
+            toasts("Invalid Email-Id!", toast.error);
+            return;
+        }
+
+        if (!validatePassword(password)) {
+            toasts("Invalid Password!", toast.error);
+            return;
+        }
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const { uid } = userCredential.user;
+            const token = await userCredential.user.getIdToken();
+            const docRef = doc(firestore, "users", uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const { userType } = docSnap.data();
+                sessionStorage.setItem("uid", uid);
+                sessionStorage.setItem("userType", userType);
+                sessionStorage.setItem("userMail", email);
+                sessionStorage.setItem("token", token);
+
+                const endpoint = "http://localhost:4000/login";
+                const body = { email, userId: uid, userType };
+                const res = await serverRequest(endpoint, "POST", body);
+                const json = await res.json();
+
+                navigate(userType === "Admin" ? "/admin" : "/home");
+                toasts(`Successfully! Logged in as ${email}`, toast.success);
+            }
+        } catch (error) {
+            console.error(error);
+            toasts(error.message, toast.error);
+        }
     };
 
     return (
         <div className="container h-100">
             <div className="row d-flex justify-content-center vh-100 align-items-center">
-                <div
-                    className="card bg-dark text-white col-12 col-md-8 col-lg-5 col-xl-4"
-                    styles="border-radius: 1rem;"
-                >
+                <div className="card bg-dark text-white col-12 col-md-8 col-lg-6 col-xl-4 rounded">
                     <div className="card-body py-5 px-3 text-center">
                         <form onSubmit={handleSubmit}>
                             <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
@@ -101,13 +134,7 @@ function SignIn() {
                                     </label>
                                 </div>
                                 <div className="col-auto mx-auto">
-                                    <input
-                                        type="email"
-                                        id="typeEmailX"
-                                        className="form-control"
-                                        placeholder="Enter Email"
-                                        ref={refEmail}
-                                    />
+                                    <input type="email" id="typeEmailX" className="form-control" placeholder="Enter Email" ref={refEmail} />
                                 </div>
                             </div>
 
@@ -118,13 +145,7 @@ function SignIn() {
                                     </label>
                                 </div>
                                 <div className="col-auto mx-auto">
-                                    <input
-                                        type="password"
-                                        id="typePasswordX"
-                                        className="form-control"
-                                        placeholder="Password"
-                                        ref={refPassword}
-                                    />
+                                    <input type="password" id="typePasswordX" className="form-control" placeholder="Password" ref={refPassword} />
                                 </div>
                             </div>
 
@@ -139,13 +160,13 @@ function SignIn() {
                             </button>
 
                             <div className="text-center mt-4 pt-1">
-                                <a href="#" className="text-white">
+                                {/* <a href="#" className="text-white">
                                     <i className="fab fa-facebook-f fa-lg"></i>
                                 </a>
                                 <a href="#" className="text-white">
                                     <i className="fab fa-twitter fa-lg mx-4 px-2"></i>
-                                </a>
-                                <a href="#" className="text-white">
+                                </a> */}
+                                <a href="#" className="text-white" onClick={handleGoogleSignIn}>
                                     <i className="fab fa-google fa-lg"></i>
                                 </a>
                             </div>
