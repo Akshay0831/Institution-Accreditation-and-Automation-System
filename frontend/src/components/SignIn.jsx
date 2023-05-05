@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import serverRequest from "../helper/serverRequest";
 import "react-toastify/dist/ReactToastify.css";
 
-function SignIn() {
+export default function SignIn() {
     const refEmail = useRef(null);
     const refPassword = useRef(null);
     const navigate = useNavigate();
@@ -80,7 +80,6 @@ function SignIn() {
                 const endpoint = "http://localhost:4000/login";
                 const body = { email: userCredential.user.email, userId: uid, userType };
                 const res = await serverRequest(endpoint, "POST", body);
-                const json = await res.json();
 
                 navigate(userType === "Admin" ? "/admin" : "/home");
                 toasts(`Successfully! Logged in as ${userCredential.user.email}`, toast.success);
@@ -124,7 +123,6 @@ function SignIn() {
                 const endpoint = "http://localhost:4000/login";
                 const body = { email, userId: uid, userType };
                 const res = await serverRequest(endpoint, "POST", body);
-                const json = await res.json();
 
                 navigate(userType === "Admin" ? "/admin" : "/home");
                 toasts(`Successfully! Logged in as ${email}`, toast.success);
@@ -136,9 +134,9 @@ function SignIn() {
     };
 
     return (
-        <div className="container h-100">
-            <div className="row d-flex justify-content-center vh-100 align-items-center">
-                <div className="card bg-dark text-white col-12 col-md-8 col-lg-6 col-xl-4 rounded">
+        <div className="container pt-5">
+            <div className="row d-flex justify-content-center align-items-center">
+                <div className="card bg-dark text-white col-12 col-sm-10 col-md-7 col-lg-6 col-xl-5 rounded">
                     <div className="card-body py-5 px-3 text-center">
                         <form onSubmit={handleSubmit}>
                             <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
@@ -195,5 +193,3 @@ function SignIn() {
         </div>
     );
 }
-
-export default SignIn;
