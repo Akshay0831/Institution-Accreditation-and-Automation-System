@@ -4,6 +4,7 @@ import { auth, firestore } from "../firebase-config";
 import React, { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import { Button, Card, Col, Row, Form, Container } from 'react-bootstrap';
 import serverRequest from "../helper/serverRequest";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -134,62 +135,60 @@ export default function SignIn() {
     };
 
     return (
-        <div className="container pt-5">
-            <div className="row d-flex justify-content-center align-items-center">
-                <div className="card bg-dark text-white col-12 col-sm-10 col-md-7 col-lg-6 col-xl-5 rounded">
-                    <div className="card-body py-5 px-3 text-center">
-                        <form onSubmit={handleSubmit}>
-                            <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
-                            <p className="text-white-50 mb-5">
-                                Please enter your login and password!
-                            </p>
+        <Container className="pt-5">
+            <Row className="justify-content-center align-items-center">
+                <Col xs={12} sm={10} md={7} lg={6} xl={5}>
+                    <Card bg="dark" text="white" className="rounded">
+                        <Card.Body className="py-5 px-3 text-center">
+                            <Form onSubmit={handleSubmit}>
+                                <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
+                                <p className="text-white-50 mb-5">
+                                    Please enter your email and password!
+                                </p>
 
-                            <div className="row form-group align-items-center m-4">
-                                <div className="col-auto mx-auto">
-                                    <label className="col-form-label" htmlFor="typeEmailX">
+                                <Form.Group as={Row} className="align-items-center m-4">
+                                    <Form.Label column sm={4} htmlFor="typeEmailX" className="text-right" >
                                         Email &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </label>
-                                </div>
-                                <div className="col-auto mx-auto">
-                                    <input type="email" id="typeEmailX" className="form-control" placeholder="Enter Email" ref={refEmail} />
-                                </div>
-                            </div>
+                                    </Form.Label>
+                                    <Col sm={8}>
+                                        <Form.Control type="email" id="typeEmailX" placeholder="Enter Email" ref={refEmail} />
+                                    </Col>
+                                </Form.Group>
 
-                            <div className="row form-group align-items-center m-4">
-                                <div className="col-auto mx-auto">
-                                    <label className="col-form-label" htmlFor="typePasswordX">
+                                <Form.Group as={Row} className="align-items-center m-4">
+                                    <Form.Label column sm={4} htmlFor="typePasswordX" className="text-right" >
                                         Password
-                                    </label>
+                                    </Form.Label>
+                                    <Col sm={8}>
+                                        <Form.Control type="password" id="typePasswordX" placeholder="Enter Password" ref={refPassword} />
+                                    </Col>
+                                </Form.Group>
+
+                                <p className="small mb-5 pb-lg-2 text-white-50" onClick={handleForgotPassword} >
+                                    Forgot password?
+                                </p>
+
+                                <Button variant="outline-light" size="lg" className="px-5" type="submit" >
+                                    Login
+                                </Button>
+
+                                <div className="text-center mt-4 pt-1">
+                                    {/* <a href="#" className="text-white">
+                                        <i className="fab fa-facebook-f fa-lg"></i>
+                                    </a>
+                                    <a href="#" className="text-white">
+                                        <i className="fab fa-twitter fa-lg mx-4 px-2"></i>
+                                    </a> */}
+                                    <a href="#" className="text-white" onClick={handleGoogleSignIn}>
+                                        <i className="fab fa-google fa-lg"></i>
+                                    </a>
                                 </div>
-                                <div className="col-auto mx-auto">
-                                    <input type="password" id="typePasswordX" className="form-control" placeholder="Password" ref={refPassword} />
-                                </div>
-                            </div>
-
-                            <p className="small mb-5 pb-lg-2 text-white-50" onClick={handleForgotPassword}>
-                                Forgot password?
-                            </p>
-
-                            <button className="btn btn-outline-light btn-lg px-5" type="submit">
-                                Login
-                            </button>
-
-                            <div className="text-center mt-4 pt-1">
-                                {/* <a href="#" className="text-white">
-                                    <i className="fab fa-facebook-f fa-lg"></i>
-                                </a>
-                                <a href="#" className="text-white">
-                                    <i className="fab fa-twitter fa-lg mx-4 px-2"></i>
-                                </a> */}
-                                <a href="#" className="text-white" onClick={handleGoogleSignIn}>
-                                    <i className="fab fa-google fa-lg"></i>
-                                </a>
-                            </div>
-                            <ToastContainer />
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                    <ToastContainer />
+                </Col>
+            </Row>
+        </Container>
     );
 }
