@@ -146,7 +146,7 @@ export default function Analytics() {
                                 {/* Analytics from here */}
                                 {submitClicked ? <>
                                     <div className='ms-2'>
-                                        <GenerateReportForm subjectId={subject} />
+                                        <GenerateReportForm departmentId={department} subjectId={subject} />
                                     </div>
                                     <div className='m-3'>
                                         <BarGraph graphData={barGraphData.graphData} labels={barGraphData.labels} title={barGraphData.title + " perfomance"} thresholdLines={true} />
