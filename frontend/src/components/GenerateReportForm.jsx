@@ -71,7 +71,6 @@ export default function GenerateReportForm(props) {
         };
         console.log(options);
         try {
-            console.log("http://localhost:4000/reportGeneration/gapAnalysis");
             let response = await serverRequest("http://localhost:4000/reportGeneration/gapAnalysis", "POST", options);
             // const blob = await response.blob();
             // const url = window.URL.createObjectURL(new Blob([blob]));
@@ -113,7 +112,7 @@ export default function GenerateReportForm(props) {
                             <Form.Control type="text" placeholder="Enter numbers separated by commas" onChange={handleInputChange} defaultValue={numbers.join(', ')} />
                             <Form.Text className="text-muted">Enter numbers between 1 and 100.</Form.Text>
                         </Form.Group>
-                        <Button variant='info' type='submit' disabled={!subjectId && numbers.length === 0}>Generate Subject Attainment Report</Button>
+                        <Button variant='info' type='submit' disabled={!subjectId || numbers.length === 0}>Generate Subject Attainment Report</Button>
                         <Button variant='warning' onClick={GenerateGapAnalysisReport} disabled={!departmentId || !batch}>Generate Department Gap Analysis Report</Button>
                     </Form>
                 }
