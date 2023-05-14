@@ -1,6 +1,6 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
-const models = require("../models");
+const tf = require('@tensorflow/tfjs-node');
 const predict = require("../predict_SEE_marks")
 const router = express.Router();
 
@@ -47,5 +47,43 @@ router.get("/predict_SEE_marks/:Student", async (req, res) => {
         res.json({ Student, Marks, Predicted_SEE: Math.round(prediction) });
     }
 })
+
+// Route for SEE Prediction
+router.get('/predict/:Subject/:Student', async (req, res) => {
+    // SEE Prediction Model: Update with a newer model and update the route
+    const model = await tf.loadLayersModel('file://./model_js/model.json');
+
+    let Marks = (await mongo.getDoc("Marks", { Student: req.params.Student, Subject: req.params.Subject }))["Marks Gained"];
+    let maxMarks = (await mongo.getDoc("Subject", { _id: req.params.Subject }))["Max Marks"];
+    // Prediction Inputs Internal Marks, Assignment Marks and CIE Percentages
+    let internals = [];
+    let assignments = [];
+    let CIE = [0];
+    for (let ia in Marks) {
+        if (ia.startsWith('IA'))
+            for (let co in Marks[ia])
+                internals.push(Marks[ia][co] / maxMarks[ia][co] * 100);
+        else if (ia.startsWith('A'))
+            for (let co in Marks[ia])
+                assignments.push(Marks[ia][co] / maxMarks[ia][co] * 100);
+    }
+    if (Marks.CIE)
+        CIE = [Marks.CIE];
+    console.log(model.inputShape);
+
+    // Reshape and convert input data to tensors
+    const internalsTensor = tf.tensor2d(internals, [1, 7]);
+    const assignmentsTensor = tf.tensor2d(assignments, [1, 7]);
+    const CIETensor = tf.tensor2d(CIE, [1, 1]);
+
+    // Perform the prediction
+    const inputs = [internalsTensor, assignmentsTensor, CIETensor];
+    const predictions = model.predict(inputs);
+    let output = predictions.arraySync()[0];
+
+    // if (maxMarks.SEE) output *= maxMarks.SEE / 100;
+
+    res.json({ prediction: output });
+});
 
 module.exports = router;
