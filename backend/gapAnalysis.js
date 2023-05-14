@@ -1,6 +1,6 @@
 const ExcelJS = require('exceljs');
 
-function addBorders (startRow, endRow, startCol, endCol, worksheet) {
+function addBorders (startRow, endRow, startCol, endCol, sheet) {
     const border = {
         top: { style: 'medium' },
         bottom: { style: 'medium' },
@@ -10,7 +10,7 @@ function addBorders (startRow, endRow, startCol, endCol, worksheet) {
 
     for (let row = startRow; row <= endRow; row++) {
         for (let col = startCol; col <= endCol; col++) {
-            const cell = worksheet.getCell(row, col);
+            const cell = sheet.getCell(row, col);
             cell.border = border;
         }
     }
@@ -21,10 +21,10 @@ function generateGapAnalysisReport (data) {
     let G = 14
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Sheet1');
-    const worksheet = workbook.getWorksheet('Sheet1');
-    const columnB = worksheet.getColumn('B');
-    columnB.width = 30;
-    const columnC = worksheet.getColumn('C');
+    // const sheet = workbook.getWorksheet('Sheet1');
+    const columnB = sheet.getColumn('B');
+    columnB.width = 40;
+    const columnC = sheet.getColumn('C');
     columnC.width = 12;
     
     let poCount = {'PO1' : 0, 'PO2' : 0, 'PO3' : 0, 'PO4' : 0, 'PO5' : 0, 'PO6' : 0, 'PO7' : 0, 'PO8' : 0, 'PO9' : 0, 'PO10' : 0, 'PO11' : 0, 'PO12' : 0, 'PSO1' : 0, 'PSO2' : 0}
@@ -54,32 +54,33 @@ function generateGapAnalysisReport (data) {
     let sumRow = ['', 'SUM = A', ''];
     let values = Object.values(poSum);
     sumRow = sumRow.concat(values);
-    worksheet.mergeCells(`${String.fromCharCode(64 + 1)}${i+1}:${String.fromCharCode(64 + 3)}${i+1}`);
     sheet.addRow(sumRow);
-    let countRow = ['(Total no. of courses addressing each PO)= T'];
+
+    let countRow = ['', '(Total no. of courses addressing each PO)= T', ''];
     let values1 = Object.values(poCount);
     countRow = countRow.concat(values1);
     sheet.addRow(countRow);
 
+    console.log(sumRow)
     let poGaps = {}
-    sumRow.forEach((entry) => {
-        if(sumRow[entry] < A){
-            poGaps[entry] =  ((27-sumRow[entry])/(27))*100;
+    for (let entry in poSum){
+        if(poSum[entry] < A){
+            poGaps[entry] =  ((27-poSum[entry])/(27))*100;
         }
         else{
             poGaps[entry] = ''
         }
-    });
+    };
 
     let poGaps1 = {}
-    countRow.forEach((entry) => {
-        if(countRow[entry] < G){
-            poGaps1[entry] = G - countRow[entry];
+    for (let entry in poCount){
+        if(poCount[entry] < G){
+            poGaps1[entry] = G - poCount[entry];
         }
         else{
             poGaps1[entry] = ''
         }
-    });
+    };
 
     let gapRow = ['', 'GAP G= (27-A)/(27))*100', '']
     let values2 = Object.values(poGaps);
@@ -91,7 +92,7 @@ function generateGapAnalysisReport (data) {
     gapRow1 = gapRow1.concat(values3);
     sheet.addRow(gapRow1);
 
-    worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+    sheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
         row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
             if (colNumber != 2 || rowNumber > i)
                 cell.alignment = {
@@ -100,7 +101,7 @@ function generateGapAnalysisReport (data) {
                 };
         });
     });
-    addBorders(1, i+4, 1, 17, worksheet);
+    addBorders(1, i+4, 1, 17, sheet);
     workbook.xlsx.writeFile('data1.xlsx').then(() => {
         console.log('Excel file created successfully');
     }).catch((error) => {
