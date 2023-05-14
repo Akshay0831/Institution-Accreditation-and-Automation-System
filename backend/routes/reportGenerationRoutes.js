@@ -11,7 +11,7 @@ router.route('/gapAnalysis')
             const deptId = req.body.department;
             const batch = req.body.batch.toString();
             let subjects = await mongo.getDocs("Subject", { "Scheme Code": batch, Department: deptId });
-            // console.log(subjects);
+            console.log(subjects);
             let gapAnalysisResults;
             // gapAnalysisResults = GapAnalysis(subjects);
             res.status(200).json(gapAnalysisResults);
@@ -57,7 +57,8 @@ router.route("/:Subject")
                 ...{
                     Marks: marks,
                     IndirectAttainmentValues: await mongo.getDoc("Feedback", searchQuery),
-                    COPOMappings: formatedCOPOMappings
+                    COPOMappings: formatedCOPOMappings, 
+                    generateReport: true
                 }, ...options
             });
             res.send(excelFileBuffer);
