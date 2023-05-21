@@ -11,6 +11,7 @@ export default class BatchInput extends Component {
         this.subjectId = props.subjectId;
         this.deptId = props.deptId;
         this.classId = props.classId;
+        this.batch = props.batch;
         this.state = { data: null, students: [] };
     }
 
@@ -49,6 +50,8 @@ export default class BatchInput extends Component {
                 let studentRes = await serverRequest(this.serverURL + "/documents/Student/add", "POST", {
                     "Student Name": entry["Student Name"],
                     USN: entry["USN"],
+                    "Admission Year": this.batch,
+                    Batch: this.batch,
                     Department: this.deptId
                 });
 

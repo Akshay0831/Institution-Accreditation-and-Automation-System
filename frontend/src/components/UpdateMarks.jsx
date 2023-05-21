@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { Accordion, Button, Card, Table } from "react-bootstrap";
+import { Accordion, Button, Card, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner';
 import BatchInput from "./teacher/BatchInput";
 import serverRequest from "../helper/serverRequest";
 
 export default class UpdateMarks extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            batch: 2018,
+            marks: false
+        };
+    }
 
     toasts(message, type) {
         type(message, {
@@ -21,9 +29,8 @@ export default class UpdateMarks extends Component {
     };
 
     async componentDidMount() {
-        let res = await serverRequest("http://localhost:4000/Marks/update");
-        let marks = await res.json();
-        this.setState({ marks });
+        let marks = await (await serverRequest("http://localhost:4000/Marks/update")).json();
+        this.setState({ marks: marks });
         this.validated = true;
         document.title = "Update Marks";
     }
@@ -61,14 +68,14 @@ export default class UpdateMarks extends Component {
         let marks = { ...this.state?.marks };
         if (!marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"].length) {
             let subjectObject = marks[deptIndex].Classes[classIndex].Subjects[subjectIndex];
-            marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"] = { "Subject": subjectObject._id, "Student": subjectObject.Students[studentIndex]._id, "Marks Gained": this.deepCopyObject(subjectObject["Max Marks"], 0) };
+            marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"] = { "Subject": subjectObject._id, "Student": subjectObject.Students[studentIndex]._id, "Marks Gained": this.deepCopyObject(subjectObject["Max Marks"][this.state.batch], 0) };
         }
         if (!["SEE", "CIE"].includes(ia)) {
-            marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"], ia, co);;
+            marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia][co] = this.inputValidation(event.target.value, marks[deptIndex].Classes[classIndex].Subjects[subjectIndex]["Max Marks"][this.state.batch], ia, co);;
         } else {
             marks[deptIndex].Classes[classIndex].Subjects[subjectIndex].Students[studentIndex]["Marks Gained"]["Marks Gained"][ia] = Number(event.target.value);
         }
-        this.setState(marks);
+        this.setState({ marks: marks });
     }
 
     updateDocument(marksObj) {
@@ -80,6 +87,13 @@ export default class UpdateMarks extends Component {
                     }
                 });
         else this.toasts("Cannot Update!", toast.error);
+    }
+
+    handleBatchChange = async (event) => {
+        let batchYear = event.target.value;
+        this.setState({ batch: batchYear, marks: false });
+        let marksObj = await (await serverRequest("http://localhost:4000/Marks/update")).json();
+        this.setState({ marks: marksObj });
     }
 
     totalIA(IAObj) {
@@ -96,8 +110,12 @@ export default class UpdateMarks extends Component {
                     <Card>
                         <Card.Header className="fs-3">Update Marks</Card.Header>
                         <Card.Body>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Batch Year:</Form.Label>
+                                <Form.Control type="number" min="2010" max={new Date().getFullYear()} value={this.state.batch} name="batch" placeholder={"Batch Year"} onChange={this.handleBatchChange} required />
+                            </Form.Group>
                             {
-                                this.state
+                                this.state.marks
                                     ? <Accordion defaultActiveKey="0">
                                         {this.state.marks && this.state.marks.map((dept, deptIndex) => {
                                             return (<Accordion.Item key={deptIndex} eventKey={deptIndex}>
@@ -111,7 +129,7 @@ export default class UpdateMarks extends Component {
                                                                         <Accordion.Header>{`${classObj.Semester}${classObj.Section} (${dept["Department Name"]})`}</Accordion.Header>
                                                                         <Accordion.Body>
                                                                             {
-                                                                                classObj.Subjects
+                                                                                classObj.Subjects && classObj.Subjects.find(subject => subject["Max Marks"][this.state.batch])
                                                                                     ? <Accordion defaultActiveKey="0">Subjects{
                                                                                         classObj.Subjects.map((subject, subjectIndex) => {
                                                                                             return <Accordion.Item key={subjectIndex} eventKey={subjectIndex}>
@@ -123,10 +141,10 @@ export default class UpdateMarks extends Component {
                                                                                                                 <th scope="col" className="text-center" rowSpan="2">Sl. No</th>
                                                                                                                 <th scope="col" className="text-center" rowSpan="2">USN</th>
                                                                                                                 <th scope="col" className="text-center" rowSpan="2">Name</th>
-                                                                                                                {Object.keys(subject["Max Marks"]).map(i => {
+                                                                                                                {Object.keys(subject["Max Marks"][this.state.batch]).map(i => {
                                                                                                                     return (
                                                                                                                         <th
-                                                                                                                            colSpan={Object.keys(subject["Max Marks"][i]).length + 1}
+                                                                                                                            colSpan={Object.keys(subject["Max Marks"][this.state.batch][i]).length + 1}
                                                                                                                             rowSpan={["SEE", "CIE"].includes(i) ? 2 : 1}
                                                                                                                             scope="col"
                                                                                                                             className="text-center"
@@ -138,8 +156,8 @@ export default class UpdateMarks extends Component {
                                                                                                                 <th scope="col" className="text-center" rowSpan="2">...</th>
                                                                                                             </tr>
                                                                                                             <tr>
-                                                                                                                {Object.keys(subject["Max Marks"]).filter(obj => !["SEE", "CIE"].includes(obj)).map((ia, i) => {
-                                                                                                                    return ([Object.keys(subject["Max Marks"][ia]).map((co, c) => {
+                                                                                                                {Object.keys(subject["Max Marks"][this.state.batch]).filter(obj => !["SEE", "CIE"].includes(obj)).map((ia, i) => {
+                                                                                                                    return ([Object.keys(subject["Max Marks"][this.state.batch][ia]).map((co, c) => {
                                                                                                                         return (
                                                                                                                             <th scope="col" className="text-center" key={ia + co}>{co}</th>
                                                                                                                         );
@@ -154,26 +172,26 @@ export default class UpdateMarks extends Component {
                                                                                                                         <td>{studentIndex + 1}</td>
                                                                                                                         <td>{student.USN}</td>
                                                                                                                         <td>{student["Student Name"]}</td>
-                                                                                                                        {Object.keys(subject["Max Marks"]).map((ia) => {
-                                                                                                                            return [(Object.keys(subject["Max Marks"][ia]).map((co) => {
+                                                                                                                        {Object.keys(subject["Max Marks"][this.state.batch]).map((ia) => {
+                                                                                                                            return [(Object.keys(subject["Max Marks"][this.state.batch][ia]).map((co) => {
                                                                                                                                 if (!["SEE", "CIE"].includes(ia)) {
                                                                                                                                     return (
                                                                                                                                         <td key={ia + co} style={{ minWidth: "100px" }}>
                                                                                                                                             <input type="number"
-                                                                                                                                                className="form-control" style={{ fontSize: "15px" }} min="0" max={subject["Max Marks"][ia][co]}
-                                                                                                                                                placeholder={(student["Marks Gained"]["Marks Gained"] && Object.keys(student["Marks Gained"]["Marks Gained"]).length ? (student["Marks Gained"]["Marks Gained"][ia][co]) : "0") + "/" + subject["Max Marks"][ia][co]}
+                                                                                                                                                className="form-control" style={{ fontSize: "15px" }} min="0" max={subject["Max Marks"][this.state.batch][ia][co]}
+                                                                                                                                                placeholder={(student["Marks Gained"]["Marks Gained"] && Object.keys(student["Marks Gained"]["Marks Gained"]).length ? (student["Marks Gained"]["Marks Gained"][ia][co]) : "0") + "/" + subject["Max Marks"][this.state.batch][ia][co]}
                                                                                                                                                 onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, co)} />
                                                                                                                                         </td>
                                                                                                                                     )
                                                                                                                                 }
                                                                                                                             })
                                                                                                                             ), (!["SEE", "CIE"].includes(ia))
-                                                                                                                                ? <td key={"total_" + ia}>{this.totalIA((student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : 0)) + "/" + this.totalIA(subject["Max Marks"][ia])}</td>
+                                                                                                                                ? <td key={"total_" + ia}>{this.totalIA((student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : 0)) + "/" + this.totalIA(subject["Max Marks"][this.state.batch][ia])}</td>
                                                                                                                                 : (
                                                                                                                                     <td key={ia} style={{ minWidth: "100px" }}>
                                                                                                                                         <input type="number"
-                                                                                                                                            className="form-control" style={{ fontSize: "15px" }} min="0" max={subject["Max Marks"][ia]}
-                                                                                                                                            placeholder={(student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : "0") + "/" + subject["Max Marks"][ia]}
+                                                                                                                                            className="form-control" style={{ fontSize: "15px" }} min="0" max={subject["Max Marks"][this.state.batch][ia]}
+                                                                                                                                            placeholder={(student["Marks Gained"]["Marks Gained"] ? student["Marks Gained"]["Marks Gained"][ia] : "0") + "/" + subject["Max Marks"][this.state.batch][ia]}
                                                                                                                                             onChange={this.handleItemChanged.bind(this, deptIndex, classIndex, subjectIndex, studentIndex, ia, null)} />
                                                                                                                                     </td>
                                                                                                                                 )]
@@ -189,7 +207,7 @@ export default class UpdateMarks extends Component {
                                                                                                         </tbody>
                                                                                                     </Table>
                                                                                                 }
-                                                                                                    <BatchInput deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]} />
+                                                                                                    <BatchInput batch={this.state.batch} deptId={dept._id} classId={classObj._id} subjectId={subject._id} subjectCode={subject["Subject Code"]} />
                                                                                                 </Accordion.Body>
                                                                                             </Accordion.Item>
                                                                                         })
