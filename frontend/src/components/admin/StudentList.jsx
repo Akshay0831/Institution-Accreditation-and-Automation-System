@@ -7,8 +7,7 @@ import serverRequest from "../../helper/serverRequest";
 export default class StudentList extends Component {
 
     async componentDidMount() {
-        let res = await serverRequest("http://localhost:4000/Student/update");
-        let data = await res.json();
+        let data = await (await serverRequest("http://localhost:4000/Student/update")).json();
         this.setState({ Students: data });
         document.title = "Students by Class";
     }
@@ -61,8 +60,8 @@ export default class StudentList extends Component {
                                                                             accId="StudentsAccordion"
                                                                             targetAndControls={classObj.Section + classObj.Semester + "_" + student.USN}
                                                                             headContent={student["Student Name"] + " (" + student.USN + ")"}>
-                                                                            <div className="accordion" id="StudentsDetailsAccordion">
-                                                                                <table>
+                                                                            <div className="accordion table-responsive" id="StudentsDetailsAccordion">
+                                                                                <table className="table table-borderless">
                                                                                     <tbody>
                                                                                         <tr>
                                                                                             <td>Name:</td>
@@ -72,16 +71,26 @@ export default class StudentList extends Component {
                                                                                             <td>USN:</td>
                                                                                             <td>{student.USN}</td>
                                                                                         </tr>
+                                                                                        <tr>
+                                                                                            <td>Admission Year:</td>
+                                                                                            <td>{student["Admission Year"]}</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td>Batch:</td>
+                                                                                            <td>{student.Batch}</td>
+                                                                                        </tr>
                                                                                     </tbody>
                                                                                     <tfoot>
                                                                                         <tr className="text-center">
                                                                                             <td colSpan={2}>
-                                                                                                <button className="btn btn-warning py-1">
-                                                                                                    <Link to={`/${sessionStorage.getItem("userType")}/student/update/${student._id}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
-                                                                                                </button>
-                                                                                                <button className="btn btn-danger" onClick={() => { this.deleteClicked(student._id) }}>
-                                                                                                    <i className="fa fa-solid fa-user-minus" aria-hidden="true"></i>
-                                                                                                </button>
+                                                                                                <div className="btn-group">
+                                                                                                    <button className="btn btn-warning py-1">
+                                                                                                        <Link to={`/${sessionStorage.getItem("userType")}/student/update/${student._id}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
+                                                                                                    </button>
+                                                                                                    <button className="btn btn-danger" onClick={() => { this.deleteClicked(student._id) }}>
+                                                                                                        <i className="fa fa-solid fa-user-minus" aria-hidden="true"></i>
+                                                                                                    </button>
+                                                                                                </div>
                                                                                             </td>
                                                                                         </tr>
                                                                                     </tfoot>
