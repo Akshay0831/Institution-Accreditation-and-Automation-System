@@ -112,6 +112,8 @@ const MetaData = {
             { isFilterable: true, isSortable: true, prop: 'USN', title: 'USN' },
             { isFilterable: true, isSortable: true, prop: 'Student Name', title: 'Name' },
             { isFilterable: true, isSortable: true, prop: 'Department', title: 'Department' },
+            { isFilterable: true, isSortable: true, prop: 'Admission Year', title: 'Admitted' },
+            { isFilterable: true, isSortable: true, prop: 'Batch', title: 'Batch' },
         ],
         bodyParseFunc: (json) => {
             for (let doc of json)
