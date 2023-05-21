@@ -62,17 +62,17 @@ export default function UpdateStudent() {
         if (classes && classID.length && departmentID.length) {
             event.preventDefault();
             const student = {
-                "Student": {
+                Student: {
                     "Student Name": name,
                     USN: usn.toUpperCase(),
                     Department: departmentID,
                     "Admission Year": parseInt(admissionYear),
                     Batch: parseInt(batch)
                 },
-                "Class": { _id: classID }
+                Class: { _id: classID }
             };
             if (isUpdate) student.Student._id = id;
-            serverRequest(`http://localhost:4000/Student`, isUpdate ? "PUT" : "POST", student, { "Content-type": "application/json; charset=UTF-8" }).then(res => {
+            serverRequest(`http://localhost:4000/Student`, isUpdate ? "PUT" : "POST", student).then(res => {
                 if (res.status == 200) {
                     navigate("/admin/collectionlist", { state: "Student", });
                     toasts(`${(isUpdate ? "Updated" : "Added")} Student`, toast.success);

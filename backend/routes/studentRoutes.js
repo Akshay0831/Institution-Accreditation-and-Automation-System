@@ -29,6 +29,8 @@ router.route("/")
             studentObj["Student Name"] = req.body.Student["Student Name"];
             studentObj.USN = req.body.Student.USN;
             studentObj.Department = req.body.Student.Department;
+            studentObj['Admission Year'] = req.body.Student["Admission Year"];
+            studentObj.Batch = req.body.Student.Batch;
             const studentAdded = await mongo.addDoc("Student", studentObj, session);
     
             //Creating a Class Allocation document
@@ -73,6 +75,8 @@ router.route("/")
         studentObj.Department = req.body.Student.Department;
         studentObj['Student Name'] = req.body.Student["Student Name"];
         studentObj.USN = req.body.Student.USN;
+        studentObj['Admission Year'] = req.body.Student["Admission Year"];
+        studentObj.Batch = req.body.Student.Batch;
 
         let oldStudent = await mongo.getDoc("Student", { _id: studentObj._id });
 
