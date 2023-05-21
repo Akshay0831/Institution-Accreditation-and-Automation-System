@@ -15,8 +15,7 @@ export default function UpdateSubject() {
     const [schemeCode, setSchemeCode] = useState("");
     const [subjectCode, setSubjectCode] = useState("");
     const [subjectName, setSubjectName] = useState("");
-    // const [testAssignmentRatio, setTestAssignmentRatio] = useState(3);
-    const [maxMarks, setMaxMarks] = useState({ IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 });
+    const [maxMarks, setMaxMarks] = useState({ [(new Date()).getFullYear()]: { IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 } });
     const [semester, setSemester] = useState(1);
     const [departmentId, setDepartmentID] = useState("");
 
@@ -52,15 +51,15 @@ export default function UpdateSubject() {
         fetchData();
     }, []);
 
-    const handleSEEChange = (col, event) => {
-        let marks = {};
-        marks[col] = parseInt(event.target.value);
+    const handleSEEChange = (batch, col, event) => {
+        let marks = maxMarks;
+        marks[batch][col] = parseInt(event.target.value);
         setMaxMarks(maxMarks => ({ ...maxMarks, ...marks }));
     }
 
-    const handleCOChange = (col, CO, event) => {
+    const handleCOChange = (batch, col, CO, event) => {
         let marks = maxMarks;
-        marks[col][CO] = parseInt(event.target.value);
+        marks[batch][col][CO] = parseInt(event.target.value);
         setMaxMarks(maxMarks => ({ ...maxMarks, ...marks }));
     }
 
@@ -71,7 +70,6 @@ export default function UpdateSubject() {
                 "Scheme Code": schemeCode,
                 "Subject Code": subjectCode,
                 "Subject Name": subjectName,
-                // "Test Assignment Ratio": testAssignmentRatio,
                 "Max Marks": maxMarks,
                 "Semester": semester,
                 "Department": departmentId
@@ -92,28 +90,33 @@ export default function UpdateSubject() {
             });
     }
 
-    const [addModal, setAddModal] = useState("");
+    const [addModal, setAddModal] = useState(false);
     const [addModalBuffer, setAddModalBuffer] = useState("");
 
-    const handleClose = () => setAddModal("");
+    const handleClose = () => setAddModal(false);
 
     const addToMaxMarksObject = () => {
-        if (/^((IA|A|CO)[0-9]+|CIE|SEE)$/.test(addModalBuffer)) {
-            if (addModal[1] && addModalBuffer.startsWith("CO")) maxMarks[addModal[1]][addModalBuffer] = 0;
-            else if (["SEE", "CIE"].includes(addModalBuffer)) {
-                if (addModalBuffer in maxMarks) toasts(addModalBuffer + " already present in Max Marks", toast.error);
-                else maxMarks[addModalBuffer] = 60;
+        if (addModal.length) {
+            if (/^((IA|A|CO)[0-9]+|CIE|SEE)$/.test(addModalBuffer)) {
+                if (addModal[1] && addModalBuffer.startsWith("CO")) maxMarks[addModal[0]][addModal[1]][addModalBuffer] = 0;
+                else if (addModal[0] && ["SEE", "CIE"].includes(addModalBuffer)) {
+                    if (addModalBuffer in maxMarks[addModal[0]]) toasts(addModalBuffer + " already present in Max Marks", toast.error);
+                    else maxMarks[addModal[0]][addModalBuffer] = 60;
+                }
+                else if (!Object.keys(maxMarks).includes(addModalBuffer)) maxMarks[addModalBuffer] = {};
             }
-            else if (!Object.keys(maxMarks).includes(addModalBuffer)) maxMarks[addModalBuffer] = {};
+            else
+                toasts("Invalid Format: " + addModalBuffer, toast.error);
         }
-        else
-            toasts("Invalid Format: " + addModalBuffer, toast.error);
+        else {
+            maxMarks[parseInt(addModalBuffer)] = { IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 };
+        }
         handleClose();
     };
 
-    const deleteObjInMaxMarks = (test) => {
+    const deleteObjInMaxMarks = (batch, test) => {
         let marksObj = { ...maxMarks };
-        delete marksObj[test];
+        delete marksObj[batch][test];
         setMaxMarks(marksObj);
     }
 
@@ -125,7 +128,7 @@ export default function UpdateSubject() {
                         <Modal.Title>Add Field</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Enter the field Name {addModal}
-                        <input className="form-control" onChange={(event) => setAddModalBuffer(event.target.value.toUpperCase())} />
+                        <Form.Control type={addModal.length ? "text" : "number"} onChange={e => setAddModalBuffer(e.target.value.toUpperCase())} />
                     </Modal.Body>
                     <Modal.Footer>
                         <ButtonGroup>
@@ -154,39 +157,46 @@ export default function UpdateSubject() {
                                 <Form.Label>Subject Name:</Form.Label>
                                 <Form.Control type="text" name="subjectName" id="subjectName" value={subjectName} placeholder={"Enter Subject Name"} onChange={(event) => { setSubjectName(event.target.value) }} required />
                             </Form.Group>
-                            {/* <Form.Group className="mb-3">
-                                <Form.Label>Test Assignment Ratio:</Form.Label>
-                                <Form.Control type="text" name="testAssignmentRatio" id="testAssignmentRatio" value={testAssignmentRatio} placeholder={"Enter Test Assignment Ratio"} onChange={(event) => { setTestAssignmentRatio(event.target.value) }} required />
-                            </Form.Group> */}
                             <Form.Group className="m-0 p-0 border rounded bg-light">
-                                <Form.Label className="p-1"> Max Marks:</Form.Label>
-                                {
-                                    maxMarks
-                                        ? Object.keys(maxMarks).map(test => {
-                                            if (typeof maxMarks[test] === 'object') {
-                                                return <Card key={test} className="ps-2">{test}
-                                                    <Card.Body className="row">
-                                                        {Object.keys(maxMarks[test]).map(CO => {
-                                                            return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={maxMarks[test][CO]} min="0" onChange={handleCOChange.bind(this, test, CO)} /></Form.Group>
-                                                        })}
+                                <Form.Label className="p-1"> Max Marks:</Form.Label><br/>
+                                {(Object.keys(maxMarks).map(batch =>
+                                    <Card key={batch} className="ps-2">{batch}
+                                        <Card.Body className="row p-0">
+                                            {Object.keys(maxMarks[batch]).map(test => {
+                                                if (typeof maxMarks[batch][test] === 'object') {
+                                                    return <Card key={test} className="ps-2">{test}
+                                                        <Card.Body className="row">
+                                                            {Object.keys(maxMarks[batch][test]).map(CO => {
+                                                                return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={maxMarks[batch][test][CO]} min="0" onChange={handleCOChange.bind(this, batch, test, CO)} /></Form.Group>
+                                                            })}
+                                                        </Card.Body>
+                                                        <ButtonGroup className="col-2 mb-2">
+                                                            <Button variant="outline-success" onClick={() => setAddModal([batch, test])} size="sm"><i className="fa fa-plus" /></Button>
+                                                            <Button variant="outline-danger" onClick={() => deleteObjInMaxMarks(batch, test)} size="sm"><i className="fa fa-trash" /></Button>
+                                                        </ButtonGroup>
+                                                    </Card>
+                                                }
+                                                else return <Card key={test} className="ps-2">
+                                                    {test}
+                                                    <Card.Body>
+                                                        <Form.Control type="number" placeholder={test} value={maxMarks[batch][test]} min="0" onChange={handleSEEChange.bind(this, batch, test)} />
                                                     </Card.Body>
-                                                    <ButtonGroup className="col-2 mb-2">
-                                                        <Button variant="outline-success" onClick={() => setAddModal([true, test])} size="sm"><i className="fa fa-plus" /></Button>
-                                                        <Button variant="outline-danger" onClick={() => deleteObjInMaxMarks(test)} size="sm"><i className="fa fa-trash" /></Button>
-                                                    </ButtonGroup>
+                                                    <Button className="col-1 mb-2" variant="outline-danger" onClick={() => deleteObjInMaxMarks(batch, test)} size="sm"><i className="fa fa-trash" /></Button>
                                                 </Card>
-                                            }
-                                            else return <Card key={test} className="ps-2">
-                                                {test}
-                                                <Card.Body>
-                                                    <Form.Control type="number" placeholder={test} value={maxMarks[test]} min="0" onChange={handleSEEChange.bind(this, test)} />
-                                                </Card.Body>
-                                                <Button className="col-1 mb-2" variant="outline-danger" onClick={() => deleteObjInMaxMarks(test)} size="sm"><i className="fa fa-trash" /></Button>
-                                            </Card>
-                                        })
-                                        : <>Max Marks not defined</>
-                                }
-                                <Button variant="outline-success" className="col-2 ms-2 mb-2" size="sm" onClick={() => setAddModal(true)}><i className="fa fa-plus" /></Button>
+                                            })}
+                                        </Card.Body>
+
+                                        <ButtonGroup size="sm" className="col-3 mb-2">
+                                            <Button variant="outline-success" onClick={() => setAddModal([batch])}><i className="fa fa-plus" /></Button>
+                                            <Button variant="outline-danger" onClick={() => {
+                                                let marksObj = { ...maxMarks };
+                                                delete marksObj[batch];
+                                                setMaxMarks(marksObj);
+                                            }}><i className="fa fa-trash" /></Button>
+                                        </ButtonGroup>
+                                    </Card>
+                                ))}
+                                <Button variant="outline-success" className="col-2 ms-2 mb-2" size="sm" onClick={() => setAddModal([])}><i className="fa fa-plus" /></Button>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Semester:</Form.Label>
