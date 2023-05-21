@@ -17,34 +17,21 @@ router.get("/", async (req, res) => {
     res.status(gotResults ? 200 : 400).json(gotResults ? { departments, subjects, students } : "Couldn't fetch data");
 })
 
-router.get("/:Subject", async (req, res) => {
-    let subject = await mongo.getDoc("Subject", { _id: req.params.Subject });
-    subject.Department = await mongo.getDoc("Department", { _id: subject.Department });
-    let marks = await mongo.getDocs("Marks", { Subject: req.params.Subject });
-    marks = marks.filter(marks => marks.Subject === req.params.Subject)
-
-    marks = await Promise.all(marks.map(async m => {
-        m.Student = await mongo.getDoc("Student", { _id: m.Student });
-        return m;
-    }));
-
-    let gotMarks = marks.length > 0;
-    res.status(gotMarks ? 200 : 400).send(gotMarks ? { Marks: marks, Subject: subject } : "Couldn't fetch marks");
-});
-
-router.get("/predict_SEE_marks/:Student", async (req, res) => {
-    let Student = await mongo.getDoc("Student", { _id: req.params.Student });
-    let Marks = await mongo.getDoc("Marks", { Student: req.params.Student });
+router.get("/predict_SEE_marks", async (req, res) => {
+    const { Subject, Student } = req.query;
+    let StudentDoc = await mongo.getDoc("Student", { _id: Student });
+    let Marks = await mongo.getDoc("Marks", { Student: Student, Subject: Subject });
     let avgIAMarks = 0;
     if (Marks) {
         Object.keys(Marks["Marks Gained"]).forEach(ia => {
             if (ia !== "SEE") {
                 Object.keys(Marks["Marks Gained"][ia]).forEach(co => avgIAMarks += Marks["Marks Gained"][ia][co]);
             }
-        })
-        avgIAMarks /= 3;
+        });
+        avgIAMarks /= Object.keys(Marks["Marks Gained"])
+            .filter(value => value.startsWith('IA')).length;
         let prediction = await predict(avgIAMarks);
-        res.json({ Student, Marks, Predicted_SEE: Math.round(prediction) });
+        res.json({ Student:StudentDoc, Marks, Predicted_SEE: Math.round(prediction) });
     }
 })
 
@@ -84,6 +71,21 @@ router.get('/predict/:Subject/:Student', async (req, res) => {
     // if (maxMarks.SEE) output *= maxMarks.SEE / 100;
 
     res.json({ prediction: output });
+})
+
+router.get("/:Subject", async (req, res) => {
+    let subject = await mongo.getDoc("Subject", { _id: req.params.Subject });
+    subject.Department = await mongo.getDoc("Department", { _id: subject.Department });
+    let marks = await mongo.getDocs("Marks", { Subject: req.params.Subject });
+    marks = marks.filter(marks => marks.Subject === req.params.Subject)
+
+    marks = await Promise.all(marks.map(async m => {
+        m.Student = await mongo.getDoc("Student", { _id: m.Student });
+        return m;
+    }));
+
+    let gotMarks = marks.length > 0;
+    res.status(gotMarks ? 200 : 400).send(gotMarks ? { Marks: marks, Subject: subject } : "Couldn't fetch marks");
 });
 
 module.exports = router;

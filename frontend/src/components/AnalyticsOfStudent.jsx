@@ -20,7 +20,7 @@ export default function AnalyticsOfStudent(props) {
         });
     }
 
-    // const subject = props.subject;
+    const subject = props.subject;
     const department = props.department;
     const [students, setStudents] = useState([]);
     const [studentID, setStudentID] = useState("");
@@ -41,10 +41,9 @@ export default function AnalyticsOfStudent(props) {
 
     let handleStudentSubmit = async (event) => {
         event.preventDefault();
-        // alert(studentID);
         if (studentID.length) {
             setIsLoading(true);
-            let data = await (await serverRequest("http://localhost:4000/Analytics/predict_SEE_marks/" + studentID)).json();
+            let data = await (await serverRequest(`http://localhost:4000/Analytics/predict_SEE_marks?Subject=${subject}&Student=${studentID}`)).json();
             let IALabels = [];
             let IAGraphData = [];
             let SEE = data.Marks["Marks Gained"].SEE;

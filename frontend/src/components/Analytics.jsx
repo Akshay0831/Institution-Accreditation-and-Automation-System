@@ -154,7 +154,7 @@ export default function Analytics() {
                                     <div className='m-3'>
                                         <PieGraph graphData={pieGraphData.graphData} labels={pieGraphData.labels} title={pieGraphData.title} />
                                     </div>
-                                    <AnalyticsOfStudent department={department} />
+                                    <AnalyticsOfStudent department={department} subject={subject} />
                                 </> : null}
                             </>) : (<div className='d-flex justify-content-center'><InfinitySpin color="#000" width='200' visible={true} /></div>)}
                     </Card.Body>
