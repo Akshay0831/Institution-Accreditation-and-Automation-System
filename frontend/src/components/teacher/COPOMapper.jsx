@@ -23,6 +23,8 @@ export default function COPOMapper() {
     const userMail = sessionStorage.getItem("userMail");
     document.title = "CO PO Mapper";
 
+    const [batch, setBatch] = useState(2018);
+    const [batches, setBatches] = useState([])
     const [subjectSelected, setSubjectSelected] = useState("");
     const [subjects, setSubjects] = useState([]);
     const [COPOCollection, setCOPOCollection] = useState([]);
@@ -67,11 +69,20 @@ export default function COPOMapper() {
     }, [COs]);
 
     useEffect(() => {
-        if (subjectSelected) {
-            let cos = getCOsFromMaxMarks(subjects.find(doc => doc._id == subjectSelected)["Max Marks"]);
+        if (subjectSelected && batch) {
+            let cos = getCOsFromMaxMarks(subjects.find(doc => doc._id == subjectSelected)["Max Marks"][batch]);
             setCOs(cos);
         }
+    }, [subjectSelected, batch]);
+
+    useEffect(() => {
+        if (subjectSelected) {
+            let batchesList = Object.keys(subjects.find(doc => doc._id == subjectSelected)["Max Marks"]);
+            setBatches(batchesList);
+            setBatch(batchesList.at(0));
+        }
     }, [subjectSelected]);
+
 
     const updateCOPOMapping = () => {
         if (subjectSelected)
@@ -98,13 +109,21 @@ export default function COPOMapper() {
                     {
                         subjects.length
                             ? <Card.Body className="overflow-auto">
-                                <select className="form-select mb-3" value={subjectSelected} aria-label="Select subject" onChange={() => setSubjectSelected(event.target.value)}>
+                                <select className="form-select mb-3" value={subjectSelected} aria-label="Select Subject" onChange={() => setSubjectSelected(event.target.value)}>
                                     <option value="">Select Subject</option>
                                     {subjects
                                         ? subjects.map(sub => {
                                             return <option key={sub._id} value={sub._id}>
                                                 {sub["Subject Name"]} ({sub["Subject Code"]})
                                             </option>
+                                        })
+                                        : ""}
+                                </select>
+                                <select className="form-select mb-3" value={batch} aria-label="Select Batch" onChange={(e) => setBatch(e.target.value)}>
+                                    <option value="">Select Batch</option>
+                                    {batches
+                                        ? batches.map(batch => {
+                                            return <option key={batch}> {batch} </option>
                                         })
                                         : ""}
                                 </select>
@@ -122,7 +141,7 @@ export default function COPOMapper() {
                                                     <th>{POn}</th>
                                                     {COs.map(COn => {
                                                         return <td key={COn}>
-                                                            {COPOMaps[COn] && <input type="number" min="0" max="4" className="bg-transparent border-0 w-100" placeholder={COn + "/" + POn} value={COPOMaps[COn][POn]} onChange={() => setCOPOMaps(COPOMap => ({ ...COPOMap, [COn]: { ...COPOMap[COn], [POn]: event.target.value } }))} />}
+                                                            {COPOMaps[COn] && <input type="number" min="0" max="3" className="bg-transparent border-0 w-100" placeholder={COn + "/" + POn} value={COPOMaps[COn][POn]} onChange={(e) => setCOPOMaps(COPOMap => ({ ...COPOMap, [COn]: { ...COPOMap[COn], [POn]: e.target.value } }))} />}
                                                         </td>
                                                     })}
                                                 </tr>
