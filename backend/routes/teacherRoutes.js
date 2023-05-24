@@ -1,7 +1,17 @@
 const express = require('express');
 const mongo = require("../db/mongodb");
-const models = require("../models");
+const admin = require("firebase-admin");
 const router = express.Router();
+
+function generateTemporaryPassword(temporaryPasswordLength = 10) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let temporaryPassword = '';
+
+    for (let i = 0; i < temporaryPasswordLength; i++)
+        temporaryPassword += characters.charAt(Math.floor(Math.random() * characters.length));
+
+    return temporaryPassword;
+}
 
 router.route("/")
     .get(async (req, res) => {
@@ -19,7 +29,35 @@ router.route("/")
         const teacherObj = req.body.Teacher;
         const teacherAdded = await mongo.addDoc("Teacher", teacherObj);
 
-        res.status(teacherAdded ? 200 : 400).json(teacherAdded ? "Created new teacher" : "Couldn't create new teacher");
+        if (teacherAdded.acknowledged) {
+            // Create a teacher login in Firebase Auth
+            try {
+                // Get the user ID for the teacher
+                const userId = teacherAdded.insertedId;
+
+                // Create the user in Firebase Auth without a set password
+                await admin.auth().createUser({
+                    uid: userId,
+                    email: teacherObj.Mail,
+                    emailVerified: true,
+                    password: generateTemporaryPassword()
+                });
+
+                // Send a password reset email to the user
+                await admin.auth().generatePasswordResetLink(teacherObj.Mail);
+
+                res.status(200).json("Created new teacher");
+            } catch (error) {
+                console.error('Error creating teacher login:', error);
+
+                // If adding to Firebase fails, remove the added teacher document
+                await mongo.deleteDoc("Teacher", { _id: teacherAdded.insertedId });
+
+                res.status(500).json("Error creating teacher login");
+            }
+        } else {
+            res.status(400).json("Couldn't create new teacher");
+        }
     })
 
     .put(async (req, res) => {

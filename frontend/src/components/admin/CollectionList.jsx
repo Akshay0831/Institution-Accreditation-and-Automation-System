@@ -213,7 +213,7 @@ export default function CollectionList() {
     }, [collectionSelected]);
 
     const deleteDocument = (id) => {
-        serverRequest(serverURL + collectionSelected, "DELETE", { _id: id }, { "Content-type": "application/json; charset=UTF-8" })
+        serverRequest(serverURL + collectionSelected, "DELETE", { _id: id })
             .then((res) => {
                 console.log("Called API: Delete " + id);
                 if (res.status == 200)

@@ -84,7 +84,11 @@ export default function UpdateTeacher() {
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Role:</Form.Label>
-                                <Form.Control type="text" name="role" id="role" value={role} placeholder={"Enter Role"} onChange={(event) => { setRole(event.target.value) }} required />
+                                <Form.Select name="role" id="role" value={role} placeholder={"Select Role"} onChange={(event) => { setRole(event.target.value) }} required >
+                                    <option value="">Select Role</option>
+                                    <option>Regular</option>
+                                    <option>Privileged</option>
+                                </Form.Select>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Teacher Name:</Form.Label>
