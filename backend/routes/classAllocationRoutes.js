@@ -22,7 +22,7 @@ router.route("/")
     .post(async (req, res) => {
         try {
             const classAllocObj = req.body["Class Allocation"];
-            const classAllocAdded = await mongo.addDoc("Class Allocation", classAllocObj);
+            const classAllocAdded = (await mongo.addDoc("Class Allocation", classAllocObj)).acknowledged;
 
             res.status(classAllocAdded ? 200 : 400).json(classAllocAdded ? "Created new class allocation" : "Couldn't create new class allocation");
         } catch (error) {
@@ -33,7 +33,7 @@ router.route("/")
     .put(async (req, res) => {
         try {
             const classAllocObj = req.body["Class Allocation"];
-            const classAllocUpdated = await mongo.updateDoc("Class Allocation", { _id: req.body._id }, classAllocObj);
+            const classAllocUpdated = (await mongo.updateDoc("Class Allocation", { _id: req.body._id }, classAllocObj)).acknowledged;
 
             res.status(classAllocUpdated ? 200 : 400).json(classAllocUpdated ? "Updated Class Allocation" : "Couldn't update Class Allocation");
         } catch (error) {

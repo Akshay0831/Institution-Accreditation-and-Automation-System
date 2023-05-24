@@ -63,14 +63,12 @@ export default function UpdateTeacherAllocation() {
         };
         if (isUpdate) teacherAllocData._id = id;
         serverRequest(`http://localhost:4000/Teacher Allocation`, isUpdate ? "PUT" : "POST", teacherAllocData)
-            .then(res => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        { state: "Teacher Allocation", });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} Teacher Allocation`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+            .then(async (res) => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "Teacher Allocation", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Teacher Allocation`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     return (

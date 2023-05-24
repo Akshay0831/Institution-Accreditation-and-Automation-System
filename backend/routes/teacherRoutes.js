@@ -26,12 +26,12 @@ router.route("/")
 
 
     .post(async (req, res) => {
-        const teacherObj = req.body.Teacher;
-        const teacherAdded = await mongo.addDoc("Teacher", teacherObj);
+        try {
+            const teacherObj = req.body.Teacher;
+            const teacherAdded = await mongo.addDoc("Teacher", teacherObj);
 
-        if (teacherAdded.acknowledged) {
-            // Create a teacher login in Firebase Auth
-            try {
+            if (teacherAdded.acknowledged) {
+                // Create a teacher login in Firebase Auth
                 // Get the user ID for the teacher
                 const userId = teacherAdded.insertedId;
 
@@ -47,16 +47,15 @@ router.route("/")
                 // await admin.auth().generatePasswordResetLink(teacherObj.Mail);
 
                 res.status(200).json("Created new teacher");
-            } catch (error) {
-                console.error('Error creating teacher login:', error);
-
-                // If adding to Firebase fails, remove the added teacher document
-                await mongo.deleteDoc("Teacher", { _id: teacherAdded.insertedId });
-
-                res.status(500).json("Error creating teacher login");
+            } else {
+                res.status(400).json("Couldn't create new teacher");
             }
-        } else {
-            res.status(400).json("Couldn't create new teacher");
+        } catch (error) {
+            console.error('Error creating teacher login:', error);
+            // If adding to Firebase fails, remove the added teacher document
+            await mongo.deleteDoc("Teacher", { _id: teacherAdded.insertedId });
+
+            res.status(500).json("Failed creating Teacher");
         }
     })
 
@@ -82,7 +81,7 @@ router.route("/")
             res.status(teacherUpdated ? 200 : 400).json(teacherUpdated ? "Updated teacher" : "Couldn't update teacher");
         } catch (error) {
             console.error('Error updating teacher:', error);
-            res.status(500).json("Error updating teacher");
+            res.status(500).json("Failed updating teacher");
         }
     })
 
@@ -102,7 +101,7 @@ router.route("/")
             res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
         } catch (error) {
             console.error('Error deleting teacher login:', error);
-            res.status(500).json("Error deleting teacher login");
+            res.status(500).json("Failed deleting teacher login");
         }
     });
 

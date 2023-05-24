@@ -59,16 +59,12 @@ export default function UpdateTeacher() {
         }
         if (isUpdate) teacher._id = id;
         serverRequest(`http://localhost:4000/Teacher`, (isUpdate ? "PUT" : "POST"), teacher)
-            .then((res) => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        {
-                            state: "Teacher",
-                        });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} Teacher`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+            .then(async (res) => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "Teacher", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Teacher`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     return (
