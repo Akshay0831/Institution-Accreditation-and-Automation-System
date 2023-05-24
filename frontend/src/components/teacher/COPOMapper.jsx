@@ -86,7 +86,7 @@ export default function COPOMapper() {
 
     const updateCOPOMapping = () => {
         if (subjectSelected)
-            serverRequest(serverURL + 'teacher/COPOMapper/update/' + subjectSelected, "POST", COPOMaps)
+            serverRequest(serverURL + 'CO PO Map/table/' + subjectSelected, "POST", COPOMaps)
                 .then(res => {
                     if (res.status == 200) {
                         console.log("Updated CO-PO Mapping for " + subjectSelected + " Successfully!");

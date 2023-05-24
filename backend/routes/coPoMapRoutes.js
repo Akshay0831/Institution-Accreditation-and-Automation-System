@@ -46,4 +46,18 @@ router.route("/:Subject")
         res.json(COPOs);
     });
 
+router.route("/table/:subjectSelected")
+    .post((req, res) => {
+        let body = Object(req.body);
+        let subjectSelected = req.params["subjectSelected"]
+        let updates = [];
+        for (let CO in body)
+            for (let PO in body[CO])
+                if (body[CO][PO])
+                    updates.push({ "Subject": subjectSelected, "CO": CO, "PO": PO, "Value": body[CO][PO] });
+        mongo.deleteThenInsert("CO PO Map", { Subject: subjectSelected }, updates)
+            .then(() => res.status(200).send("Updated Mapping!"))
+            .catch(err => res.status(500).send(err));
+    });
+
 module.exports = router;
