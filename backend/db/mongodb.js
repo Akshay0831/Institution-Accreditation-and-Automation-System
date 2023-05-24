@@ -37,20 +37,30 @@ class MongoDB {
     }
 
     async updateDoc(collectionName, searchObj, body) {
-        body = Object(body);
-        let updatedResult = await this.db
-            .collection(collectionName)
-            .updateOne(searchObj, { $set: body });
-        return updatedResult.acknowledged;
+        try {
+            body = Object.assign({}, body);
+            let updatedResult = await this.db.collection(collectionName).updateOne(searchObj, { $set: body });
+            return updatedResult;
+        } catch (error) {
+            if (error.code === 11000) {
+                // Duplicate key error
+                throw new Error("Duplicate key error. The update would create a duplicate document.");
+            }
+            throw error;
+        }
     }
 
     async addDoc(collectionName, body) {
-        // body['_id'] = (new ObjectId).toString();
-        body._id = body._id ? body._id : (new ObjectId).toString();
-        let insertedResult = await this.db
-            .collection(collectionName)
-            .insertOne(body);
-        return insertedResult
+        try {
+            body._id = body._id ? body._id : new ObjectId().toString();
+            let insertedResult = await this.db.collection(collectionName).insertOne(body);
+            return insertedResult;
+        } catch (error) {
+            if (error.code === 11000) {     // Duplicate key error
+                throw new Error("The document already exists.");
+            }
+            throw error;
+        }
     }
 
     async getMarks() {

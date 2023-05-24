@@ -52,17 +52,13 @@ export default function UpdateClassAllocation() {
             }
         };
         if (isUpdate) classAllocData._id = id;
-        serverRequest(`http://localhost:4000/Class Allocation`, isUpdate ? "PUT" : "POST", classAllocData, { "Content-type": "application/json; charset=UTF-8" })
-            .then(res => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        {
-                            state: "Class Allocation",
-                        });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} Class Allocation`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+        serverRequest(`http://localhost:4000/Class Allocation`, isUpdate ? "PUT" : "POST", classAllocData, { "Content-Type": "application/json; charset=UTF-8" })
+            .then(async res => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "Class Allocation", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Class Allocation`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     return (
