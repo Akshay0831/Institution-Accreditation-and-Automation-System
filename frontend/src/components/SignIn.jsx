@@ -1,6 +1,5 @@
-import { sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, firestore } from "../firebase-config";
+import { sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
+import { auth } from "../firebase-config";
 import React, { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -67,26 +66,28 @@ export default function SignIn() {
         try {
             const userCredential = await signInWithPopup(auth, provider);
             const { uid } = userCredential.user;
-            const token = await userCredential.user.getIdToken();
-            const docRef = doc(firestore, "users", uid);
-            const docSnap = await getDoc(docRef);
+            const tokenResult = await auth.currentUser.getIdTokenResult();
+            const token = tokenResult.token;
+            const { userType } = tokenResult.claims;
 
-            if (docSnap.exists()) {
-                const { userType } = docSnap.data();
-                sessionStorage.setItem("uid", uid);
-                sessionStorage.setItem("userType", userType);
-                sessionStorage.setItem("userMail", userCredential.user.email);
-                sessionStorage.setItem("token", token);
+            if (!userType)
+                throw new Error("UserType not set");
 
-                const endpoint = "http://localhost:4000/login";
-                const body = { email: userCredential.user.email, userId: uid, userType };
-                const res = await serverRequest(endpoint, "POST", body);
+            sessionStorage.setItem("uid", uid);
+            sessionStorage.setItem("userType", userType);
+            sessionStorage.setItem("userMail", userCredential.user.email);
+            sessionStorage.setItem("token", token);
 
-                navigate(userType === "Admin" ? "/admin" : "/home");
-                toasts(`Successfully! Logged in as ${userCredential.user.email}`, toast.success);
-            }
+            const endpoint = "http://localhost:4000/login";
+            const body = { email: userCredential.user.email, userId: uid, userType };
+            await serverRequest(endpoint, "POST", body);
+
+            navigate(userType === "Admin" ? "/admin" : "/home");
+            toasts(`Successfully! Logged in as ${userCredential.user.email}`, toast.success);
         } catch (error) {
             console.error(error);
+            sessionStorage.clear();
+            await signOut(auth);
             toasts(error.message, toast.error);
         }
     };
@@ -110,26 +111,27 @@ export default function SignIn() {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const { uid } = userCredential.user;
-            const token = await userCredential.user.getIdToken();
-            const docRef = doc(firestore, "users", uid);
-            const docSnap = await getDoc(docRef);
+            const tokenResult = await auth.currentUser.getIdTokenResult();
+            const token = tokenResult.token;
+            const { userType } = tokenResult.claims;
 
-            if (docSnap.exists()) {
-                const { userType } = docSnap.data();
-                sessionStorage.setItem("uid", uid);
-                sessionStorage.setItem("userType", userType);
-                sessionStorage.setItem("userMail", email);
-                sessionStorage.setItem("token", token);
+            if (!userType)
+                throw new Error("UserType not set");
+            sessionStorage.setItem("uid", uid);
+            sessionStorage.setItem("userType", userType);
+            sessionStorage.setItem("userMail", email);
+            sessionStorage.setItem("token", token);
 
-                const endpoint = "http://localhost:4000/login";
-                const body = { email, userId: uid, userType };
-                const res = await serverRequest(endpoint, "POST", body);
+            const endpoint = "http://localhost:4000/login";
+            const body = { email, userId: uid, userType };
+            await serverRequest(endpoint, "POST", body);
 
-                navigate(userType === "Admin" ? "/admin" : "/home");
-                toasts(`Successfully! Logged in as ${email}`, toast.success);
-            }
+            navigate(userType === "Admin" ? "/admin" : "/home");
+            toasts(`Successfully! Logged in as ${email}`, toast.success);
         } catch (error) {
             console.error(error);
+            sessionStorage.clear();
+            await signOut(auth);
             toasts(error.message, toast.error);
         }
     };
