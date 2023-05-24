@@ -24,16 +24,24 @@ router.route("/")
     })
 
     .post(async (req, res) => {
-        const marksObj = req.body["Marks"];
-        const marksAdded = await mongo.addDoc("Marks", marksObj);
+        try {
+            const marksObj = req.body["Marks"];
+            const marksAdded = await mongo.addDoc("Marks", marksObj);
 
-        res.status(marksAdded ? 200 : 400).json(marksAdded ? "Created new marks" : "Couldn't create new marks");
+            res.status(marksAdded ? 200 : 400).json(marksAdded ? "Created new marks" : "Couldn't create new marks");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .put(async (req, res) => {
-        const marksUpdated = await mongo.updateDoc("Marks", { _id: req.body.Marks._id }, req.body.Marks);
+        try {
+            const marksUpdated = await mongo.updateDoc("Marks", { _id: req.body.Marks._id }, req.body.Marks);
 
-        res.status(marksUpdated ? 200 : 400).json(marksUpdated ? "Updated marks" : "Couldn't update marks");
+            res.status(marksUpdated ? 200 : 400).json(marksUpdated ? "Updated marks" : "Couldn't update marks");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .delete(async (req, res) => {

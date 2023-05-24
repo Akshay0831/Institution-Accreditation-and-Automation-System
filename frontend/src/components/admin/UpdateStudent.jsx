@@ -72,13 +72,13 @@ export default function UpdateStudent() {
                 Class: { _id: classID }
             };
             if (isUpdate) student.Student._id = id;
-            serverRequest(`http://localhost:4000/Student`, isUpdate ? "PUT" : "POST", student).then(res => {
-                if (res.status == 200) {
+            serverRequest(`http://localhost:4000/Student`, isUpdate ? "PUT" : "POST", student)
+                .then(async (res) => {
+                    if (!res.ok)
+                        throw new Error(await res.json());
                     navigate("/admin/collectionlist", { state: "Student", });
                     toasts(`${(isUpdate ? "Updated" : "Added")} Student`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+                }).catch(err => toasts(err.message, toast.error));
         } else {
             alert("Please fill all fields");
         }

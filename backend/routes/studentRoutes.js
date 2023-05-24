@@ -19,100 +19,102 @@ router.route("/")
 
     .post(async (req, res) => {
         const session = await mongo.startSession();
-    
-        try {
-          await session.withTransaction(async () => {
-            const studentId = (new ObjectId()).toString();
-            //Creating a Student document
-            const studentObj = { ...models.Student }
-            studentObj._id = studentId;
-            studentObj["Student Name"] = req.body.Student["Student Name"];
-            studentObj.USN = req.body.Student.USN;
-            studentObj.Department = req.body.Student.Department;
-            studentObj['Admission Year'] = req.body.Student["Admission Year"];
-            studentObj.Batch = req.body.Student.Batch;
-            const studentAdded = await mongo.addDoc("Student", studentObj, session);
-    
-            //Creating a Class Allocation document
-            const classAllocationObj = { ...models["Class Allocation"] };
-            classAllocationObj.Class = req.body.Class._id;
-            classAllocationObj.Student = studentId;
-            const classAllocationAdded = await mongo.addDoc("Class Allocation", classAllocationObj, session);
-    
-            let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department }, session);
-    
-            let marksAdded = true;
-    
-            for (let subject of subjects) {
-                //Creating a Subject document for all subjects
-                const marksObj = { ...models.Marks };
-                marksObj.Subject = subject._id;
-                marksObj.Student = studentId;
-                if (!await mongo.addDoc("Marks", { ...marksObj }, session)) {
-                    marksAdded = false;
-                    break;
-                }
-            };
-    
-            if (!studentAdded || !classAllocationAdded || !marksAdded) {
-                throw new Error("Transaction rolled back due to failed insert.");
-            }
-          });
-    
-          res.status(200).json("Created new Student");
-        } catch (error) {
-          res.status(400).json(error.message);
-        } finally {
-          session.endSession();
-        }
-      })
 
+        try {
+            await session.withTransaction(async () => {
+                const studentId = (new ObjectId()).toString();
+                //Creating a Student document
+                const studentObj = { ...models.Student }
+                studentObj._id = studentId;
+                studentObj["Student Name"] = req.body.Student["Student Name"];
+                studentObj.USN = req.body.Student.USN;
+                studentObj.Department = req.body.Student.Department;
+                studentObj['Admission Year'] = req.body.Student["Admission Year"];
+                studentObj.Batch = req.body.Student.Batch;
+                const studentAdded = await mongo.addDoc("Student", studentObj, session);
+
+                //Creating a Class Allocation document
+                const classAllocationObj = { ...models["Class Allocation"] };
+                classAllocationObj.Class = req.body.Class._id;
+                classAllocationObj.Student = studentId;
+                const classAllocationAdded = await mongo.addDoc("Class Allocation", classAllocationObj, session);
+
+                let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department }, session);
+
+                let marksAdded = true;
+
+                for (let subject of subjects) {
+                    //Creating a Subject document for all subjects
+                    const marksObj = { ...models.Marks };
+                    marksObj.Subject = subject._id;
+                    marksObj.Student = studentId;
+                    if (!await mongo.addDoc("Marks", { ...marksObj }, session)) {
+                        marksAdded = false;
+                        break;
+                    }
+                };
+
+                if (!studentAdded || !classAllocationAdded || !marksAdded) {
+                    throw new Error("Transaction rolled back due to failed insert.");
+                }
+            });
+
+            res.status(200).json("Created new Student");
+        } catch (error) {
+            res.status(400).json(error.message);
+        } finally {
+            session.endSession();
+        }
+    })
 
     .put(async (req, res) => {
+        try {
+            const studentObj = { ...models.Student };
+            studentObj._id = req.body.Student._id;
+            studentObj.Department = req.body.Student.Department;
+            studentObj['Student Name'] = req.body.Student["Student Name"];
+            studentObj.USN = req.body.Student.USN;
+            studentObj['Admission Year'] = req.body.Student["Admission Year"];
+            studentObj.Batch = req.body.Student.Batch;
 
-        const studentObj = { ...models.Student };
-        studentObj._id = req.body.Student._id;
-        studentObj.Department = req.body.Student.Department;
-        studentObj['Student Name'] = req.body.Student["Student Name"];
-        studentObj.USN = req.body.Student.USN;
-        studentObj['Admission Year'] = req.body.Student["Admission Year"];
-        studentObj.Batch = req.body.Student.Batch;
+            let oldStudent = await mongo.getDoc("Student", { _id: studentObj._id });
 
-        let oldStudent = await mongo.getDoc("Student", { _id: studentObj._id });
+            const isStudentDepartmentChanged = Object.keys(oldStudent).length == 0;
 
-        const isStudentDepartmentChanged = Object.keys(oldStudent).length == 0;
+            if (isStudentDepartmentChanged) {
+                // Adding marks document to subjects in new department
+                let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department });
+                subjects.forEach(async (subject) => {
+                    //Creating a Subject document for all subjects
+                    const marksObj = { ...models.Marks };
+                    marksObj.Subject = subject._id;
+                    marksObj.Student = studentObj._id;
+                    marksAdded = await mongo.addDoc("Marks", { ...marksObj });
+                });
 
-        if (isStudentDepartmentChanged) {
-            // Adding marks document to subjects in new department
-            let subjects = await mongo.getDocs("Subject", { Department: studentObj.Department });
-            subjects.forEach(async (subject) => {
-                //Creating a Subject document for all subjects
-                const marksObj = { ...models.Marks };
-                marksObj.Subject = subject._id;
-                marksObj.Student = studentObj._id;
-                marksAdded = await mongo.addDoc("Marks", { ...marksObj });
-            });
-
-            // Deleting marks documents in old department
-            let oldStudentDepartment = (await mongo.getDoc("Student", { _id: studentObj._id })).Department;
-            let oldDepartmentSubjects = await mongo.getDocs("Subject", { Department: oldStudentDepartment });
-            oldDepartmentSubjects.forEach(async (subject) => {
-                await mongo.deleteDoc("Marks", { Student: studentObj._id, Subject: subject._id })
-            });
+                // Deleting marks documents in old department
+                let oldStudentDepartment = (await mongo.getDoc("Student", { _id: studentObj._id })).Department;
+                let oldDepartmentSubjects = await mongo.getDocs("Subject", { Department: oldStudentDepartment });
+                oldDepartmentSubjects.forEach(async (subject) => {
+                    await mongo.deleteDoc("Marks", { Student: studentObj._id, Subject: subject._id })
+                });
 
 
+            }
+            const studentUpdated = await mongo.updateDoc("Student", { _id: studentObj._id }, studentObj);
+
+            const classAllocationObj = { ...models['Class Allocation'] };
+            delete classAllocationObj._id;
+            classAllocationObj.Class = req.body.Class._id;
+            classAllocationObj.Student = req.body.Student._id;
+            const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { _id: classAllocationObj._id }, classAllocationObj);
+
+            const isSuccess = studentUpdated && classAllocationUpdated;
+
+            res.status(isSuccess ? 200 : 400).json({ message: isSuccess ? "Updated Successfully" : "Update Unsuccessful" });
+        } catch (error) {
+            res.status(400).json(error.message);
         }
-        const studentUpdated = await mongo.updateDoc("Student", { _id: studentObj._id }, studentObj);
-
-        const classAllocationObj = { ...models['Class Allocation'] };
-        delete classAllocationObj._id;
-        classAllocationObj.Class = req.body.Class._id;
-        classAllocationObj.Student = req.body.Student._id;
-        const classAllocationUpdated = await mongo.updateDoc("Class Allocation", { _id: classAllocationObj._id }, classAllocationObj);
-
-        const isSuccess = studentUpdated && classAllocationUpdated;
-
-        res.status(isSuccess ? 200 : 400).json({ message: isSuccess ? "Updated Successfully" : "Update Unsuccessful" });
     })
 
 

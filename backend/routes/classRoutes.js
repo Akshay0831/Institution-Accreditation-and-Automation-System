@@ -12,18 +12,25 @@ router.route("/")
     })
 
     .post(async (req, res) => {
-        const classObj = req.body.Class;
-        const classAdded = await mongo.addDoc("Class", classObj);
+        try {
+            const classObj = req.body.Class;
+            const classAdded = await mongo.addDoc("Class", classObj);
 
-        res.status(classAdded ? 200 : 400).json(classAdded ? "Created new class" : "Couldn't create new class");
+            res.status(classAdded ? 200 : 400).json(classAdded ? "Created new class" : "Couldn't create new class");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .put(async (req, res) => {
+        try {
+            const classObj = req.body.Class;
+            const classUpdated = await mongo.updateDoc("Class", { _id: req.body._id }, classObj);
 
-        const classObj = req.body.Class;
-        const classUpdated = await mongo.updateDoc("Class", { _id: req.body._id }, classObj);
-
-        res.status(classUpdated ? 200 : 400).json(classUpdated ? "Updated class" : "Couldn't update class");
+            res.status(classUpdated ? 200 : 400).json(classUpdated ? "Updated class" : "Couldn't update class");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .delete(async (req, res) => {

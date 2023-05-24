@@ -56,17 +56,13 @@ export default function UpdateClass() {
             }
         };
         if (isUpdate) classData._id = id;
-        serverRequest(`http://localhost:4000/Class`, isUpdate ? "PUT" : "POST", classData, { "Content-type": "application/json; charset=UTF-8" })
-            .then(res => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        {
-                            state: "Class",
-                        });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} Class`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+        serverRequest(`http://localhost:4000/Class`, isUpdate ? "PUT" : "POST", classData, { "Content-Type": "application/json; charset=UTF-8" })
+            .then(async (res) => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "Class", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Class`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     const handleDepartmentChange = (event) => setDepartmentID(event.target.value);

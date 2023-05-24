@@ -58,17 +58,13 @@ export default function UpdateCOPOMap() {
                 "Value": val,
             }
         }
-        serverRequest(`http://localhost:4000/CO PO Map`, isUpdate ? "PUT" : "POST", copoMap, { "Content-type": "application/json; charset=UTF-8" })
-            .then(res => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        {
-                            state: "CO PO Map",
-                        });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} CO PO Map`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+        serverRequest(`http://localhost:4000/CO PO Map`, isUpdate ? "PUT" : "POST", copoMap, { "Content-Type": "application/json; charset=UTF-8" })
+            .then(async (res) => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "CO PO Map", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} CO PO Map`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     const handleSubjectChange = (event) => setSubjectID(event.target.value);

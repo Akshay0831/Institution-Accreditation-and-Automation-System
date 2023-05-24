@@ -13,18 +13,25 @@ router.route("/")
     })
 
     .post(async (req, res) => {
-        const copoMapObj = req.body["CO PO Map"];
-        const copoMapAdded = await mongo.addDoc("CO PO Map", copoMapObj);
+        try {
+            const copoMapObj = req.body["CO PO Map"];
+            const copoMapAdded = await mongo.addDoc("CO PO Map", copoMapObj);
 
-        res.status(copoMapAdded ? 200 : 400).json(copoMapAdded ? "Created new class allocation" : "Couldn't create new class allocation");
+            res.status(copoMapAdded ? 200 : 400).json(copoMapAdded ? "Created new class allocation" : "Couldn't create new class allocation");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .put(async (req, res) => {
+        try {
+            const copoMapObj = req.body["CO PO Map"];
+            const copoMapUpdated = await mongo.updateDoc("CO PO Map", { _id: req.body._id }, copoMapObj);
 
-        const copoMapObj = req.body["CO PO Map"];
-        const copoMapUpdated = await mongo.updateDoc("CO PO Map", { _id: req.body._id }, copoMapObj);
-
-        res.status(copoMapUpdated ? 200 : 400).json(copoMapUpdated ? "Updated CO PO Map" : "Couldn't update CO PO Map");
+            res.status(copoMapUpdated ? 200 : 400).json(copoMapUpdated ? "Updated CO PO Map" : "Couldn't update CO PO Map");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .delete(async (req, res) => {

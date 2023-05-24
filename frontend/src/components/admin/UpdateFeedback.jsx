@@ -141,15 +141,13 @@ export default function UpdateFeedback() {
         }
         if (isUpdate) feedbackDoc._id = id;
 
-        serverRequest(`http://localhost:4000/Feedback`, isUpdate ? "PUT" : "POST", feedbackDoc, { "Content-type": "application/json; charset=UTF-8" })
-            .then(res => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        { state: "Feedback", });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} Feedback`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+        serverRequest(`http://localhost:4000/Feedback`, isUpdate ? "PUT" : "POST", feedbackDoc, { "Content-Type": "application/json; charset=UTF-8" })
+            .then(async (res) => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "Feedback", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Feedback`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     return (

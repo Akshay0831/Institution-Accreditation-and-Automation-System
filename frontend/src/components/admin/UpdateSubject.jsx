@@ -78,16 +78,12 @@ export default function UpdateSubject() {
         subject._id = id;
 
         serverRequest(`http://localhost:4000/Subject`, isUpdate ? "PUT" : "POST", subject)
-            .then(res => {
-                if (res.status == 200) {
-                    navigate("/admin/collectionlist",
-                        {
-                            state: "Subject",
-                        });
-                    toasts(`${(isUpdate ? "Updated" : "Added")} Subject`, toast.success);
-                }
-                console.log(res.status, res.statusText);
-            });
+            .then(async (res) => {
+                if (!res.ok)
+                    throw new Error(await res.json());
+                navigate("/admin/collectionlist", { state: "Subject", });
+                toasts(`${(isUpdate ? "Updated" : "Added")} Subject`, toast.success);
+            }).catch(err => toasts(err.message, toast.error));
     }
 
     const [addModal, setAddModal] = useState(false);
@@ -158,7 +154,7 @@ export default function UpdateSubject() {
                                 <Form.Control type="text" name="subjectName" id="subjectName" value={subjectName} placeholder={"Enter Subject Name"} onChange={(event) => { setSubjectName(event.target.value) }} required />
                             </Form.Group>
                             <Form.Group className="m-0 p-0 border rounded bg-light">
-                                <Form.Label className="p-1"> Max Marks:</Form.Label><br/>
+                                <Form.Label className="p-1"> Max Marks:</Form.Label><br />
                                 {(Object.keys(maxMarks).map(batch =>
                                     <Card key={batch} className="ps-2">{batch}
                                         <Card.Body className="row p-0">

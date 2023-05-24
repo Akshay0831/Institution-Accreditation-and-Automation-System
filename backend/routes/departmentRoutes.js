@@ -17,18 +17,25 @@ router.route("/")
     })
 
     .post(async (req, res) => {
-        const departmentObj = req.body.Department;
-        const departmentAdded = await mongo.addDoc("Department", departmentObj);
+        try {
+            const departmentObj = req.body.Department;
+            const departmentAdded = await mongo.addDoc("Department", departmentObj);
 
-        res.status(departmentAdded ? 200 : 400).json(departmentAdded ? "Created new department" : "Couldn't create new department");
+            res.status(departmentAdded ? 200 : 400).json(departmentAdded ? "Created new department" : "Couldn't create new department");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .put(async (req, res) => {
+        try {
+            const departmentObj = req.body.Department;
+            const departmentUpdated = await mongo.updateDoc("Department", { _id: req.body._id }, departmentObj);
 
-        const departmentObj = req.body.Department;
-        const departmentUpdated = await mongo.updateDoc("Department", { _id: req.body._id }, departmentObj);
-
-        res.status(departmentUpdated ? 200 : 400).json(departmentUpdated ? "Updated department" : "Couldn't update department");
+            res.status(departmentUpdated ? 200 : 400).json(departmentUpdated ? "Updated department" : "Couldn't update department");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .delete(async (req, res) => {

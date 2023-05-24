@@ -60,10 +60,10 @@ router.route("/")
     })
 
     .put(async (req, res) => {
-        const teacherObj = req.body.Teacher;
-        const teacherId = req.body._id;
-
         try {
+            const teacherObj = req.body.Teacher;
+            const teacherId = req.body._id;
+
             // Retrieve the existing email of the teacher from the MongoDB document
             const existingTeacher = await mongo.getDoc("Teacher", { _id: teacherId });
 
@@ -86,8 +86,8 @@ router.route("/")
     })
 
     .delete(async (req, res) => {
-        const teacherId = req.body._id;
         try {
+            const teacherId = req.body._id;
             // Delete the Firebase user associated with the teacher
             await admin.auth().deleteUser(teacherId);
 

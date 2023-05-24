@@ -35,18 +35,25 @@ router.route("/")
     })
 
     .post(async (req, res) => {
-        const feedbackObj = req.body.Feedback;
-        const feedbackAdded = await mongo.addDoc("Feedback", feedbackObj);
+        try {
+            const feedbackObj = req.body.Feedback;
+            const feedbackAdded = await mongo.addDoc("Feedback", feedbackObj);
 
-        res.status(feedbackAdded ? 200 : 400).json(feedbackAdded ? "Created new Feedback" : "Couldn't create new Feedback");
+            res.status(feedbackAdded ? 200 : 400).json(feedbackAdded ? "Created new Feedback" : "Couldn't create new Feedback");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .put(async (req, res) => {
+        try {
+            const feedbackObj = req.body.Feedback;
+            const feedbackUpdated = await mongo.updateDoc("Feedback", { _id: req.body._id }, feedbackObj);
 
-        const feedbackObj = req.body.Feedback;
-        const feedbackUpdated = await mongo.updateDoc("Feedback", { _id: req.body._id }, feedbackObj);
-
-        res.status(feedbackUpdated ? 200 : 400).json(feedbackUpdated ? "Updated Feedback" : "Couldn't update Feedback");
+            res.status(feedbackUpdated ? 200 : 400).json(feedbackUpdated ? "Updated Feedback" : "Couldn't update Feedback");
+        } catch (error) {
+            res.status(400).json(error.message);
+        }
     })
 
     .delete(async (req, res) => {
