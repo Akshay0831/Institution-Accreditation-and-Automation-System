@@ -42,9 +42,9 @@ router.route("/")
                     emailVerified: true,
                     password: generateTemporaryPassword()
                 });
-
-                // Send a password reset email to the user
-                await admin.auth().generatePasswordResetLink(teacherObj.Mail);
+                await admin.auth().setCustomUserClaims(userId, { userType: "Teacher" });
+                // // Send a password reset email to the user
+                // await admin.auth().generatePasswordResetLink(teacherObj.Mail);
 
                 res.status(200).json("Created new teacher");
             } catch (error) {
@@ -61,23 +61,49 @@ router.route("/")
     })
 
     .put(async (req, res) => {
-
         const teacherObj = req.body.Teacher;
-        const teacherUpdated = await mongo.updateDoc("Teacher", { _id: req.body._id }, teacherObj);
+        const teacherId = req.body._id;
 
-        res.status(teacherUpdated ? 200 : 400).json(teacherUpdated ? "Updated teacher" : "Couldn't update teacher");
+        try {
+            // Retrieve the existing email of the teacher from the MongoDB document
+            const existingTeacher = await mongo.getDoc("Teacher", { _id: teacherId });
+
+            // Compare the existing email with the new email
+            if (existingTeacher.Mail !== teacherObj.Mail) {
+                // Update the email for the corresponding Firebase user
+                await admin.auth().updateUser(teacherId, {
+                    email: teacherObj.Mail
+                });
+            }
+
+            // Update the email in the MongoDB document
+            const teacherUpdated = await mongo.updateDoc("Teacher", { _id: teacherId }, teacherObj);
+
+            res.status(teacherUpdated ? 200 : 400).json(teacherUpdated ? "Updated teacher" : "Couldn't update teacher");
+        } catch (error) {
+            console.error('Error updating teacher:', error);
+            res.status(500).json("Error updating teacher");
+        }
     })
 
     .delete(async (req, res) => {
+        const teacherId = req.body._id;
+        try {
+            // Delete the Firebase user associated with the teacher
+            await admin.auth().deleteUser(teacherId);
 
-        const isTeacherDeleted = await mongo.deleteDoc("Teacher", { _id: req.body._id });
-        const isAllocationDeleted = await mongo.deleteDoc("Teacher Allocation", { Teacher: req.body._id });
-        const isDepartmentUpdated = await mongo.updateDoc("Department", { HoD: req.body._id }, { HoD: "" });
+            // Delete the teacher document from the MongoDB collection
+            const isTeacherDeleted = await mongo.deleteDoc("Teacher", { _id: teacherId });
+            const isAllocationDeleted = await mongo.deleteDoc("Teacher Allocation", { Teacher: teacherId });
+            const isDepartmentUpdated = await mongo.updateDoc("Department", { HoD: teacherId }, { HoD: "" });
 
-        const isDeleteSuccess = isAllocationDeleted && isTeacherDeleted && isDepartmentUpdated;
+            const isDeleteSuccess = isAllocationDeleted && isTeacherDeleted && isDepartmentUpdated;
 
-        res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
-
+            res.status(isDeleteSuccess ? 200 : 400).json({ message: isDeleteSuccess ? "Deleted Successfully" : "Delete Unsuccessful" });
+        } catch (error) {
+            console.error('Error deleting teacher login:', error);
+            res.status(500).json("Error deleting teacher login");
+        }
     });
 
 module.exports = router;

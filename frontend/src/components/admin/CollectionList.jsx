@@ -1,9 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { Link, useLocation } from "react-router-dom";
 import serverRequest from "../../helper/serverRequest";
 import { InfinitySpin } from 'react-loader-spinner'
 import { Button, ButtonGroup, Card, Col, Modal, Row, Table, Tab, Tabs } from 'react-bootstrap';
 import { DatatableWrapper, Filter, Pagination, PaginationOptions, TableBody, TableHeader } from 'react-bs-datatable';
+
+const toasts = (message, type) => {
+    type(message, {
+        position: "top-center",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+    });
+}
 
 const MetaData = {
     "CO PO Map": {
@@ -216,10 +230,12 @@ export default function CollectionList() {
         serverRequest(serverURL + collectionSelected, "DELETE", { _id: id })
             .then((res) => {
                 console.log("Called API: Delete " + id);
-                if (res.status == 200)
+                if (res.status == 200) {
+                    toasts(`Deleted Teacher`, toast.success);
                     setDocuments(documents.filter((doc) => doc._id !== id));
+                }
             })
-            .catch((err) => console.error(err));
+            .catch((err) => toasts("Error:" + err.message, toast.error));
     }
 
     const handleDeleteModalClose = () => setDeleteRow("");
