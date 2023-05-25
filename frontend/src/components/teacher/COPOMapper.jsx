@@ -24,7 +24,7 @@ export default function COPOMapper() {
     document.title = "CO PO Mapper";
 
     const [batch, setBatch] = useState(2018);
-    const [batches, setBatches] = useState([])
+    const [batches, setBatches] = useState([]);
     const [subjectSelected, setSubjectSelected] = useState("");
     const [subjects, setSubjects] = useState([]);
     const [COPOCollection, setCOPOCollection] = useState([]);

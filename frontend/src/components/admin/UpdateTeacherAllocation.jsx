@@ -82,7 +82,7 @@ export default function UpdateTeacherAllocation() {
                                 <Form.Label>Class: </Form.Label>
                                 <Form.Select name="class" value={classID} onChange={(event) => setClassID(event.target.value)} required>
                                     <option value="">Select Class</option>
-                                    {classes.map((classObj) => {
+                                    {classes && classes.map((classObj) => {
                                         return <option key={classObj._id} value={classObj._id}>{`${classObj["Semester"]}${classObj["Section"]} (${classObj["Department"]["Department Name"]})`}</option>
                                     })}
                                 </Form.Select>
