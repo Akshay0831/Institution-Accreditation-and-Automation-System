@@ -9,6 +9,42 @@ router.route("/update")
         res.status(gotMarks ? 200 : 400).json(gotMarks ? marks : "Couldn't fetch marks");
     })
 
+router.route("/table")
+    .get(async (req, res) => {
+        try {
+            const { teacherMail, subjectID } = req.query;
+            let teacherDoc = (await mongo.getDoc("Teacher", { Mail: teacherMail }));
+            let teacherAllocData = await mongo.getDocs("Teacher Allocation", { Teacher: teacherDoc._id, Subject: subjectID });
+
+            for (let ta of teacherAllocData) {
+              ta.Class = await mongo.getDoc("Class", { _id: ta.Class });
+        
+              const classAllocations = await mongo.getDocs("Class Allocation", {
+                Class: ta.Class._id,
+              });
+        
+              ta.Class.Students = (await Promise.all(
+                classAllocations.map(async (ca) => {
+                  const student = await mongo.getDoc("Student", { _id: ca.Student });
+                  const studentMarks = await mongo.getDoc("Marks", {
+                    Student: student._id,
+                    Subject: subjectID,
+                  });
+        
+                  if (studentMarks && studentMarks["Marks Gained"]) {
+                    student.Marks = studentMarks;
+                  }
+        
+                  return student;
+                })
+              )).sort((a, b)=> a.USN.localeCompare(b.USN));
+            }        
+            res.status(200).json(teacherAllocData);
+        } catch (error) {
+            res.status(500).json(error.message);
+        }
+    })
+
 router.route("/")
     .get(async (req, res) => {
         let marks = await mongo.getDocs("Marks");

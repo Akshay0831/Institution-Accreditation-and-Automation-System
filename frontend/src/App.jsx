@@ -4,7 +4,8 @@ const Admin = lazy(() => import("./components/admin/AdminBase"));
 const Home = lazy(() => import("./components/teacher/TeacherBase"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 import DocumentsAccess from "./components/teacher/DocumentsAccess"
-import UpdateMarks from "./components/UpdateMarks";
+import AdminUpdateMarksTable from "./components/admin/AdminUpdateMarksTable";
+import TeacherUpdateMarksTable from "./components/teacher/TeacherUpdateMarksTable";
 import Analytics from "./components/Analytics";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
@@ -35,14 +36,14 @@ function App() {
                     <Route exact path="/" element={<ProtectedRoute />}>
                         <Route exact path="home">
                             <Route index element={<><Home /><Dashboard type="home" /></>} />
-                            <Route exact path="updatemarks" element={<><Home /><UpdateMarks /></>} />
+                            <Route exact path="updatemarks" element={<><Home /><TeacherUpdateMarksTable /></>} />
                             <Route exact path="documents" element={<><Home /><DocumentsAccess /></>} />
                             <Route exact path="analytics" element={<><Home /><Analytics /></>} />
                             <Route exact path="mapping" element={<><Home /><COPOMapper /></>} />
                         </Route>
                         <Route exact path="admin" >
                             <Route index element={<><Admin /><Dashboard type="admin" /></>} />
-                            <Route exact path="updatemarks" element={<><Admin /><UpdateMarks /></>} />
+                            <Route exact path="updatemarks" element={<><Admin /><AdminUpdateMarksTable /></>} />
                             <Route exact path="documents" element={<><Admin /><DocumentsAccess /></>} />
                             <Route exact path="analytics" element={<><Admin /><Analytics /></>} />
                             <Route exact path="mapping" element={<><Admin /><COPOMapper /></>} />

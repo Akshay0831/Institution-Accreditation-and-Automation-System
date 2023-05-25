@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { Accordion, Button, Card, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner';
-import BatchInput from "./teacher/BatchInput";
-import serverRequest from "../helper/serverRequest";
+import BatchInput from "../teacher/BatchInput";
+import serverRequest from "../../helper/serverRequest";
 
-export default class UpdateMarks extends Component {
+export default class AdminUpdateMarksTable extends Component {
 
     constructor(props) {
         super(props);

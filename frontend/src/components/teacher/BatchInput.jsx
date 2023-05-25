@@ -47,20 +47,23 @@ export default class BatchInput extends Component {
             let student = await (await serverRequest(this.serverURL + "/documents/Student", "POST", { searchObj: { USN: entry["USN"] } })).json();
 
             if (!student.length) {
-                let studentRes = await serverRequest(this.serverURL + "/documents/Student/add", "POST", {
-                    "Student Name": entry["Student Name"],
-                    USN: entry["USN"],
-                    "Admission Year": this.batch,
-                    Batch: this.batch,
-                    Department: this.deptId
-                });
+                if (sessionStorage.getItem("userType") == "Admin") {
+                    let studentRes = await serverRequest(this.serverURL + "/documents/Student/add", "POST", {
+                        "Student Name": entry["Student Name"],
+                        USN: entry["USN"],
+                        "Admission Year": this.batch,
+                        Batch: this.batch,
+                        Department: this.deptId
+                    });
 
-                if (studentRes.status == 200) {
-                    studentId = await studentRes.text();
-                    console.log("Inserted ", studentId);
+                    if (studentRes.status == 200) {
+                        studentId = await studentRes.text();
+                        console.log("Inserted ", studentId);
+                    }
+
+                    await serverRequest(this.serverURL + "/documents/Class Allocation/add", "POST", { Class: this.classId, Student: studentId });
                 }
-
-                let classAllocRes = await serverRequest(this.serverURL + "/documents/Class Allocation/add", "POST", { Class: this.classId, Student: studentId });
+                else return;
             }
             else
                 studentId = student[0]._id;
