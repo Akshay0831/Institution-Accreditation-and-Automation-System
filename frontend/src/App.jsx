@@ -25,6 +25,7 @@ import UpdateTeacher from "./components/admin/UpdateTeacher";
 import UpdateTeacherAllocation from "./components/admin/UpdateTeacherAllocation";
 import UpdateStudentMarks from "./components/admin/UpdateStudentMarks";
 import StudentList from "./components/admin/StudentList";
+import AccreditationReportGeneration from "./components/AccreditationReportGeneration";
 
 function App() {
     return (
@@ -45,6 +46,7 @@ function App() {
                             <Route index element={<><Admin /><Dashboard type="admin" /></>} />
                             <Route exact path="updatemarks" element={<><Admin /><AdminUpdateMarksTable /></>} />
                             <Route exact path="documents" element={<><Admin /><DocumentsAccess /></>} />
+                            <Route exact path="accreditationreports" element={<><Admin /><AccreditationReportGeneration /></>} />
                             <Route exact path="analytics" element={<><Admin /><Analytics /></>} />
                             <Route exact path="mapping" element={<><Admin /><COPOMapper /></>} />
                             <Route exact path="collectionlist" element={<><Admin /><CollectionList /></>} />

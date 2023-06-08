@@ -30,11 +30,13 @@ router.route("/:Subject")
         let marks = await mongo.getDocs("Marks", searchQuery);
         marks = marks.filter(marks => marks.Subject === req.params.Subject)
 
+        let subject = await mongo.getDoc("Subject", { _id: req.params.Subject });
+        subject["Max Marks"] = subject["Max Marks"][options.batch];
         marks = await Promise.all(marks.map(async m => {
             m.Student = await mongo.getDoc("Student", { _id: m.Student });
             if (m.Student != null) {
                 m.Student = { ...m.Student, Department: await mongo.getDoc("Department", { _id: m.Student.Department }) }
-                m.Subject = await mongo.getDoc("Subject", { _id: m.Subject });
+                m.Subject = subject;
                 return m;
             }
         }));

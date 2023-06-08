@@ -30,13 +30,25 @@ export default function Dashboard(props) {
                             </div>
                         </div>
                     }
+                    {props.type == "admin" &&
+                        <div className="col-12 col-sm-6">
+                            <div className="card" >
+                                <div className="card-body">
+                                    <h5 className="card-title">Report Generation</h5>
+                                    <h6 className="card-subtitle mb-2 text-muted">NBA Accreditation SAR Reports</h6>
+                                    <p className="card-text">Generate NBA Self Assessment Report for Criterion.</p>
+                                    <Link to="/admin/accreditationreports"><div className="card-link">Link to Generate Reports</div></Link>
+                                </div>
+                            </div>
+                        </div>
+                    }
                     <div className="col-12 col-sm-6">
                         <div className="card" >
                             <div className="card-body">
-                                <h5 className="card-title">NBA Documents</h5>
+                                <h5 className="card-title">Documents</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Document Files Viewer</h6>
-                                <p className="card-text">Access all the stored and generated documents needed for NBA.</p>
-                                <Link to={"/" + props.type + "/documents"}><div className="card-link">Link to get documents</div></Link>
+                                <p className="card-text">Access all the stored and generated documents.</p>
+                                <Link to={"/" + props.type + "/documents"}><div className="card-link">Link to get Documents</div></Link>
                             </div>
                         </div>
                     </div>
@@ -46,7 +58,7 @@ export default function Dashboard(props) {
                                 <h5 className="card-title">Analytics</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Data Analysis Tools</h6>
                                 <p className="card-text">Graphical representation of student data for ease of understanding.</p>
-                                <Link to={"/" + props.type + "/analytics"}><div className="card-link">Link to view</div></Link>
+                                <Link to={"/" + props.type + "/analytics"}><div className="card-link">Link to View Analytics</div></Link>
                             </div>
                         </div>
                     </div>
@@ -55,8 +67,8 @@ export default function Dashboard(props) {
                             <div className="card-body">
                                 <h5 className="card-title">CO PO Mapping</h5>
                                 <h6 className="card-subtitle mb-2 text-muted">Mapping Table</h6>
-                                <p className="card-text">Editable Table to map Course outcomes to Programme outcomes.</p>
-                                <Link to={"/" + props.type + "/mapping"}><div className="card-link">Link to map</div></Link>
+                                <p className="card-text">Editable Table to map Course outcomes to Program Outcomes.</p>
+                                <Link to={"/" + props.type + "/mapping"}><div className="card-link">Link to Mapping Table</div></Link>
                             </div>
                         </div>
                     </div>
@@ -67,7 +79,7 @@ export default function Dashboard(props) {
                                     <h5 className="card-title">Collection CRUD</h5>
                                     <h6 className="card-subtitle mb-2 text-muted">Create, Read, Update and Delete</h6>
                                     <p className="card-text">View and Edit all the data in the database.</p>
-                                    <Link to="/admin/collectionlist"><div className="card-link">Link to CRUD</div></Link>
+                                    <Link to="/admin/collectionlist"><div className="card-link">Link to CRUD App</div></Link>
                                 </div>
                             </div>
                         </div>

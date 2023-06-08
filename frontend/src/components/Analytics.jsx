@@ -143,9 +143,6 @@ export default function Analytics() {
                                         </Col>
                                     </Row>
                                 </Form>
-                                <div className='ms-2'>
-                                    <GenerateReportForm departmentId={department} subjectId={subject} />
-                                </div>
                                 {/* Analytics from here */}
                                 {submitClicked ? <>
                                     <div className='m-3'>

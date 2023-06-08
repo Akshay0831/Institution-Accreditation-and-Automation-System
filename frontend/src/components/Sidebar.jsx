@@ -16,18 +16,16 @@ const Sidebar = props => {
                                 <i className="fas fa-tachometer-alt fa-fw me-3" />Main dashboard
                             </span>
                         </Link>
+                        <Link to={"/" + props.type + "/mapping"} style={{ textDecoration: 'none' }}>
+                            <span className="list-group-item list-group-item-action ripple">
+                                <i className="fa-solid fa-arrow-down-up-across-line fa-fw me-3" />CO PO Mapping
+                            </span>
+                        </Link>
                         <Link to={"/" + props.type + "/updatemarks"} style={{ textDecoration: 'none' }}>
                             <span className="list-group-item list-group-item-action ripple">
                                 <i className="fa-solid fa-square-pen fa-fw me-3" />Update Marks
                             </span>
                         </Link>
-                        {props.type == "admin" &&
-                            <Link to={"/" + props.type + "/studentlist"} style={{ textDecoration: 'none' }}>
-                                <span className="list-group-item list-group-item-action ripple">
-                                    <i className="fas fa-solid fa-graduation-cap fa-fw me-3" />Student List
-                                </span>
-                            </Link>
-                        }
                         <Link to={"/" + props.type + "/documents"} style={{ textDecoration: 'none' }}>
                             <span className="list-group-item list-group-item-action ripple">
                                 <i className="fa-regular fa-folder-open fa-fw me-3" />Documents
@@ -38,11 +36,20 @@ const Sidebar = props => {
                                 <i className="fas fa-chart-line fa-fw me-3" />Analytics
                             </span>
                         </Link>
-                        <Link to={"/" + props.type + "/mapping"} style={{ textDecoration: 'none' }}>
-                            <span className="list-group-item list-group-item-action ripple">
-                                <i className="fa-solid fa-arrow-down-up-across-line fa-fw me-3" />CO PO Mapping
-                            </span>
-                        </Link>
+                        {props.type == "admin" &&
+                            <Link to={"/" + props.type + "/accreditationreports"} style={{ textDecoration: 'none' }}>
+                                <span className="list-group-item list-group-item-action ripple">
+                                    <i className="fas fa-solid fa-file-import fa-fw me-3" />Generate Reports
+                                </span>
+                            </Link>
+                        }
+                        {props.type == "admin" &&
+                            <Link to={"/" + props.type + "/studentlist"} style={{ textDecoration: 'none' }}>
+                                <span className="list-group-item list-group-item-action ripple">
+                                    <i className="fas fa-solid fa-graduation-cap fa-fw me-3" />Student List
+                                </span>
+                            </Link>
+                        }
                         {props.type == "admin" &&
                             <Link to="/admin/collectionlist" style={{ textDecoration: 'none' }}>
                                 <span className="list-group-item list-group-item-action ripple">
