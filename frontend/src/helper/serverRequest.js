@@ -1,7 +1,14 @@
 import { auth } from "../firebase-config";
 
 const serverRequest = async (url, method, body, options) => {
-    const token = await auth?.currentUser?.getIdToken() || sessionStorage.getItem("token");
+    await new Promise((resolve) => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            unsubscribe(); // Unsubscribe to prevent multiple calls
+            resolve(user); // Resolve the promise if the user is signed in
+        });
+    });
+
+    const token = await auth?.currentUser?.getIdToken();
 
     if (method && !["GET", "POST", "PUT", "DELETE"].includes(method.toUpperCase())) {
         return Promise.resolve("Invalid request");
