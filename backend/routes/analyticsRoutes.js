@@ -41,7 +41,7 @@ router.get('/predict/:Subject/:Student', async (req, res) => {
     const model = await tf.loadLayersModel('file://./model_js/model.json');
 
     let Marks = (await mongo.getDoc("Marks", { Student: req.params.Student, Subject: req.params.Subject }))["Marks Gained"];
-    let maxMarks = (await mongo.getDoc("Subject", { _id: req.params.Subject }))["Max Marks"];
+    let maxMarks = (await mongo.getDoc("Subject", { _id: req.params.Subject }))[req.query.batch]["Max Marks"];
     // Prediction Inputs Internal Marks, Assignment Marks and CIE Percentages
     let internals = [];
     let assignments = [];

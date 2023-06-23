@@ -14,7 +14,7 @@ export default function GenerateReportForm(props) {
     const [generatingReport, setGeneratingReport] = useState(false);
     const [numbers, setNumbers] = useState(defaultTargetValues);
     const [subjectCode, setSubjectCode] = useState("");
-    const [batch, setBatch] = useState(18);
+    const [batch, setBatch] = useState(2018);
 
     function toasts(message, type) {
         type(message, {
@@ -69,20 +69,21 @@ export default function GenerateReportForm(props) {
             targetValues: numbers.length ? numbers : defaultTargetValues,
             marksThreshold: marksThreshold ? parseInt(marksThreshold) : defaultMarksThreshold,
         };
-        console.log(options);
+        // console.log(options);
         try {
             let response = await serverRequest("http://localhost:4000/reportGeneration/gapAnalysis", "POST", options);
-            // const blob = await response.blob();
-            // const url = window.URL.createObjectURL(new Blob([blob]));
-            // const link = document.createElement('a');
-            // link.href = url;
-            // link.setAttribute('download', subject["Subject Code"] + ".xlsx");
-            // document.body.appendChild(link);
-            // link.click();
+            // console.log(response);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', departmentId + ".xlsx");
+            document.body.appendChild(link);
+            link.click();
             console.log(response);
             toasts("Generated Report", toast.success)
         }
-        catch(err){
+        catch (err) {
             console.log(err);
             toasts(err.message, toast.error);
         }
@@ -101,7 +102,7 @@ export default function GenerateReportForm(props) {
                     : <Form onSubmit={onGenerateReportClicked}>
                         <Form.Group>
                             <Form.Label>Batch:</Form.Label>
-                            <Form.Control type="number" min={1} max={99} placeholder="Enter batch" onChange={(e) => setBatch(e.target.value)} value={batch} />
+                            <Form.Control type="number" placeholder="Enter batch" onChange={(e) => setBatch(e.target.value)} value={batch} />
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Marks Threshold (Optional):</Form.Label>

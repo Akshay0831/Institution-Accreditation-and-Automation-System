@@ -1,6 +1,6 @@
 const ExcelJS = require('exceljs');
 
-function addBorders (startRow, endRow, startCol, endCol, sheet) {
+function addBorders(startRow, endRow, startCol, endCol, sheet) {
     const border = {
         top: { style: 'medium' },
         bottom: { style: 'medium' },
@@ -16,7 +16,49 @@ function addBorders (startRow, endRow, startCol, endCol, sheet) {
     }
 }
 
-function generateGapAnalysisReport (data) {
+async function generateGapAnalysisReport(data1) {
+    let data = [
+        {
+            "Subject Name": "Unix Programming",
+            "Subject Code": "18CS56",
+            "PO Averages": {
+                "PO1": 3,
+                "PO2": 1.6,
+                "PO3": 1.6,
+                "PO4": null,
+                "PO5": 2,
+                "PO6": null,
+                "PO7": null,
+                "PO8": null,
+                "PO9": 2,
+                "PO10": null,
+                "PO11": null,
+                "PO12": null,
+                "PSO1": 2,
+                "PSO2": 2
+            }
+        }, {
+            "Subject Name": "DSA",
+            "Subject Code": "18CS32",
+            "PO Averages": {
+                "PO1": 2,
+                "PO2": 1.6,
+                "PO3": 1.6,
+                "PO4": 1,
+                "PO5": null,
+                "PO6": null,
+                "PO7": null,
+                "PO8": null,
+                "PO9": 2,
+                "PO10": null,
+                "PO11": null,
+                "PO12": null,
+                "PSO1": 2,
+                "PSO2": 2
+            }
+        }
+    ]
+
     let A = 27
     let G = 14
     const workbook = new ExcelJS.Workbook();
@@ -26,9 +68,9 @@ function generateGapAnalysisReport (data) {
     columnB.width = 40;
     const columnC = sheet.getColumn('C');
     columnC.width = 12;
-    
-    let poCount = {'PO1' : 0, 'PO2' : 0, 'PO3' : 0, 'PO4' : 0, 'PO5' : 0, 'PO6' : 0, 'PO7' : 0, 'PO8' : 0, 'PO9' : 0, 'PO10' : 0, 'PO11' : 0, 'PO12' : 0, 'PSO1' : 0, 'PSO2' : 0}
-    let poSum = {'PO1' : 0, 'PO2' : 0, 'PO3' : 0, 'PO4' : 0, 'PO5' : 0, 'PO6' : 0, 'PO7' : 0, 'PO8' : 0, 'PO9' : 0, 'PO10' : 0, 'PO11' : 0, 'PO12' : 0, 'PSO1' : 0, 'PSO2' : 0}
+
+    let poCount = { 'PO1': 0, 'PO2': 0, 'PO3': 0, 'PO4': 0, 'PO5': 0, 'PO6': 0, 'PO7': 0, 'PO8': 0, 'PO9': 0, 'PO10': 0, 'PO11': 0, 'PO12': 0, 'PSO1': 0, 'PSO2': 0 }
+    let poSum = { 'PO1': 0, 'PO2': 0, 'PO3': 0, 'PO4': 0, 'PO5': 0, 'PO6': 0, 'PO7': 0, 'PO8': 0, 'PO9': 0, 'PO10': 0, 'PO11': 0, 'PO12': 0, 'PSO1': 0, 'PSO2': 0 }
     sheet.addRow(['Sl No.', 'Subject Name', 'Subject Code', 'PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2']);
 
     let i = 1;
@@ -37,7 +79,7 @@ function generateGapAnalysisReport (data) {
         row.push(subject['Subject Name']);
         row.push(subject['Subject Code']);
         for (const po in subject['PO Averages']) {
-            if(subject['PO Averages'][po] != null){
+            if (subject['PO Averages'][po] != null) {
                 row.push(subject['PO Averages'][po]);
                 poCount[po] += 1;
                 poSum[po] += subject['PO Averages'][po];
@@ -63,21 +105,21 @@ function generateGapAnalysisReport (data) {
 
     console.log(sumRow)
     let poGaps = {}
-    for (let entry in poSum){
-        if(poSum[entry] < A){
-            poGaps[entry] =  ((27-poSum[entry])/(27))*100;
+    for (let entry in poSum) {
+        if (poSum[entry] < A) {
+            poGaps[entry] = ((27 - poSum[entry]) / (27)) * 100;
         }
-        else{
+        else {
             poGaps[entry] = ''
         }
     };
 
     let poGaps1 = {}
-    for (let entry in poCount){
-        if(poCount[entry] < G){
+    for (let entry in poCount) {
+        if (poCount[entry] < G) {
             poGaps1[entry] = G - poCount[entry];
         }
-        else{
+        else {
             poGaps1[entry] = ''
         }
     };
@@ -101,56 +143,58 @@ function generateGapAnalysisReport (data) {
                 };
         });
     });
-    addBorders(1, i+4, 1, 17, sheet);
-    workbook.xlsx.writeFile('data1.xlsx').then(() => {
-        console.log('Excel file created successfully');
-    }).catch((error) => {
-        console.log('Error creating Excel file:', error);
-    });
+    addBorders(1, i + 4, 1, 17, sheet);
+    let output = await workbook.xlsx.writeBuffer();
+    // return await workbook.xlsx.writeBuffer();
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(output);
+        }, 1000)
+    })
 }
 
-let data = [
-    {
-    "Subject Name":"Unix Programming",
-    "Subject Code":"18CS56",
-    "PO Averages":{
-        "PO1":3,
-        "PO2":1.6,
-        "PO3":1.6,
-        "PO4":null,
-        "PO5":2,
-        "PO6":null,
-        "PO7":null,
-        "PO8":null,
-        "PO9":2,
-        "PO10":null,
-        "PO11":null,
-        "PO12":null,
-        "PSO1":2,
-        "PSO2":2
-    }
-}, {
-    "Subject Name":"DSA",
-    "Subject Code":"18CS32",
-    "PO Averages":{
-        "PO1":2,
-        "PO2":1.6,
-        "PO3":1.6,
-        "PO4":1,
-        "PO5":null,
-        "PO6":null,
-        "PO7":null,
-        "PO8":null,
-        "PO9":2,
-        "PO10":null,
-        "PO11":null,
-        "PO12":null,
-        "PSO1":2,
-        "PSO2":2
-    }
-}
-]
+// let data = [
+//     {
+//         "Subject Name": "Unix Programming",
+//         "Subject Code": "18CS56",
+//         "PO Averages": {
+//             "PO1": 3,
+//             "PO2": 1.6,
+//             "PO3": 1.6,
+//             "PO4": null,
+//             "PO5": 2,
+//             "PO6": null,
+//             "PO7": null,
+//             "PO8": null,
+//             "PO9": 2,
+//             "PO10": null,
+//             "PO11": null,
+//             "PO12": null,
+//             "PSO1": 2,
+//             "PSO2": 2
+//         }
+//     }, {
+//         "Subject Name": "DSA",
+//         "Subject Code": "18CS32",
+//         "PO Averages": {
+//             "PO1": 2,
+//             "PO2": 1.6,
+//             "PO3": 1.6,
+//             "PO4": 1,
+//             "PO5": null,
+//             "PO6": null,
+//             "PO7": null,
+//             "PO8": null,
+//             "PO9": 2,
+//             "PO10": null,
+//             "PO11": null,
+//             "PO12": null,
+//             "PSO1": 2,
+//             "PSO2": 2
+//         }
+//     }
+// ]
 
-generateGapAnalysisReport(data);
+// generateGapAnalysisReport(data);
 
-// module.exports = generateGapAnalysisReport;
+module.exports = generateGapAnalysisReport;

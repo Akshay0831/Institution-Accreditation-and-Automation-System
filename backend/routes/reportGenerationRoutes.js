@@ -2,6 +2,7 @@ const express = require('express');
 const mongo = require("../db/mongodb");
 const router = express.Router();
 const coCalculation = require("../coCalculation");
+const gapAnalysis = require("../gapAnalysis");
 const fs = require("fs")
 const contentDisposition = require("content-disposition");
 
@@ -10,11 +11,52 @@ router.route('/gapAnalysis')
         try {
             const deptId = req.body.department;
             const batch = req.body.batch.toString();
-            let subjects = await mongo.getDocs("Subject", { "Scheme Code": batch, Department: deptId });
-            console.log(subjects);
-            let gapAnalysisResults;
-            // gapAnalysisResults = GapAnalysis(subjects);
-            res.status(200).json(gapAnalysisResults);
+            let subjects = await mongo.getDocs("Subject", { ["Max Marks." + batch]: { $exists: true }, "Department": deptId });
+            // console.log(subjects);
+            let coCalculationOutputs = [];
+
+            subjects.forEach(async subject => {
+                let marks = await mongo.getDocs("Marks", { "Subject": subject._id });
+
+                marks = await Promise.all(marks.map(async m => {
+                    m.Student = await mongo.getDoc("Student", { _id: m.Student });
+                    if (m.Student != null) {
+                        m.Student = { ...m.Student, Department: await mongo.getDoc("Department", { _id: m.Student.Department }) }
+                        m.Subject = await mongo.getDoc("Subject", { _id: m.Subject });
+                        return m;
+                    }
+                }));
+
+                let COs = ['CO1', 'CO2', 'CO3', 'CO4', 'CO5'];
+                let POs = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PO9', 'PO10', 'PO11', 'PO12', 'PSO1', 'PSO2'];
+                let coPoMappings = await mongo.getDocs("CO PO Map", { "Subject": subject._id });
+                let formatedCOPOMappings = {};
+                POs.forEach(po => {
+                    formatedCOPOMappings[po] = {}
+                    COs.forEach(co => {
+                        let value = coPoMappings.filter(copo => copo.PO === po && copo.CO == co)[0]?.Value
+                        formatedCOPOMappings[po][co] = Number(value != null ? value : 0);
+                    });
+                });
+
+                let gotMarks = marks.length > 0 && Object.keys(formatedCOPOMappings).length > 0;
+
+                if (gotMarks) {
+                    let output = await coCalculation({
+                        ...{
+                            Marks: marks,
+                            IndirectAttainmentValues: await mongo.getDoc("Feedback", { "Subject": subject._id }),
+                            COPOMappings: formatedCOPOMappings,
+                            generateReport: false,
+                        }, ...req.body
+                    });
+                    coCalculationOutputs.push({ ...output });
+                }
+            });
+
+            gapAnalysisResults = await gapAnalysis(coCalculationOutputs);
+            console.log(gapAnalysisResults);
+            res.status(200).send(gapAnalysisResults);
         } catch (err) {
             console.log(err);
             res.status(500).json({ message: 'Internal Server Error' });
@@ -59,8 +101,8 @@ router.route("/:Subject")
                 ...{
                     Marks: marks,
                     IndirectAttainmentValues: await mongo.getDoc("Feedback", searchQuery),
-                    COPOMappings: formatedCOPOMappings, 
-                    generateReport: true
+                    COPOMappings: formatedCOPOMappings,
+                    generateReport: true,
                 }, ...options
             });
             res.send(excelFileBuffer);

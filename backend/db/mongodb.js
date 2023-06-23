@@ -1,7 +1,8 @@
 const { MongoClient, ObjectId } = require("mongodb");
 class MongoDB {
     constructor(database) {
-        this.uri = "mongodb+srv://prajwalkulkarni01:zHLNFYN-KvmJ75W@prodject.lgxin4n.mongodb.net/?retryWrites=true&w=majority";
+        this.uri = "mongodb://127.0.0.1:27017";
+        // this.uri = "mongodb+srv://prajwalkulkarni01:zHLNFYN-KvmJ75W@prodject.lgxin4n.mongodb.net/?retryWrites=true&w=majority";
         this.client = new MongoClient(this.uri, {
             useUnifiedTopology: true,
             useNewUrlParser: true,

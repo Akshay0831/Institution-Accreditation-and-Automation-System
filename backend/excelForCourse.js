@@ -1,4 +1,4 @@
-function addRowsWithSpace (rowsToBeAdded, startRow1, worksheet) {
+function addRowsWithSpace(rowsToBeAdded, startRow1, worksheet) {
     let numRowsToAdd1 = rowsToBeAdded.length;
     let numRowsToAdd2 = 5;
     let startRow2 = startRow1 + numRowsToAdd1 + 3;
@@ -6,12 +6,12 @@ function addRowsWithSpace (rowsToBeAdded, startRow1, worksheet) {
     worksheet.spliceRows(startRow2, numRowsToAdd2);
 }
 
-function mergeMaado (startCol, endCol, startRow, endRow, worksheet) {
+function mergeMaado(startCol, endCol, startRow, endRow, worksheet) {
     let cellString = String.fromCharCode(64 + startCol) + startRow + ':' + String.fromCharCode(64 + endCol) + endRow;
     worksheet.mergeCells(cellString);
 }
 
-function addBorders (startRow, endRow, startCol, endCol, worksheet) {
+function addBorders(startRow, endRow, startCol, endCol, worksheet) {
     const border = {
         top: { style: 'medium' },
         bottom: { style: 'medium' },
@@ -37,13 +37,13 @@ function getDepth(obj) {
     for (let key in obj) {
         let depth = getDepth(obj[key]);
         if (depth > maxDepth) {
-        maxDepth = depth;
+            maxDepth = depth;
         }
-    return maxDepth + 1;
+        return maxDepth + 1;
     }
 }
 
-function generateExcel (data) {
+function generateExcel(data) {
     try {
         let jsonData = data["jsonData"]
         let xPercentageOfMaxMarks = data["xPercentageOfMaxMarks"]
@@ -60,7 +60,8 @@ function generateExcel (data) {
         let coAttainmentAverage = data["coAttainmentAverage"]
         let poAverages = data["poAverages"]
         let lab = false
-        if (Object.keys(jsonData[0]["Subject"]["Max Marks"]).length < 4) {
+        if (Object.keys(jsonData[0]["Subject"]["Max Marks"][data.batch]).length < 4) {
+            console.log("🚀 ~ file: excelForCourse.js:64 ~ generateExcel ~ jsonData[0]['Subject']['Max Marks']:", jsonData[0]["Subject"]["Max Marks"]);
             lab = true
         }
 
@@ -154,7 +155,7 @@ function generateExcel (data) {
                 worksheet.getCell('D9').value = academicYear;
                 // worksheet.getCell('D12').value = jsonData[0]["Subject"]["Subject Code"];
 
-                let headingDepth = getDepth(jsonData[0]["Subject"]["Max Marks"]);
+                let headingDepth = getDepth(jsonData[0]["Subject"]["Max Marks"][data.batch]);
                 headingDepth += 1
                 mergeMaado(1, 1, 12, 12 + headingDepth, worksheet)
                 mergeMaado(2, 2, 12, 12 + headingDepth, worksheet)
@@ -164,21 +165,21 @@ function generateExcel (data) {
                 worksheet.getCell('C12').value = "Student Name"
 
                 let colTracker = 4
-                let maxMarksObj = jsonData[0]["Subject"]["Max Marks"]
+                let maxMarksObj = jsonData[0]["Subject"]["Max Marks"][data.batch]
                 for (let ia in maxMarksObj) {
                     // console.log(ia)
                     if (typeof maxMarksObj[ia] === "object") {
                         let objLength = Object.keys(maxMarksObj[ia]).length
-                        mergeMaado(colTracker, colTracker+objLength - 1, 13, 13, worksheet)
+                        mergeMaado(colTracker, colTracker + objLength - 1, 13, 13, worksheet)
                         for (let co in maxMarksObj[ia]) {
                             let getCell1 = String.fromCharCode(64 + colTracker) + "13"
                             console.log(ia, co, getCell1)
                             worksheet.getCell(getCell1).value = ia
-                            for (let k=0; k < objLength; k++){
+                            for (let k = 0; k < objLength; k++) {
                                 let getCell2 = String.fromCharCode(64 + colTracker + k) + "14"
                                 worksheet.getCell(getCell2).value = co
                             }
-                            for (let k=0; k < objLength; k++){
+                            for (let k = 0; k < objLength; k++) {
                                 let getCell2 = String.fromCharCode(64 + colTracker + k) + "15"
                                 worksheet.getCell(getCell2).value = maxMarksObj[ia][co]
                             }
@@ -187,13 +188,13 @@ function generateExcel (data) {
                     } else {
                         let getCell1 = String.fromCharCode(64 + colTracker) + "13"
                         worksheet.getCell(getCell1).value = ia
-                        mergeMaado(colTracker, colTracker, 13, 14 ,worksheet)
+                        mergeMaado(colTracker, colTracker, 13, 14, worksheet)
                         let getCell2 = String.fromCharCode(64 + colTracker) + "15"
                         worksheet.getCell(getCell2).value = maxMarksObj[ia]
                         colTracker += 1
                     }
                 }
-                mergeMaado(4, colTracker-1, 12, 12, worksheet);
+                mergeMaado(4, colTracker - 1, 12, 12, worksheet);
 
                 // startRow = 15
                 studentsForExcel.forEach((row, index) => {
@@ -204,9 +205,9 @@ function generateExcel (data) {
                 // if (lab) {
                 //     colEnd = 5
                 // }
-                addBorders(startRow, startRow + i, 1, colTracker-1, worksheet)
+                addBorders(startRow, startRow + i, 1, colTracker - 1, worksheet)
                 worksheet.getCell('D12').value = jsonData[0]["Subject"]["Subject Code"];
-                
+
                 calculatedRowNumber = startRow + i + 1
                 calculatedRows = []
                 let flattenedMinMarks = flattenObject(xPercentageOfMaxMarks);
@@ -239,7 +240,7 @@ function generateExcel (data) {
                 calculatedRows.push(valuesArray3)
 
                 let headingsRow = [' ', ' ', ' ']
-                let headingsRow1 = Object.values(jsonData[0]["Subject"]["Max Marks"]).flatMap(innerObj => Object.keys(innerObj));
+                let headingsRow1 = Object.values(jsonData[0]["Subject"]["Max Marks"][data.batch]).flatMap(innerObj => Object.keys(innerObj));
                 headingsRow = headingsRow.concat(headingsRow1)
                 headingsRow.push('SEE')
                 calculatedRows.push(headingsRow)
@@ -248,10 +249,10 @@ function generateExcel (data) {
                 for (let k = 0; k < 5; k++) {
                     mergeMaado(1, 3, calculatedRowNumber + k, calculatedRowNumber + k, worksheet)
                 }
-                addBorders(calculatedRowNumber, calculatedRowNumber + 4, 1, colTracker-1, worksheet)
+                addBorders(calculatedRowNumber, calculatedRowNumber + 4, 1, colTracker - 1, worksheet)
 
                 const keySet = Object.keys(maxMarksObj);
-                const noOfCOs = Array.from(new Set(keySet.reduce((acc, key) => [...acc, ...Object.keys(jsonData[0]["Subject"]["Max Marks"][key])], []))).length;
+                const noOfCOs = Array.from(new Set(keySet.reduce((acc, key) => [...acc, ...Object.keys(jsonData[0]["Subject"]["Max Marks"][data.batch][key])], []))).length;
 
                 attainmentTable = []
                 attainmentTableForExcelHeadings = ["CO", "CIE", "SEE", "Direct Attainment", "Level", "Course Exit Survey", "Level", "Attainment"]
@@ -281,7 +282,7 @@ function generateExcel (data) {
 
                 addBorders(calculatedRowNumber1, calculatedRowNumber1 + 1 + noOfCOs, 1, 8, worksheet)
 
-                if (!lab){
+                if (!lab) {
                     coAverageTable = []
                     coAverageTableHeading = [' ']
                     for (const key in coPercentage) {
@@ -330,13 +331,13 @@ function generateExcel (data) {
                 console.log(targetLevels)
                 let significanceTable = [['CO Attainment Level', 'Significance', '', '', '', '', 'For Direct attainment , 50% of CIE and 50% of SEE marks are considered.']]
                 significanceTable.push(['Level ' + targetLevels.length, targetLevels[0] + '% and above students should have scored >=' + targetLevels[0] + '% of Total marks', '', '', '', '', 'CO attainment is 90% of direct attainment + 10% of Indirect atttainment.'])
-                for( let i = 1; i < targetLevels.length; i++){
-                    significanceTable.push(['Level ' + (targetLevels.length - i), targetLevels[i] + '% to ' + (targetLevels[i-1] - 1) + '% of students should have scored >= 60% of Total marks', '', '', '', '', 'CO attainment is 90% of direct attainment + 10% of Indirect atttainment.'])
+                for (let i = 1; i < targetLevels.length; i++) {
+                    significanceTable.push(['Level ' + (targetLevels.length - i), targetLevels[i] + '% to ' + (targetLevels[i - 1] - 1) + '% of students should have scored >= 60% of Total marks', '', '', '', '', 'CO attainment is 90% of direct attainment + 10% of Indirect atttainment.'])
                 }
-                
+
                 // ['Level ' + targetLevels.length, Math.max(...targetLevels).toString() + '% and above students should have scored >= 60% of Total marks', '', '', '', '', 'For indirect attainment, Course end survey is considered.'],
                 // ['Level 2', Math.max(...targetLevels1).toString() + '% to ' + (Math.max(...targetLevels)-1).toString() + '% of students should have scored >= 60% of Total marks', '', '', '', '', 'CO attainment is 90%of direct attainment + 10% of Indirect atttainment.'],
-                
+
                 // ['Level ' + i, Math.min(...targetLevels).toString() + '% to ' + (Math.max(...targetLevels1)-1).toString() + '% of students should have scored >= 60% of Total marks', '', '', '', '', 'PO attainment = CO-PO mapping strength/3 * CO attainment .']]
                 calculatedRowNumber2 = calculatedRowNumber1 + 3 + noOfCOs
                 addRowsWithSpace(significanceTable, calculatedRowNumber2, worksheet)
