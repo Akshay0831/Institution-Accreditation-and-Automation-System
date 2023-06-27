@@ -23,6 +23,8 @@ export default function AccreditationReportGeneration(props) {
         const defaultTargetValues = [50, 55, 60];
         const defaultMarksThreshold = 60;
 
+        const [minA, setMinA] = useState(27);
+        const [minT, setMinT] = useState(14);
         const [departments, setDepartments] = useState([]);
         const [departmentId, setDepartmentId] = useState("");
         const [originalSubjects, setOriginalSubjects] = useState([]);
@@ -85,6 +87,8 @@ export default function AccreditationReportGeneration(props) {
             let options = {
                 department: departmentId,
                 batch: batch,
+                A:minA,
+                T:minT,
                 targetValues: numbers.length ? numbers : defaultTargetValues,
                 marksThreshold: marksThreshold ? parseInt(marksThreshold) : defaultMarksThreshold,
             };
@@ -95,10 +99,10 @@ export default function AccreditationReportGeneration(props) {
                 const url = window.URL.createObjectURL(new Blob([blob]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', departmentId + ".xlsx");
+                link.setAttribute('download', `${departments.find(dept => dept._id === departmentId)["Department Name"]} ${batch}.xlsx`);
                 document.body.appendChild(link);
                 link.click();
-                console.log(response);
+                // console.log(response);
                 toasts("Generated Report", toast.success)
             }
             catch (err) {
@@ -133,11 +137,19 @@ export default function AccreditationReportGeneration(props) {
                             <Accordion.Header>Optional Fields</Accordion.Header>
                             <Accordion.Body className='p-1'>
                                 <Form.Group className='m-2'>
-                                    <Form.Label>Marks Threshold (Optional):</Form.Label>
+                                    <Form.Label>A (Minimum SUM PO value needed):</Form.Label>
+                                    <Form.Control type="number" min={1} max={99} placeholder="Enter the minimum PO value needed" onChange={(e) => setMinA(e.target.value)} value={minA} />
+                                </Form.Group>
+                                <Form.Group className='m-2'>
+                                    <Form.Label>T (Minimum Number of PO attained subjects needed):</Form.Label>
+                                    <Form.Control type="number" min={1} max={99} placeholder="Enter the minimum number of subjects addressing PO needed" onChange={(e) => setMinT(e.target.value)} value={minT} />
+                                </Form.Group>
+                                <Form.Group className='m-2'>
+                                    <Form.Label>Marks Threshold:</Form.Label>
                                     <Form.Control type="number" min={1} max={99} placeholder="Enter minimum marks for CO attainment" onChange={(e) => setMarksThreshold(e.target.value)} value={marksThreshold} />
                                 </Form.Group>
                                 <Form.Group controlId="numberList" className='m-2'>
-                                    <Form.Label>List of Target Levels (Optional):</Form.Label>
+                                    <Form.Label>List of Target Levels:</Form.Label>
                                     <Form.Control type="text" placeholder="Enter numbers separated by commas" onChange={handleInputChange} defaultValue={numbers.join(', ')} />
                                     <Form.Text className="text-muted">Enter numbers between 1 and 100.</Form.Text>
                                 </Form.Group>
@@ -174,11 +186,11 @@ export default function AccreditationReportGeneration(props) {
                             <Accordion.Header>Optional Fields</Accordion.Header>
                             <Accordion.Body className='p-1'>
                                 <Form.Group className='m-2'>
-                                    <Form.Label>Marks Threshold (Optional):</Form.Label>
+                                    <Form.Label>Marks Threshold:</Form.Label>
                                     <Form.Control type="number" min={1} max={99} placeholder="Enter minimum marks for CO attainment" onChange={(e) => setMarksThreshold(e.target.value)} value={marksThreshold} />
                                 </Form.Group>
                                 <Form.Group controlId="numberList" className='m-2'>
-                                    <Form.Label>List of Target Levels (Optional):</Form.Label>
+                                    <Form.Label>List of Target Levels:</Form.Label>
                                     <Form.Control type="text" placeholder="Enter numbers separated by commas" onChange={handleInputChange} defaultValue={numbers.join(', ')} />
                                     <Form.Text className="text-muted">Enter numbers between 1 and 100.</Form.Text>
                                 </Form.Group>

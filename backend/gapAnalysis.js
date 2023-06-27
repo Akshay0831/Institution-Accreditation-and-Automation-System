@@ -16,9 +16,7 @@ function addBorders(startRow, endRow, startCol, endCol, sheet) {
     }
 }
 
-async function generateGapAnalysisReport(data) {
-    let A = 27
-    let G = 14
+async function generateGapAnalysisReport(data, A=27, G=14) {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Sheet1');
     // const sheet = workbook.getWorksheet('Sheet1');
@@ -65,7 +63,7 @@ async function generateGapAnalysisReport(data) {
     let poGaps = {}
     for (let entry in poSum) {
         if (poSum[entry] < A) {
-            poGaps[entry] = ((27 - poSum[entry]) / (27)) * 100;
+            poGaps[entry] = ((A - poSum[entry]) / (A)) * 100;
         }
         else {
             poGaps[entry] = ''
@@ -82,7 +80,7 @@ async function generateGapAnalysisReport(data) {
         }
     };
 
-    let gapRow = ['', 'GAP G= (27-A)/(27))*100', '']
+    let gapRow = ['', `GAP G= (${A}-A)/(${A}))*100`, '']
     let values2 = Object.values(poGaps);
     gapRow = gapRow.concat(values2);
     sheet.addRow(gapRow);

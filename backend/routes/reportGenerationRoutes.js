@@ -60,7 +60,7 @@ router.route('/gapAnalysis')
             }));
 
             coCalculationOutputs = coCalculationOutputs.filter(output => Boolean(output));
-            gapAnalysisResults = await gapAnalysis(coCalculationOutputs);
+            gapAnalysisResults = await gapAnalysis(coCalculationOutputs, req.body.A, req.body.T);
 
             console.log(gapAnalysisResults);
             res.status(200).send(gapAnalysisResults);
