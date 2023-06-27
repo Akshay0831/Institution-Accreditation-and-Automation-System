@@ -3,8 +3,6 @@ const mongo = require("../db/mongodb");
 const router = express.Router();
 const coCalculation = require("../coCalculation");
 const gapAnalysis = require("../gapAnalysis");
-const fs = require("fs")
-const contentDisposition = require("content-disposition");
 
 router.route('/gapAnalysis')
     .post(async (req, res) => {
@@ -70,10 +68,8 @@ router.route("/:Subject")
         let options = req.body;
 
         let marks = await mongo.getDocs("Marks", searchQuery);
-        marks = marks.filter(marks => marks.Subject === req.params.Subject)
-
         let subject = await mongo.getDoc("Subject", { _id: req.params.Subject });
-        subject["Max Marks"] = subject["Max Marks"][options.batch];
+
         marks = await Promise.all(marks.map(async m => {
             m.Student = await mongo.getDoc("Student", { _id: m.Student });
             if (m.Student != null) {

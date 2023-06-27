@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner'
 import { Button, Card, Container, Row, Col, Form } from 'react-bootstrap';
-import GenerateReportForm from './GenerateReportForm';
 import BarGraph from './BarGraph';
 import PieGraph from './PieGraph';
 import AnalyticsOfStudent from './AnalyticsOfStudent';

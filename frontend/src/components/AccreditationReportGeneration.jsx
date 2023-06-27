@@ -88,16 +88,16 @@ export default function AccreditationReportGeneration(props) {
                 targetValues: numbers.length ? numbers : defaultTargetValues,
                 marksThreshold: marksThreshold ? parseInt(marksThreshold) : defaultMarksThreshold,
             };
-            console.log(options);
+            // console.log(options);
             try {
                 let response = await serverRequest("http://localhost:4000/reportGeneration/gapAnalysis", "POST", options);
-                // const blob = await response.blob();
-                // const url = window.URL.createObjectURL(new Blob([blob]));
-                // const link = document.createElement('a');
-                // link.href = url;
-                // link.setAttribute('download', subject["Subject Code"] + ".xlsx");
-                // document.body.appendChild(link);
-                // link.click();
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', departmentId + ".xlsx");
+                document.body.appendChild(link);
+                link.click();
                 console.log(response);
                 toasts("Generated Report", toast.success)
             }
