@@ -1,4 +1,4 @@
-import { auth } from "../firebase-config";
+import { auth } from "../firebase";
 
 const serverRequest = async (url, method, body, options) => {
     await new Promise((resolve) => {

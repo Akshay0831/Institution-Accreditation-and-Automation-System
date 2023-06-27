@@ -1,14 +1,18 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "./AuthContext";
+
 const SignOutBtn = lazy(() => import("./SignOutBtn"));
 
 const Header = (props) => {
-    return (
+    const { user } = useContext(AuthContext);
+
+    return (user &&
         <Suspense fallback={<h1>Loading...</h1>}>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
                 <div className="container-fluid">
                     <a className="navbar-brand ms-3" href="#">
-                        {sessionStorage.getItem("userType")}
+                        {user.userType}
                     </a>
                     <button
                         className="navbar-toggler"
@@ -24,7 +28,7 @@ const Header = (props) => {
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <Link to={"/"+sessionStorage.getItem("userType").toLowerCase()} className="nav-link active">
+                                <Link to={"/" + (user.userType)} className="nav-link active">
                                     Home
                                 </Link>
                             </li>
@@ -39,15 +43,13 @@ const Header = (props) => {
                                 </a>
                             </li>
                             {
-                                (props.links)
-                                    ? props.links.map((entry) => {
-                                        return <li key={entry[0]} className="nav-item">
-                                            <Link to={entry[1]} className="nav-link">
-                                                {entry[0]}
-                                            </Link>
-                                        </li>
-                                    })
-                                    : <></>
+                                props.links && props.links.map((entry) => {
+                                    return <li key={entry[0]} className="nav-item">
+                                        <Link to={entry[1]} className="nav-link">
+                                            {entry[0]}
+                                        </Link>
+                                    </li>
+                                })
                             }
                         </ul>
                         <SignOutBtn />

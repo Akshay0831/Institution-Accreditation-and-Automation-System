@@ -1,23 +1,24 @@
 import { sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
-import { auth } from "../firebase-config";
-import React, { useRef, useEffect } from "react";
+import { auth } from "../firebase";
+import React, { useContext, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { Button, Card, Col, Row, Form, Container } from 'react-bootstrap';
+import { AuthContext } from "./AuthContext";
 import serverRequest from "../helper/serverRequest";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function SignIn() {
+    const { user, setUser } = useContext(AuthContext);
     const refEmail = useRef(null);
     const refPassword = useRef(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Login";
-        if (sessionStorage.getItem("token")) {
-            navigate(sessionStorage.getItem("userType") === "Admin" ? "/admin" : "/home");
-        }
-    }, [navigate]);
+        if (user)
+            navigate(user.userType === "Admin" ? "/admin" : "/home");
+    }, [navigate, user]);
 
     const toasts = (message, type) => {
         type(message, {
@@ -73,6 +74,7 @@ export default function SignIn() {
             if (!userType)
                 throw new Error("UserType not set");
 
+            setUser({ uid: uid, userType: userType, userMail: userCredential.user.email, token: token })
             sessionStorage.setItem("uid", uid);
             sessionStorage.setItem("userType", userType);
             sessionStorage.setItem("userMail", userCredential.user.email);
@@ -86,6 +88,7 @@ export default function SignIn() {
             toasts(`Successfully! Logged in as ${userCredential.user.email}`, toast.success);
         } catch (error) {
             console.error(error);
+            setUser(null);
             sessionStorage.clear();
             await signOut(auth);
             toasts(error.message, toast.error);
@@ -117,6 +120,7 @@ export default function SignIn() {
 
             if (!userType)
                 throw new Error("UserType not set");
+            setUser({ uid: uid, userType: userType, userMail: email, token: token })
             sessionStorage.setItem("uid", uid);
             sessionStorage.setItem("userType", userType);
             sessionStorage.setItem("userMail", email);
@@ -130,6 +134,7 @@ export default function SignIn() {
             toasts(`Successfully! Logged in as ${email}`, toast.success);
         } catch (error) {
             console.error(error);
+            setUser(null);
             sessionStorage.clear();
             await signOut(auth);
             toasts(error.message, toast.error);
