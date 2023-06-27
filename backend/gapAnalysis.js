@@ -16,49 +16,7 @@ function addBorders(startRow, endRow, startCol, endCol, sheet) {
     }
 }
 
-async function generateGapAnalysisReport(data1) {
-    let data = [
-        {
-            "Subject Name": "Unix Programming",
-            "Subject Code": "18CS56",
-            "PO Averages": {
-                "PO1": 3,
-                "PO2": 1.6,
-                "PO3": 1.6,
-                "PO4": null,
-                "PO5": 2,
-                "PO6": null,
-                "PO7": null,
-                "PO8": null,
-                "PO9": 2,
-                "PO10": null,
-                "PO11": null,
-                "PO12": null,
-                "PSO1": 2,
-                "PSO2": 2
-            }
-        }, {
-            "Subject Name": "DSA",
-            "Subject Code": "18CS32",
-            "PO Averages": {
-                "PO1": 2,
-                "PO2": 1.6,
-                "PO3": 1.6,
-                "PO4": 1,
-                "PO5": null,
-                "PO6": null,
-                "PO7": null,
-                "PO8": null,
-                "PO9": 2,
-                "PO10": null,
-                "PO11": null,
-                "PO12": null,
-                "PSO1": 2,
-                "PSO2": 2
-            }
-        }
-    ]
-
+async function generateGapAnalysisReport(data) {
     let A = 27
     let G = 14
     const workbook = new ExcelJS.Workbook();
