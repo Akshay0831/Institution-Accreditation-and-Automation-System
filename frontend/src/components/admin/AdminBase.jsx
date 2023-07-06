@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, lazy, Suspense } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AuthContext } from "../AuthContext";
 
@@ -9,10 +9,21 @@ const Sidebar = lazy(() => import("../Sidebar"));
 const AdminBase = () => {
     const { user } = useContext(AuthContext);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        if (user) navigate(user.userType === "Admin" ? "/admin" : "/home");
-        else navigate("/login");
+        if (user) {
+            if (user.userType === "Admin") {
+                if (!location.pathname.startsWith("/admin")) {
+                    navigate("/admin");
+                }
+            } else {
+                if (!location.pathname.startsWith("/home")) {
+                    navigate("/home");
+                }
+            }
+        } else if (location.pathname !== "/login")
+            navigate("/login");
     }, [user]);
 
     return (

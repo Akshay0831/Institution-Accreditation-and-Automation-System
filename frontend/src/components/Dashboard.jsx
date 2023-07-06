@@ -3,7 +3,7 @@ import "/public/css/styles.css"
 import { Link } from "react-router-dom";
 
 export default function Dashboard(props) {
-    document.title = sessionStorage.getItem("userType") + " Dashboard"
+    document.title = props.type.toUpperCase() + " Dashboard"
     return (
         <main className="pt-3">
             <div className="container">

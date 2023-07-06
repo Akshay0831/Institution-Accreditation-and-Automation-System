@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import { Card, Form } from 'react-bootstrap';
 import serverRequest from "../../helper/serverRequest";
 import * as XLSX from 'xlsx';
+import { AuthContext } from "../AuthContext";
 
 export default class BatchInput extends Component {
+    static contextType = AuthContext;
+
     constructor(props) {
         super(props);
         this.serverURL = 'http://localhost:4000';
@@ -22,14 +25,17 @@ export default class BatchInput extends Component {
     }
 
     addData() {
-        let data = this.state.data;
+        const { user } = this.context;
+        const data = this.state.data;
         if (!data) return;
+
         const workbook = XLSX.read(data);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, {
             header: 2,
             defval: "",
         });
+
         jsonData.map(async (entry) => {
             let marksGained = {};
             for (let key of Object.keys(entry)) {
@@ -47,7 +53,7 @@ export default class BatchInput extends Component {
             let student = await (await serverRequest(this.serverURL + "/documents/Student", "POST", { searchObj: { USN: entry["USN"] } })).json();
 
             if (!student.length) {
-                if (sessionStorage.getItem("userType") == "Admin") {
+                if (user.userType == "Admin") {
                     let studentRes = await serverRequest(this.serverURL + "/documents/Student/add", "POST", {
                         "Student Name": entry["Student Name"],
                         USN: entry["USN"],

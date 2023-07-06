@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Form, Button, Modal, ButtonGroup } from "react-bootstrap";
@@ -11,11 +11,39 @@ export default function UpdateSubject() {
     const isUpdate = Boolean(id);
     document.title = (isUpdate ? "Update" : "Add") + " Subject";
 
+    const defaultBatchMaxMarks = { IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 };
+
+    const reducer = (state, action) => {
+        switch (action.type) {
+            case "SET":
+                return action.data;
+            case "addBatch":
+                return { ...state, [action.batch]: defaultBatchMaxMarks };
+            case "updateTestValue":
+                state[action.batch][action.test] = parseInt(action.value);
+                return { ...state };
+            case "updateCOnValue":
+                state[action.batch][action.test][action.COn] = parseInt(action.value);
+                return { ...state };
+            case "deleteBatch":
+                delete state[action.batch];
+                return { ...state };
+            case "deleteTest":
+                delete state[action.batch][action.test];
+                return { ...state };
+            case "deleteCO":
+                delete state[action.batch][action.test][action.COn];
+                return { ...state };
+            default:
+                return state;
+        }
+    }
+
     const [departments, setDepartments] = useState([]);
     const [schemeCode, setSchemeCode] = useState("");
     const [subjectCode, setSubjectCode] = useState("");
     const [subjectName, setSubjectName] = useState("");
-    const [maxMarks, setMaxMarks] = useState({ [(new Date()).getFullYear()]: { IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 } });
+    const [maxMarks, dispatchMaxMarks] = useReducer(reducer, { [(new Date()).getFullYear()]: defaultBatchMaxMarks })
     const [semester, setSemester] = useState(1);
     const [departmentId, setDepartmentID] = useState("");
 
@@ -40,7 +68,7 @@ export default function UpdateSubject() {
                 setSubjectCode(subjectsData["Subject Code"]);
                 setSubjectName(subjectsData["Subject Name"]);
                 // setTestAssignmentRatio(subjectsData["Test Assignment Ratio"]);
-                setMaxMarks(subjectsData["Max Marks"]);
+                dispatchMaxMarks({ type: 'SET', data: subjectsData["Max Marks"] });
                 setSemester(subjectsData["Semester"]);
                 setDepartmentID(subjectsData["Department"]);
             }
@@ -50,18 +78,6 @@ export default function UpdateSubject() {
         }
         fetchData();
     }, []);
-
-    const handleSEEChange = (batch, col, event) => {
-        let marks = maxMarks;
-        marks[batch][col] = parseInt(event.target.value);
-        setMaxMarks(maxMarks => ({ ...maxMarks, ...marks }));
-    }
-
-    const handleCOChange = (batch, col, CO, event) => {
-        let marks = maxMarks;
-        marks[batch][col][CO] = parseInt(event.target.value);
-        setMaxMarks(maxMarks => ({ ...maxMarks, ...marks }));
-    }
 
     const onSubmitClicked = (event) => {
         event.preventDefault();
@@ -92,29 +108,21 @@ export default function UpdateSubject() {
     const handleClose = () => setAddModal(false);
 
     const addToMaxMarksObject = () => {
-        if (addModal.length) {
+        if (addModal[0]) {
             if (/^((IA|A|CO)[0-9]+|CIE|SEE)$/.test(addModalBuffer)) {
                 if (addModal[1] && addModalBuffer.startsWith("CO")) maxMarks[addModal[0]][addModal[1]][addModalBuffer] = 0;
-                else if (addModal[0] && ["SEE", "CIE"].includes(addModalBuffer)) {
+                else if (["SEE", "CIE"].includes(addModalBuffer)) {
                     if (addModalBuffer in maxMarks[addModal[0]]) toasts(addModalBuffer + " already present in Max Marks", toast.error);
                     else maxMarks[addModal[0]][addModalBuffer] = 60;
                 }
-                else if (!Object.keys(maxMarks).includes(addModalBuffer)) maxMarks[addModalBuffer] = {};
+                else if (!Object.keys(maxMarks).includes(addModalBuffer)) maxMarks[addModal[0]][addModalBuffer] = {};
             }
             else
                 toasts("Invalid Format: " + addModalBuffer, toast.error);
         }
-        else {
-            maxMarks[parseInt(addModalBuffer)] = { IA1: { CO1: 18, CO2: 12 }, A1: { CO1: 6, CO2: 4 }, IA2: { CO2: 6, CO3: 18, CO4: 6 }, A2: { CO2: 2, CO3: 6, CO4: 2 }, IA3: { CO4: 12, CO5: 18 }, A3: { CO4: 4, CO5: 6 }, SEE: 60 };
-        }
+        else dispatchMaxMarks({ type: 'addBatch', batch: parseInt(addModalBuffer) });
         handleClose();
     };
-
-    const deleteObjInMaxMarks = (batch, test) => {
-        let marksObj = { ...maxMarks };
-        delete marksObj[batch][test];
-        setMaxMarks(marksObj);
-    }
 
     return (
         <main className="pt-5">
@@ -123,7 +131,7 @@ export default function UpdateSubject() {
                     <Modal.Header closeButton>
                         <Modal.Title>Add Field</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>Enter the field Name {addModal}
+                    <Modal.Body>Enter the field Name {addModal.length ? addModal.join("/") : ""}
                         <Form.Control type={addModal.length ? "text" : "number"} onChange={e => setAddModalBuffer(e.target.value.toUpperCase())} />
                     </Modal.Body>
                     <Modal.Footer>
@@ -163,32 +171,28 @@ export default function UpdateSubject() {
                                                     return <Card key={test} className="ps-2">{test}
                                                         <Card.Body className="row">
                                                             {Object.keys(maxMarks[batch][test]).map(CO => {
-                                                                return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={maxMarks[batch][test][CO]} min="0" onChange={handleCOChange.bind(this, batch, test, CO)} /></Form.Group>
+                                                                return <Form.Group key={CO} className="col"><Form.Label>{CO}</Form.Label><Form.Control type="number" placeholder={CO} value={maxMarks[batch][test][CO]} min="0" onChange={(e) => dispatchMaxMarks({ type: 'updateCOnValue', batch: batch, test: test, COn: CO, value: e.target.value })} /></Form.Group>
                                                             })}
                                                         </Card.Body>
                                                         <ButtonGroup className="col-2 mb-2">
                                                             <Button variant="outline-success" onClick={() => setAddModal([batch, test])} size="sm"><i className="fa fa-plus" /></Button>
-                                                            <Button variant="outline-danger" onClick={() => deleteObjInMaxMarks(batch, test)} size="sm"><i className="fa fa-trash" /></Button>
+                                                            <Button variant="outline-danger" onClick={() => dispatchMaxMarks({ type: "deleteTest", batch: batch, test: test })} size="sm"><i className="fa fa-trash" /></Button>
                                                         </ButtonGroup>
                                                     </Card>
                                                 }
                                                 else return <Card key={test} className="ps-2">
                                                     {test}
                                                     <Card.Body>
-                                                        <Form.Control type="number" placeholder={test} value={maxMarks[batch][test]} min="0" onChange={handleSEEChange.bind(this, batch, test)} />
+                                                        <Form.Control type="number" placeholder={test} value={maxMarks[batch][test]} min="0" onChange={(e) => dispatchMaxMarks({ type: 'updateTestValue', batch: batch, test: test, value: e.target.value })} />
                                                     </Card.Body>
-                                                    <Button className="col-1 mb-2" variant="outline-danger" onClick={() => deleteObjInMaxMarks(batch, test)} size="sm"><i className="fa fa-trash" /></Button>
+                                                    <Button className="col-1 mb-2" variant="outline-danger" onClick={() => dispatchMaxMarks({ type: "deleteTest", batch: batch, test: test })} size="sm"><i className="fa fa-trash" /></Button>
                                                 </Card>
                                             })}
                                         </Card.Body>
 
                                         <ButtonGroup size="sm" className="col-3 mb-2">
                                             <Button variant="outline-success" onClick={() => setAddModal([batch])}><i className="fa fa-plus" /></Button>
-                                            <Button variant="outline-danger" onClick={() => {
-                                                let marksObj = { ...maxMarks };
-                                                delete marksObj[batch];
-                                                setMaxMarks(marksObj);
-                                            }}><i className="fa fa-trash" /></Button>
+                                            <Button variant="outline-danger" onClick={() => dispatchMaxMarks({ type: "deleteBatch", batch: batch })}><i className="fa fa-trash" /></Button>
                                         </ButtonGroup>
                                     </Card>
                                 ))}

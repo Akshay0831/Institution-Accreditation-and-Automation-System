@@ -274,10 +274,10 @@ export default function CollectionList() {
                                 headers={
                                     MetaData[collectionSelected]["headers"].concat([{
                                         prop: "button",
-                                        title: (<Link to={["", sessionStorage.getItem("userType").toLowerCase(), collectionSelected, "add"].join("/")}><Button style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button></Link>),
+                                        title: (<Link to={`/admin/${collectionSelected}/add`}><Button style={{ width: '90%' }} size="sm" variant="success"><i className="fa fa-plus" /></Button></Link>),
                                         cell: (row) => (
                                             <ButtonGroup aria-label="DB Actions" style={{ width: '90%' }} >
-                                                <Link to={["", sessionStorage.getItem("userType").toLowerCase(), collectionSelected, "update", row['_id']].join("/")} className="btn btn-warning btn-sm"><i className="fa fa-pencil" /></Link>
+                                                <Link to={`/admin/${collectionSelected}/update/${row['_id']}`} className="btn btn-warning btn-sm"><i className="fa fa-pencil" /></Link>
                                                 <Button variant="danger" size="sm" onClick={() => setDeleteRow(row)}><i className="fa fa-trash" /></Button>
                                             </ButtonGroup>
                                         )

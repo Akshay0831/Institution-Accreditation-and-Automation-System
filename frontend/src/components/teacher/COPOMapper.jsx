@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Card, Table } from "react-bootstrap";
 import serverRequest from "../../helper/serverRequest";
+import { AuthContext } from "../AuthContext";
 
 export default function COPOMapper() {
 
@@ -19,9 +20,11 @@ export default function COPOMapper() {
     }
 
     const serverURL = 'http://localhost:4000/';
-    const userType = sessionStorage.getItem("userType");
-    const userMail = sessionStorage.getItem("userMail");
     document.title = "CO PO Mapper";
+
+    const { user } = useContext(AuthContext);
+    const userType = user.userType;
+    const userMail = user.userMail;
 
     const [batch, setBatch] = useState(2018);
     const [batches, setBatches] = useState([]);

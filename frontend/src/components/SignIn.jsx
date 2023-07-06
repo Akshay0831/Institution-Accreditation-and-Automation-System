@@ -74,11 +74,7 @@ export default function SignIn() {
             if (!userType)
                 throw new Error("UserType not set");
 
-            setUser({ uid: uid, userType: userType, userMail: userCredential.user.email, token: token })
-            sessionStorage.setItem("uid", uid);
-            sessionStorage.setItem("userType", userType);
-            sessionStorage.setItem("userMail", userCredential.user.email);
-            sessionStorage.setItem("token", token);
+            setUser({ uid: uid, userType: userType, userMail: userCredential.user.email, token: token });
 
             const endpoint = "http://localhost:4000/login";
             const body = { email: userCredential.user.email, userId: uid, userType };
@@ -89,7 +85,6 @@ export default function SignIn() {
         } catch (error) {
             console.error(error);
             setUser(null);
-            sessionStorage.clear();
             await signOut(auth);
             toasts(error.message, toast.error);
         }
@@ -120,11 +115,7 @@ export default function SignIn() {
 
             if (!userType)
                 throw new Error("UserType not set");
-            setUser({ uid: uid, userType: userType, userMail: email, token: token })
-            sessionStorage.setItem("uid", uid);
-            sessionStorage.setItem("userType", userType);
-            sessionStorage.setItem("userMail", email);
-            sessionStorage.setItem("token", token);
+            setUser({ uid: uid, userType: userType, userMail: email, token: token });
 
             const endpoint = "http://localhost:4000/login";
             const body = { email, userId: uid, userType };
@@ -135,7 +126,6 @@ export default function SignIn() {
         } catch (error) {
             console.error(error);
             setUser(null);
-            sessionStorage.clear();
             await signOut(auth);
             toasts(error.message, toast.error);
         }

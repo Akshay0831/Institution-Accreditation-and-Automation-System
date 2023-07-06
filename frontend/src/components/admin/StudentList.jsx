@@ -26,7 +26,7 @@ export default class StudentList extends Component {
             <main className="pt-5" >
                 <div className="container">
                     <button className="btn btn-success">
-                        <Link to={"/" + sessionStorage.getItem("userType").toLowerCase() + "/Student/add"} style={{ textDecoration: 'none', color: 'white' }}> <i className="fas fa-solid fa-user-plus"></i> Add Student </Link>
+                        <Link to={"/admin/Student/add"} style={{ textDecoration: 'none', color: 'white' }}> <i className="fas fa-solid fa-user-plus"></i> Add Student </Link>
                     </button>
                     <hr />
                     {this.state
@@ -85,7 +85,7 @@ export default class StudentList extends Component {
                                                                                             <td colSpan={2}>
                                                                                                 <div className="btn-group">
                                                                                                     <button className="btn btn-warning py-1">
-                                                                                                        <Link to={`/${sessionStorage.getItem("userType")}/student/update/${student._id}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
+                                                                                                        <Link to={`/admin/student/update/${student._id}`}><i className="fa fa-pencil" aria-hidden="true" /></Link>
                                                                                                     </button>
                                                                                                     <button className="btn btn-danger" onClick={() => { this.deleteClicked(student._id) }}>
                                                                                                         <i className="fa fa-solid fa-user-minus" aria-hidden="true"></i>

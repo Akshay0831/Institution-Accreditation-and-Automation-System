@@ -38,14 +38,14 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route exact path="/login" element={<SignIn />} />
-                    <Route path="/home" element={<TeacherBase />}>
+                    {user && <Route path="/home" element={<TeacherBase />}>
                         <Route index element={<Dashboard type="home" />} />
                         <Route path="updatemarks" element={<TeacherUpdateMarksTable />} />
                         <Route path="documents" element={<DocumentsAccess />} />
                         <Route path="analytics" element={<Analytics />} />
                         <Route path="mapping" element={<COPOMapper />} />
-                    </Route>
-                    <Route path="/admin" element={<AdminBase />}>
+                    </Route>}
+                    {user && <Route path="/admin" element={<AdminBase />}>
                         <Route index element={<Dashboard type="admin" />} />
                         <Route path="updatemarks" element={<AdminUpdateMarksTable />} />
                         <Route path="documents" element={<DocumentsAccess />} />
@@ -74,7 +74,7 @@ function App() {
                         <Route path="teacher allocation/add" element={<UpdateTeacherAllocation />} />
                         <Route path="teacher allocation/update/:id" element={<UpdateTeacherAllocation />} />
                         <Route path="studentlist" element={<StudentList />} />
-                    </Route>
+                    </Route>}
                 </Routes>
             </Router>
         </Suspense >

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Accordion, Button, Card, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { InfinitySpin } from 'react-loader-spinner';
 import BatchInput from "./BatchInput";
 import serverRequest from '../../helper/serverRequest';
+import { AuthContext } from "../AuthContext";
 
 function toasts(message, type) {
     type(message, {
@@ -33,9 +34,13 @@ function deepCopyObject(originalObject, defaultValue = null) {
 
 export default function TeacherUpdateMarksTable(props) {
     const serverURL = 'http://localhost:4000/';
-    const userType = sessionStorage.getItem("userType");
-    const userMail = sessionStorage.getItem("userMail");
     document.title = "Update Marks Table";
+
+    const { user } = useContext(AuthContext);
+    const userType = user.userType;
+    const userMail = user.userMail;
+
+    if (!user) return;
 
     const [batch, setBatch] = useState(2018);
     const [batches, setBatches] = useState([]);
@@ -91,7 +96,7 @@ export default function TeacherUpdateMarksTable(props) {
     }
 
     function handleItemChanged(classIndex, studentIndex, ia, co, event) {
-        let marks = [ ...marksTable ];
+        let marks = [...marksTable];
         if (!marks[classIndex].Class.Students[studentIndex].Marks.length) {
             marks[classIndex].Class.Students[studentIndex].Marks = { "Subject": subjectSelected._id, "Student": marks[classIndex].Class.Students[studentIndex]._id, "Marks Gained": deepCopyObject(subjectSelected["Max Marks"][batch], 0) };
         }
